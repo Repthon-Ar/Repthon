@@ -40,7 +40,7 @@ except Exception as e:
 try:
     zq_lo.tgbot = tgbot = RepUserBotClient(
         session="RepTgbot",
-        api_id=Config.APP_ID,
+        api_id=Config.API_ID,
         api_hash=Config.API_HASH,
         loop=loop,
         app_version=__version__,
