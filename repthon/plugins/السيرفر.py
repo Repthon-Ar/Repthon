@@ -19,7 +19,7 @@ plugin_category = "الادوات"
 # ============================@ Constants @===============================
 config = "./config.py"
 var_checker = [
-    "APP_ID",
+    "API_ID",
     "PM_LOGGER_GROUP_ID",
     "PRIVATE_CHANNEL_BOT_API_ID",
     "PRIVATE_GROUP_BOT_API_ID",
