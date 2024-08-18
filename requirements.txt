@@ -1,4 +1,4 @@
-telethon==1.36.0
+telethon
 telethon-session-sqlalchemy
 setuptools
 wheel
@@ -96,4 +96,4 @@ wikipedia
 youtube-search-python==1.4.9
 youtube_dl
 youtube-search
-yt_dlp==2024.05.27
+yt_dlp
