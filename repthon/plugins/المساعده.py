@@ -27,7 +27,7 @@ rep_temp = """
 │ ● ɴᴀᴍᴇ ➪  {mention}
 │ ● ʀᴇᴘᴛʜᴏɴ ➪ {repver}
 │ ● ᴘʏᴛʜᴏɴ ➪ {pyver}
-│ ● ᴘʟᴀᴛғᴏʀᴍ ➪ 𐍃ᥴᥲᥣiᥒg᧐
+│ ● ᴘʟᴀᴛғᴏʀᴍ ➪ ᴄʟᴇᴠᴇʀ ᴄʟᴏụᴅ
 │ ● ᴘɪɴɢ ➪ {ping}
 │ ● ᴜᴘ ᴛɪᴍᴇ ➪ {uptime}
 │ ● ᴀʟɪᴠᴇ sɪɴᴇᴄ ➪ {reppa}
@@ -35,7 +35,7 @@ rep_temp = """
 ┗───────────────┛"""
 
 
-if Config.APP_USERNAME is not None and tgbot is not None:
+if Config.TG_BOT_USERNAME is not None and tgbot is not None:
 
     @tgbot.on(events.InlineQuery)
     @check_owner
@@ -127,7 +127,7 @@ if Config.APP_USERNAME is not None and tgbot is not None:
 async def help(event):
     if event.reply_to_msg_id:
         await event.get_reply_message()
-    response = await zq_lo.inline_query(Config.APP_USERNAME, "مساعده")
+    response = await zq_lo.inline_query(Config.TG_BOT_USERNAME, "مساعده")
     await response[0].click(event.chat_id)
     await event.delete()
 
@@ -136,7 +136,7 @@ async def help(event):
 async def help(event):
     if event.reply_to_msg_id:
         await event.get_reply_message()
-    response = await zq_lo.inline_query(Config.APP_USERNAME, "الفحص")
+    response = await zq_lo.inline_query(Config.TG_BOT_USERNAME, "الفحص")
     await response[0].click(event.chat_id)
     await event.delete()
 
