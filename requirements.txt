@@ -18,7 +18,6 @@ DateTime
 emoji
 ffmpeg-python
 flask
-flask_restful
 fonttools
 geopy
 gitpython
@@ -55,13 +54,11 @@ prettytable
 psutil
 psycopg2-binary
 psycopg2
-py-tgcalls==2.0.2
 pyfiglet
 PyGithub
 pygments
 pylast
 pymediainfo
-pyquery
 pyrogram
 pySmartDL
 python-barcode
@@ -79,7 +76,6 @@ spamwatch
 speedtest-cli
 sqlalchemy-json
 sqlalchemy==1.3.23
-ShazamAPI
 speechrecognition
 telegraph
 tgcrypto
@@ -93,7 +89,3 @@ vcsi
 wand
 wget
 wikipedia
-youtube-search-python==1.4.9
-youtube_dl
-youtube-search
-yt_dlp
