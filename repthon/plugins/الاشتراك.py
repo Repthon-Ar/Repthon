@@ -191,7 +191,7 @@ async def supc(event):  # Repthon - Baqir
         try:
    
             idd = event.peer_id.user_id
-            tok = Config.APP_TOKEN
+            tok = Config.TG_BOT_TOKEN
             ch = gvarstatus ("Custom_Pm_Channel")
             try:
                 ch = int(ch)
@@ -245,7 +245,7 @@ async def supc(event):  # Repthon - Baqir
                 except BaseException as er:
                     await zq_lo.tgbot.send_message(BOTLOG_CHATID, f"- خطـأ \n{er}")
             if "error_code" in reqt:
-                await zq_lo.tgbot.send_message(BOTLOG_CHATID, f"**- خطـأ غير معروف قم باعادة توجيه الرسالة ل@zzzzl1l لحل المشكلة\n{reqt}**")
+                await zq_lo.tgbot.send_message(BOTLOG_CHATID, f"**- خطـأ غير معروف قم باعادة توجيه الرسالة @E_7_V لحل المشكلة\n{reqt}**")
             
             return
         except BaseException as er:
