@@ -205,7 +205,7 @@ async def song2(event):
         try:
             purgeflag = await conv.send_message(song)
         except YouBlockedUserError:
-            await catub(unblock("CatMusicRobot"))
+            await zq_lo(unblock("CatMusicRobot"))
             purgeflag = await conv.send_message(song)
         music = await conv.get_response()
         await event.client.send_read_acknowledge(conv.chat_id)
