@@ -10,6 +10,7 @@ from .core.session import zq_lo
 from .helpers.functions.converter import Convert
 from .helpers.utils.utils import runasync
 from .sql_helper.globals import addgvar, delgvar, gvarstatus
+from .helpers.functions.musictool import *
 
 __version__ = "3.1.3"
 __license__ = "حقـوق سـورس ريبـــثون"
@@ -24,7 +25,7 @@ StartTime = time.time()
 repversion = "3.1.3"
 
 if Config.UPSTREAM_REPO == "Repthon":
-    UPSTREAM_REPO_URL = "https://github.com/xxe9/Repthon"
+    UPSTREAM_REPO_URL = "https://github.com/RepthonAr/Repthon"
 else:
     UPSTREAM_REPO_URL = Config.UPSTREAM_REPO
 
