@@ -35,7 +35,7 @@ SONG_SENDING_STRING = "<b>╮ جـارِ تحميـل الاغنيـٓه... 🎧
 # =========================================================== #
 
 @zq_lo.rep_cmd(
-    pattern="بحث(320)?(?:\s|$)([\s\S]*)",
+    pattern="بحث(320)?(?:\\s|$)([\\s\\S]*)",
     command=("بحث", plugin_category),
     info={
         "header": "لـ تحميـل الاغـانـي مـن يـوتيـوب",
@@ -116,7 +116,7 @@ async def _(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="فيديو(?:\s|$)([\s\S]*)",
+    pattern="فيديو(?:\\s|$)([\\s\\S]*)",
     command=("فيديو", plugin_category),
     info={
         "header": "لـ تحميـل مقـاطـع الفيـديـو مـن يـوتيـوب",
@@ -186,7 +186,7 @@ async def _(event):
             os.remove(files)
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث(?:\s|$)([\s\S]*)",
+    pattern=r"بحث2(?:\\s|$)([\\s\\S]*)",
     command=("بحث2", plugin_category),
     info={
         "header": "To search songs and upload to telegram",
