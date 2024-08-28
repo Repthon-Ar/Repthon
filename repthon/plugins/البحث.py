@@ -186,7 +186,7 @@ async def _(event):
             os.remove(files)
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث2(?:\\s|$)([\\s\\S]*)",
+    pattern="بحث2(?:\\s|$)([\\s\\S]*)",
     command=("بحث2", plugin_category),
     info={
         "header": "To search songs and upload to telegram",
