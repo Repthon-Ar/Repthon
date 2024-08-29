@@ -611,7 +611,7 @@ async def download_audio(event):
 
 
 #Code by T.me/E_7_V
-@zq_lo.rep_cmd(pattern="انستا(?: |$)([\s\S]*)")
+@zq_lo.rep_cmd(pattern="انستا(?: |$)([\\s\\S]*)")
 async def zelzal_gif(event):
     link = event.pattern_match.group(1)
     reply = await event.get_reply_message()
