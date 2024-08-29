@@ -20,7 +20,7 @@ class Config(object):
     API_ID = os.environ.get("API_ID") or None
     API_HASH = os.environ.get("API_HASH") or None
     # Datbase url heroku sets it automatically else get this from elephantsql
-    DB_URI = os.environ.get("POSTGRESQL_ADDON_URI", None)
+    DB_URI = os.environ.get("DATABASE_URL", None)
     # Get this value by running python3 stringsetup.py or https://repl.it/@zedthonn/stringsession
     STRING_SESSION = os.environ.get("STRING_SESSION", None)
     # Telegram BOT Token and bot username from @BotFather
@@ -32,7 +32,7 @@ class Config(object):
     TZ = os.environ.get("TZ", "Asia/Baghdad")
     # set this with required zed repo link
     UPSTREAM_REPO = os.environ.get(
-        "UPSTREAM_REPO", "https://github.com/Repthon-Arabic/RepthonAr"
+        "UPSTREAM_REPO", "https://github.com/RepthonAr/Repthon"
     )
     # External plugins repo
     EXTERNAL_REPO = os.environ.get("EXTERNAL_REPO", None)
