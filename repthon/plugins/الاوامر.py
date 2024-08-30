@@ -82,7 +82,7 @@ async def reporepthon(event):
         return
     if event.reply_to_msg_id:
         await event.get_reply_message()
-    response = await event.client.inline_query(Config.APP_USERNAME, "الاوامر")
+    response = await event.client.inline_query(Config.TG_BOT_USERNAME, "الاوامر")
     await response[0].click(event.chat_id)
     await event.delete()
 
