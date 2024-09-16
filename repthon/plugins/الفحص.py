@@ -19,7 +19,7 @@ from telethon.errors.rpcerrorlist import (
 
 from . import StartTime, zq_lo, repversion
 
-from ..Config import Config, HOSTED_ON
+from ..Config import Config
 from ..core.managers import edit_or_reply
 from ..helpers.functions import repalive, check_data_base_heal_th, get_readable_time
 from ..helpers.utils import reply_id
