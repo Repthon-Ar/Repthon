@@ -20,6 +20,7 @@ from telethon.errors.rpcerrorlist import (
 from . import StartTime, zq_lo, repversion
 
 from ..Config import Config
+from sample_config import HOSTED_ON
 from ..core.managers import edit_or_reply
 from ..helpers.functions import repalive, check_data_base_heal_th, get_readable_time
 from ..helpers.utils import reply_id
@@ -63,7 +64,7 @@ async def rep_alive(event):
         rrt=rrt,
         telever=version.__version__,
         repver=repversion,
-        HOSTED_ON=HOSTED_ON,
+        HOSTED_ON=detect_platform,
         pyver=python_version(),
         dbhealth=check_sgnirts,
         ping=ms,
@@ -95,7 +96,7 @@ rep_temp = """
 │ ● ɴᴀᴍᴇ ➪  {mention}
 │ ● ʀᴇᴘᴛʜᴏɴ ➪ {repver}
 │ ● ᴘʏᴛʜᴏɴ ➪ {pyver}
-│ ● ᴘʟᴀᴛғᴏʀᴍ ➪ {HOSTED_ON}
+│ ● ᴘʟᴀᴛғᴏʀᴍ ➪ Is [{HOSTED_ON}] Running
 │ ● ᴘɪɴɢ ➪ {ping}
 │ ● ᴜᴘ ᴛɪᴍᴇ ➪ {uptime}
 │ ● ᴀʟɪᴠᴇ sɪɴᴇᴄ ➪ {reppa}
