@@ -63,6 +63,7 @@ async def rep_alive(event):
         rrt=rrt,
         telever=version.__version__,
         repver=repversion,
+        HOSTED_ON=detect_platform()
         pyver=python_version(),
         dbhealth=check_sgnirts,
         ping=ms,
