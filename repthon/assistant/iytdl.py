@@ -1,4 +1,5 @@
-""" Download Youtube Video / Audio in a User friendly interface """
+"""Download Youtube Video / Audio in a User friendly interface"""
+
 # --------------------------- #
 #   Modded ytdl by code-rgb   #
 # --------------------------- #
@@ -25,27 +26,18 @@ from ..core import check_owner, pool
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
 from ..helpers import post_to_telegraph, progress, reply_id
-from ..helpers.functions.utube import (
-    _mp3Dl,
-    _tubeDl,
-    download_button,
-    get_choice_by_id,
-    get_ytthumb,
-    yt_search_btns,
-)
+from ..helpers.functions.utube import _mp3Dl, _tubeDl, download_button, get_choice_by_id, get_ytthumb, yt_search_btns
 from ..plugins import BOTLOG_CHATID
 
 LOGS = logging.getLogger(__name__)
 BASE_YT_URL = "https://www.youtube.com/watch?v="
-YOUTUBE_REGEX = re.compile(
-    r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/|shorts/)?([\w-]{11})"
-)
+YOUTUBE_REGEX = re.compile(r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/|shorts/)?([\w-]{11})")
 PATH = "./repthon/cache/ytsearch.json"
 plugin_category = "البوت"
 
 
 @zq_lo.rep_cmd(
-    pattern="iytdl(?:\s|$)([\s\S]*)",
+    pattern=r"iytdl(?:\s|$)([\s\S]*)",
     command=("iytdl", plugin_category),
     info={
         "header": "ytdl with inline buttons.",
@@ -65,15 +57,13 @@ async def iytdl_inline(event):
         input_url = (reply.text).strip()
     if not input_url:
         return await edit_delete(event, "Give input or reply to a valid youtube URL")
-    repevent = await edit_or_reply(event, f"🔎 Searching Youtube for: `'{input_url}'`")
+    catevent = await edit_or_reply(event, f"🔎 Searching Youtube for: `'{input_url}'`")
     flag = True
     cout = 0
     results = None
     while flag:
         try:
-            results = await event.client.inline_query(
-                Config.TG_BOT_USERNAME, f"ytdl {input_url}"
-            )
+            results = await event.client.inline_query(Config.TG_BOT_USERNAME, f"ytdl {input_url}")
             flag = False
         except BotResponseTimeoutError:
             await asyncio.sleep(2)
@@ -81,34 +71,18 @@ async def iytdl_inline(event):
         if cout > 5:
             flag = False
     if results:
-        await repevent.delete()
+        await catevent.delete()
         await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     else:
-        await repevent.edit("`Sorry!. Can't find any results`")
+        await catevent.edit("`Sorry!. Can't find any results`")
 
 
-@zq_lo.tgbot.on(
-    CallbackQuery(
-        data=re.compile(b"^ytdl_download_(.*)_([\d]+|mkv|mp4|mp3)(?:_(a|v))?")
-    )
-)
+@zq_lo.tgbot.on(CallbackQuery(data=re.compile(rb"^ytdl_download_(.*)_([\d]+|mkv|mp4|mp3)(?:_(a|v))?")))
 @check_owner
 async def ytdl_download_callback(c_q: CallbackQuery):  # sourcery no-metrics
-    yt_code = (
-        str(c_q.pattern_match.group(1).decode("UTF-8"))
-        if c_q.pattern_match.group(1) is not None
-        else None
-    )
-    choice_id = (
-        str(c_q.pattern_match.group(2).decode("UTF-8"))
-        if c_q.pattern_match.group(2) is not None
-        else None
-    )
-    downtype = (
-        str(c_q.pattern_match.group(3).decode("UTF-8"))
-        if c_q.pattern_match.group(3) is not None
-        else None
-    )
+    yt_code = str(c_q.pattern_match.group(1).decode("UTF-8")) if c_q.pattern_match.group(1) is not None else None
+    choice_id = str(c_q.pattern_match.group(2).decode("UTF-8")) if c_q.pattern_match.group(2) is not None else None
+    downtype = str(c_q.pattern_match.group(3).decode("UTF-8")) if c_q.pattern_match.group(3) is not None else None
     if str(choice_id).isdigit():
         choice_id = int(choice_id)
         if choice_id == 0:
@@ -182,26 +156,12 @@ async def ytdl_download_callback(c_q: CallbackQuery):  # sourcery no-metrics
     )
 
 
-@zq_lo.tgbot.on(
-    CallbackQuery(data=re.compile(b"^ytdl_(listall|back|next|detail)_([a-z0-9]+)_(.*)"))
-)
+@zq_lo.tgbot.on(CallbackQuery(data=re.compile(b"^ytdl_(listall|back|next|detail)_([a-z0-9]+)_(.*)")))
 @check_owner
 async def ytdl_callback(c_q: CallbackQuery):
-    choosen_btn = (
-        str(c_q.pattern_match.group(1).decode("UTF-8"))
-        if c_q.pattern_match.group(1) is not None
-        else None
-    )
-    data_key = (
-        str(c_q.pattern_match.group(2).decode("UTF-8"))
-        if c_q.pattern_match.group(2) is not None
-        else None
-    )
-    page = (
-        str(c_q.pattern_match.group(3).decode("UTF-8"))
-        if c_q.pattern_match.group(3) is not None
-        else None
-    )
+    choosen_btn = str(c_q.pattern_match.group(1).decode("UTF-8")) if c_q.pattern_match.group(1) is not None else None
+    data_key = str(c_q.pattern_match.group(2).decode("UTF-8")) if c_q.pattern_match.group(2) is not None else None
+    page = str(c_q.pattern_match.group(3).decode("UTF-8")) if c_q.pattern_match.group(3) is not None else None
     if not os.path.exists(PATH):
         return await c_q.answer(
             "Search data doesn't exists anymore, please perform search again ...",
@@ -212,9 +172,7 @@ async def ytdl_callback(c_q: CallbackQuery):
     search_data = view_data.get(data_key)
     total = len(search_data) if search_data is not None else 0
     if total == 0:
-        return await c_q.answer(
-            "Search again your bot lost the information about this.", alert=True
-        )
+        return await c_q.answer("Search again your bot lost the information about this.", alert=True)
     if choosen_btn == "back":
         index = int(page) - 1
         del_back = index == 1
@@ -251,9 +209,7 @@ async def ytdl_callback(c_q: CallbackQuery):
         )
     elif choosen_btn == "listall":
         await c_q.answer("View Changed to:  📜  List", alert=False)
-        list_res = "".join(
-            search_data.get(vid_s).get("list_view") for vid_s in search_data
-        )
+        list_res = "".join(search_data.get(vid_s).get("list_view") for vid_s in search_data)
 
         telegraph = await post_to_telegraph(
             f"Showing {total} youtube video results for the given query ...",
@@ -264,13 +220,13 @@ async def ytdl_callback(c_q: CallbackQuery):
             buttons=[
                 (
                     Button.url(
-                        "↗️  اضغط للفتح",
+                        "↗️  Click To Open",
                         url=telegraph,
                     )
                 ),
                 (
                     Button.inline(
-                        "📰  عرض التفاصيل",
+                        "📰  Detailed View",
                         data=f"ytdl_detail_{data_key}_{page}",
                     )
                 ),
