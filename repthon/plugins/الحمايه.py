@@ -421,23 +421,6 @@ async def on_new_private_message(event):
         return
     if pmpermit_sql.is_approved(chat.id):
         return
-    await event.client.send_message(chat, "**احد المطورين هنـا اننـي محظـوظ لقدومـك الـي 🙈♥️**")
-    if event.chat_id == 5502537272:
-        reason = "**انـه مطـور السـورس 🥳♥️**"
-        try:
-            PM_WARNS = sql.get_collection("pmwarns").json
-        except AttributeError:
-            PM_WARNS = {}
-        if not pmpermit_sql.is_approved(chat.id):
-            if str(chat.id) in PM_WARNS:
-                del PM_WARNS[str(chat.id)]
-            start_date = str(datetime.now().strftime("%B %d, %Y"))
-            pmpermit_sql.approve(
-                chat.id, get_display_name(chat), start_date, chat.username, reason
-            )
-        return await event.client.send_message(chat, "**اطـلق هـلاو مطـوري الغـالي اننـي محظـوظ لقدومـك الـي 🙈♥️**")
-    if chat.id in PMPERMIT_.TEMPAPPROVED:
-        return
     if str(chat.id) in sqllist.get_collection_list("pmspam"):
         return await do_pm_spam_action(event, chat)
     if str(chat.id) in sqllist.get_collection_list("pmchat"):
@@ -448,6 +431,10 @@ async def on_new_private_message(event):
         return await do_pm_enquire_action(event, chat)
     if str(chat.id) in sqllist.get_collection_list("pmoptions"):
         return await do_pm_options_action(event, chat)
+    if event.sender_id == 5502537272:
+        await event.reply("**اهلاً وسهلاً بيك واكثر بلوياك الگلب گبل العين فز وتلگاك\n منورني يامطوري باقر🖤**")
+        pmpermit_sql.approve(chat.id, get_display_name(chat), "تاريخ الإضافة", chat.username, "تم الموافقة تلقائيًا")
+        return
     await do_pm_permit_action(event, chat)
 
 
