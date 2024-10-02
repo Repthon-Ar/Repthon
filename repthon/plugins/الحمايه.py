@@ -417,25 +417,11 @@ async def on_new_private_message(event):
     if gvarstatus("pmpermit") is None:
         return
     chat = await event.get_chat()
-    rep_dev = {1145818344}
     if chat.bot or chat.verified:
         return
     if pmpermit_sql.is_approved(chat.id):
         return
-    if event.chat_id in rep_dev:
-        reason = "**انـه احـد المطـورين المساعديـن 🥳♥️**"
-        try:
-            PM_WARNS = sql.get_collection("pmwarns").json
-        except AttributeError:
-            PM_WARNS = {}
-        if not pmpermit_sql.is_approved(chat.id):
-            if str(chat.id) in PM_WARNS:
-                del PM_WARNS[str(chat.id)]
-            start_date = str(datetime.now().strftime("%B %d, %Y"))
-            pmpermit_sql.approve(
-                chat.id, get_display_name(chat), start_date, chat.username, reason
-            )
-        return await event.client.send_message(chat, "**احد المطورين هنـا اننـي محظـوظ لقدومـك الـي 🙈♥️**")
+    await event.client.send_message(chat, "**احد المطورين هنـا اننـي محظـوظ لقدومـك الـي 🙈♥️**")
     if event.chat_id == 5502537272:
         reason = "**انـه مطـور السـورس 🥳♥️**"
         try:
