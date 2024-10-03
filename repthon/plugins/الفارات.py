@@ -1275,7 +1275,7 @@ async def alive_repthon(event):
             if response.status_code == 200 and response.json().get("success"):
                 url = response.json()["files"][0]["url"]
                 addgvar("ALIVE_PIC", url)
-                await repevent.edit(f"**⎉╎  تم اضافة الصورة الى الفحص ✓ **")
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى الفحص ✓ **")
             else:
                 await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
 
@@ -1286,6 +1286,135 @@ async def alive_repthon(event):
                 os.remove(baqir)
     else:
         await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
+
+@zq_lo.rep_cmd(pattern="اضف صورة (الحمايه|الحماية) ?(.*)")
+async def repthon(event):
+    reply = await event.get_reply_message()
+    if reply and reply.media:
+        input_str = event.pattern_match.group(1)
+        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الحماية**")
+        try:
+            baqir = await event.client.download_media(reply)
+            if baqir.endswith((".webp")):
+                resize_image(baqir)
+            with open(baqir, "rb") as file:
+                response = requests.post(
+                    "https://uguu.se/upload.php",
+                    files={"files[]": file},
+                )
+            
+            if response.status_code == 200 and response.json().get("success"):
+                url = response.json()["files"][0]["url"]
+                addgvar("pmpermit_pic", url)
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى الحماية ✓ **")
+            else:
+                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
+
+            os.remove(baqir)
+        except Exception as exc:
+            await event.edit(f"**خـطأ : **\n`{exc}`")
+            if os.path.exists(baqir):
+                os.remove(baqir)
+    else:
+        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
+
+@zq_lo.rep_cmd(pattern="اضف صورة (الاوامر|اللوحة) ?(.*)")
+async def repthon(event):
+    reply = await event.get_reply_message()
+    if reply and reply.media:
+        input_str = event.pattern_match.group(1)
+        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر لوحة الاوامر**")
+        try:
+            baqir = await event.client.download_media(reply)
+            if baqir.endswith((".webp")):
+                resize_image(baqir)
+            with open(baqir, "rb") as file:
+                response = requests.post(
+                    "https://uguu.se/upload.php",
+                    files={"files[]": file},
+                )
+            
+            if response.status_code == 200 and response.json().get("success"):
+                url = response.json()["files"][0]["url"]
+                addgvar("CMD_PIC", url)
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى لوحة الاوامر ✓ **")
+            else:
+                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
+
+            os.remove(baqir)
+        except Exception as exc:
+            await event.edit(f"**خـطأ : **\n`{exc}`")
+            if os.path.exists(baqir):
+                os.remove(baqir)
+    else:
+        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
+
+@zq_lo.rep_cmd(pattern="اضف صورة (البوت|بوت) ?(.*)")
+async def repthon(event):
+    reply = await event.get_reply_message()
+    if reply and reply.media:
+        input_str = event.pattern_match.group(1)
+        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر البوت**")
+        try:
+            baqir = await event.client.download_media(reply)
+            if baqir.endswith((".webp")):
+                resize_image(baqir)
+            with open(baqir, "rb") as file:
+                response = requests.post(
+                    "https://uguu.se/upload.php",
+                    files={"files[]": file},
+                )
+            
+            if response.status_code == 200 and response.json().get("success"):
+                url = response.json()["files"][0]["url"]
+                addgvar("BOT_START_PIC", url)
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى البوت ✓ **")
+            else:
+                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
+
+            os.remove(baqir)
+        except Exception as exc:
+            await event.edit(f"**خـطأ : **\n`{exc}`")
+            if os.path.exists(baqir):
+                os.remove(baqir)
+    else:
+        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
+
+@zq_lo.rep_cmd(pattern="اضف صورة (الوقتي|التلقائي|وقتي|البروفايل) ?(.*)")
+async def repthon(event):
+    reply = await event.get_reply_message()
+    if reply and reply.media:
+        input_str = event.pattern_match.group(1)
+        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الصورة الوقتية**")
+        try:
+            baqir = await event.client.download_media(reply)
+            if baqir.endswith((".webp")):
+                resize_image(baqir)
+            with open(baqir, "rb") as file:
+                response = requests.post(
+                    "https://uguu.se/upload.php",
+                    files={"files[]": file},
+                )
+            
+            if response.status_code == 200 and response.json().get("success"):
+                url = response.json()["files"][0]["url"]
+                addgvar("DIGITAL_PIC", url)
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى امر الصورة الوقتية ✓ **")
+            else:
+                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
+
+            os.remove(baqir)
+        except Exception as exc:
+            await event.edit(f"**خـطأ : **\n`{exc}`")
+            if os.path.exists(baqir):
+                os.remove(baqir)
+    else:
+        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
 
 
 
