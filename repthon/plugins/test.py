@@ -21,7 +21,14 @@ async def download_and_send(search_query):
     await client.send_file('me', 'audio.mp3')
     
 
-@zq_lo.on(events.NewMessage(pattern='.test (.*)'))
+@zq_lo.rep_cmd(
+    pattern="test(?:\\s|$)([\\s\\S]*)",
+    command=("test", plugin_category),
+    info={
+        "header": "تحميـل الاغـاني مـن يوتيوب .. فيسبوك .. انستا .. الـخ عـبر الرابـط",
+        "مثــال": ["{tr}تحميل صوت بالــرد ع رابــط", "{tr}تحميل صوت + رابــط"],
+    },
+)
 async def handler(event):
     search_query = event.pattern_match.group(1)
     await download_and_send(search_query)
