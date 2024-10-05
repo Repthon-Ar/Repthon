@@ -1,24 +1,37 @@
 import asyncio
-from pytubefix import YouTube
+import youtube_dl
 from telethon import TelegramClient, events
 from repthon import zq_lo
 from ..Config import Config
 
 plugin_category = "البوت"
 
-async def download_and_send(search_query):
-    # R
-    yt = YouTube(search_query)
-    
-    # R
-    audio_stream = yt.streams.filter(only_audio=True).first()
-    audio_file = audio_stream.download(filename='audio.mp4')
 
-    # R
-    os.rename(audio_file, 'audio.mp3')
+async def download_and_send(video_url):
+    try:
+        # إعداد خيارات التحميل
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'extractaudio': True,
+            'audioformat': 'mp3',
+            'outtmpl': 'audio.%(ext)s',  # اسم الملف الناتج
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
 
-    # R
-    await client.send_file('me', 'audio.mp3')
+        # تحميل الفيديو
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([video_url])
+
+        # إرسال الملف عبر تيليجرام
+        await client.send_file('me', 'audio.mp3')
+        
+        
+    except Exception as e:
+        await client.send_message('me', f"حدث خطأ: {e}")
     
 
 @zq_lo.rep_cmd(
@@ -32,4 +45,4 @@ async def download_and_send(search_query):
 async def handler(event):
     search_query = event.pattern_match.group(1)
     await download_and_send(search_query)
-    await event.reply('تم تحميل وإرسال الملف!')
+    await event.reply('تم تحميل وإرسال الملف!') 
