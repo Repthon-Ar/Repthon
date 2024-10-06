@@ -22,7 +22,7 @@ async def download_and_send(search_query):
     
 
 @zq_lo.rep_cmd(
-    pattern="test(?:\v|\/)([\v\v]*)",
+    pattern=r"test(?:v=|\/)([0-9A-Za-z_-]{11}).*", url, group=1),
     command=("test", plugin_category),
     info={
         "header": "تحميـل الاغـاني مـن يوتيوب .. فيسبوك .. انستا .. الـخ عـبر الرابـط",
