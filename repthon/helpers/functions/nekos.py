@@ -20,12 +20,10 @@ async def fakegs(search, result):
 
 
 async def trumptweet(text):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=trumptweet&text={text}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=trumptweet&text={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -35,12 +33,10 @@ async def trumptweet(text):
 
 
 async def changemymind(text):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=changemymind&text={text}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=changemymind&text={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -50,12 +46,10 @@ async def changemymind(text):
 
 
 async def kannagen(text):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=kannagen&text={text}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=kannagen&text={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -65,12 +59,10 @@ async def kannagen(text):
 
 
 async def moditweet(text):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=tweet&text={text}&username=narendramodi"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=tweet&text={text}&username=narendramodi").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -80,12 +72,10 @@ async def moditweet(text):
 
 
 async def tweets(text1, text2):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=tweet&text={text1}&username={text2}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=tweet&text={text1}&username={text2}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -97,8 +87,8 @@ async def tweets(text1, text2):
 async def iphonex(text):
     r = requests.get(f"https://nekobot.xyz/api/imagegen?type=iphonex&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -108,12 +98,10 @@ async def iphonex(text):
 
 
 async def baguette(text):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=baguette&url={text}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=baguette&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -125,8 +113,8 @@ async def baguette(text):
 async def threats(text):
     r = requests.get(f"https://nekobot.xyz/api/imagegen?type=threats&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -140,8 +128,8 @@ async def threats(text):
 async def lolice(text):
     r = requests.get(f"https://nekobot.xyz/api/imagegen?type=lolice&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -155,8 +143,8 @@ async def lolice(text):
 async def trash(text):
     r = requests.get(f"https://nekobot.xyz/api/imagegen?type=trash&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -170,8 +158,8 @@ async def trash(text):
 async def awooify(text):
     r = requests.get(f"https://nekobot.xyz/api/imagegen?type=awooify&url={text}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -183,12 +171,10 @@ async def awooify(text):
 
 
 async def trap(text1, text2, text3):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=trap&name={text1}&author={text2}&image={text3}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=trap&name={text1}&author={text2}&image={text3}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
@@ -200,12 +186,10 @@ async def trap(text1, text2, text3):
 
 
 async def phcomment(text1, text2, text3):
-    r = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=phcomment&image={text1}&text={text2}&username={text3}"
-    ).json()
+    r = requests.get(f"https://nekobot.xyz/api/imagegen?type=phcomment&image={text1}&text={text2}&username={text3}").json()
     sandy = r.get("message")
-    zedurl = url(sandy)
-    if not zedurl:
+    caturl = url(sandy)
+    if not caturl:
         return "check syntax once more"
     with open("temp.png", "wb") as f:
         f.write(requests.get(sandy).content)
