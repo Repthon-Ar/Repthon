@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import zipfile
 from random import choice
 from textwrap import wrap
@@ -7,19 +8,10 @@ from uuid import uuid4
 
 import requests
 from googletrans import Translator
-from PIL import Image, ImageOps
-from telethon import functions, types
-
-from ..utils.extdl import install_pip
-
-try:
-    from imdb import IMDb
-except ModuleNotFoundError:
-    install_pip("IMDbPY")
-    from imdb import IMDb
-
 from html_telegraph_poster import TelegraphPoster
-from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageOps
+from imdb import Cinemagoer
+from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageOps
+from telethon import functions, types
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest as unblock
 
@@ -29,7 +21,7 @@ from ...sql_helper.globals import gvarstatus
 from ..resources.states import states
 
 LOGS = logging.getLogger(__name__)
-imdb = IMDb()
+imdb = Cinemagoer()
 
 mov_titles = [
     "long imdb title",
@@ -74,18 +66,12 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-async def sanga_seperator(sanga_list):
-    for i in sanga_list:
-        if i.startswith("🔗"):
-            sanga_list.remove(i)
-    s = 0
-    for i in sanga_list:
-        if i.startswith("Username History"):
-            break
-        s += 1
-    usernames = sanga_list[s:]
-    names = sanga_list[:s]
-    return names, usernames
+def sanga_seperator(sanga_list):
+    string = "".join(info[info.find("\n") + 1 :] for info in sanga_list)
+    string = re.sub(r"^$\n", "", string, flags=re.MULTILINE)
+    name, username = string.split("Usernames**")
+    name = name.split("Names")[1]
+    return name, username
 
 
 # covid india data
@@ -109,7 +95,7 @@ async def post_to_telegraph(
         author_url=auth_url,
         text=html_format_content,
     )
-    return post_page["url"]
+    return f"https://graph.org/{post_page['path']}"
 
 
 # --------------------------------------------------------------------------------------------------------------------#
@@ -120,9 +106,7 @@ async def age_verification(event, reply_to_id):
     ALLOW_NSFW = gvarstatus("ALLOW_NSFW") or "False"
     if ALLOW_NSFW.lower() == "true":
         return False
-    results = await event.client.inline_query(
-        Config.TG_BOT_USERNAME, "age_verification_alert"
-    )
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "age_verification_alert")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
     return True
@@ -142,25 +126,6 @@ async def unsavegif(event, sandy):
         )
     except Exception as e:
         LOGS.info(str(e))
-
-
-async def animator(media, mainevent, textevent=None):
-    # //Hope u dunt kang :/ @Jisan7509
-    if not os.path.isdir(Config.TEMP_DIR):
-        os.makedirs(Config.TEMP_DIR)
-    OldZed = await mainevent.client.download_media(media, Config.TEMP_DIR)
-    file = await fileinfo(OldZed)
-    h = file["height"]
-    w = file["width"]
-    w, h = (-1, 512) if h > w else (512, -1)
-    if textevent:
-        await textevent.edit("__🎞Converting into Animated sticker..__")
-    await runcmd(
-        f"ffmpeg -to 00:00:02.900 -i '{OldZed}' -vf scale={w}:{h} -c:v libvpx-vp9 -crf 30 -b:v 560k -maxrate 560k -bufsize 256k -an animate.webm"
-    )  # pain
-    os.remove(OldZed)
-    return "animate.webm"
-
 
 
 # --------------------------------------------------------------------------------------------------------------------#
@@ -215,6 +180,7 @@ async def delete_conv(event, chat, from_message):
 
 # ----------------------------------------------## Tools ##------------------------------------------------------------#
 
+
 # https://www.tutorialspoint.com/How-do-you-split-a-list-into-evenly-sized-chunks-in-Python
 def sublists(input_list: list, width: int = 3):
     return [input_list[x : x + width] for x in range(0, len(input_list), width)]
@@ -260,6 +226,39 @@ def reddit_thumb_link(preview, thumb=None):
 
 
 # ----------------------------------------------## Image ##------------------------------------------------------------#
+
+
+def format_image(filename):
+    img = Image.open(filename).convert("RGBA")
+    w, h = img.size
+    if w != h:
+        _min, _max = min(w, h), max(w, h)
+        bg = img.crop(((w - _min) // 2, (h - _min) // 2, (w + _min) // 2, (h + _min) // 2))
+        bg = bg.filter(ImageFilter.GaussianBlur(5))
+        bg = bg.resize((_max, _max))
+        img_new = Image.new("RGBA", (_max, _max), (255, 255, 255, 0))
+        img_new.paste(bg, ((img_new.width - bg.width) // 2, (img_new.height - bg.height) // 2))
+        img_new.paste(img, ((img_new.width - w) // 2, (img_new.height - h) // 2))
+        img = img_new
+    img.save(filename)
+
+
+async def wall_download(piclink, query, ext=".jpg"):
+    try:
+        if not os.path.isdir("./temp"):
+            os.mkdir("./temp")
+        picpath = f"./temp/{query.title().replace(' ', '')}{ext}"
+        if os.path.exists(picpath):
+            i = 1
+            while os.path.exists(picpath) and i < 11:
+                picpath = f"./temp/{query.title().replace(' ', '')}-{i}{ext}"
+                i += 1
+        with open(picpath, "wb") as f:
+            f.write(requests.get(piclink).content)
+        return picpath
+    except Exception as e:
+        LOGS.info(str(e))
+        return None
 
 
 def ellipse_create(filename, size, border):
@@ -317,11 +316,7 @@ def higlighted_text(
     templait = Image.open(input_img)
     # resize image
     raw_width, raw_height = templait.size
-    resized_width, resized_height = (
-        (1024, int(1024 * raw_height / raw_width))
-        if raw_width > raw_height
-        else (int(1024 * raw_width / raw_height), 1024)
-    )
+    resized_width, resized_height = (1024, int(1024 * raw_height / raw_width)) if raw_width > raw_height else (int(1024 * raw_width / raw_height), 1024)
     if font_name is None:
         font_name = "repthon/helpers/styles/impact.ttf"
     font = ImageFont.truetype(font_name, font_size)
@@ -349,9 +344,7 @@ def higlighted_text(
         if direction == "upwards":
             list_text.reverse()
             operator = "-"
-            hight = (
-                resized_height - (text_height + int(text_height / 1.2)) + extra_height
-            )
+            hight = resized_height - (text_height + int(text_height / 1.2)) + extra_height
         else:
             operator = "+"
         for i, items in enumerate(list_text):
@@ -368,9 +361,7 @@ def higlighted_text(
                 width_align = "(mask_size-x)"
             color = ImageColor.getcolor(background, "RGBA")
             if transparency == 0:
-                mask_img = Image.new(
-                    "RGBA", (x, y), (color[0], color[1], color[2], 0)
-                )  # background
+                mask_img = Image.new("RGBA", (x, y), (color[0], color[1], color[2], 0))  # background
                 mask_draw = ImageDraw.Draw(mask_img)
                 mask_draw.text(
                     (25, 8),
@@ -381,9 +372,7 @@ def higlighted_text(
                     stroke_fill=stroke_fill,
                 )
             else:
-                mask_img = Image.new(
-                    "RGBA", (x, y), (color[0], color[1], color[2], transparency)
-                )  # background
+                mask_img = Image.new("RGBA", (x, y), (color[0], color[1], color[2], transparency))  # background
                 # put text on mask
                 mask_draw = ImageDraw.Draw(mask_img)
                 mask_draw.text(
@@ -431,6 +420,7 @@ def higlighted_text(
 
 
 # ----------------------------------------------## Sticker ##-----------------------------------------------------------#
+
 
 # for stickertxt
 async def waifutxt(text, chat_id, reply_to_id, bot):
