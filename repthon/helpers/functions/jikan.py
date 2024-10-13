@@ -125,7 +125,7 @@ query ($id: Int, $idMal: Int,$search: String) {
     }
     format
     status
-    type 
+    type
     description
     startDate {
       year
@@ -201,7 +201,7 @@ query ($id: Int, $idMal:Int, $search: String, $asHtml: Boolean) {
     }
     format
     status
-    type 
+    type
     description (asHtml: $asHtml)
     startDate {
       year
@@ -319,9 +319,7 @@ async def callAPI(search_str, manga=False):
 async def searchanilist(search_str, manga=False):
     typea = "MANGA" if manga else "ANIME"
     variables = {"search": search_str, "type": typea, "page": 1, "perPage": 10}
-    response = requests.post(
-        anilisturl, json={"query": anilist_query, "variables": variables}
-    )
+    response = requests.post(anilisturl, json={"query": anilist_query, "variables": variables})
     msg = ""
     jsonData = json.loads(response.text)
     res = list(jsonData.keys())
@@ -361,9 +359,9 @@ async def formatJSON(outData, manga=False):
     msg += f"\n**Popularity** : {jsonData['popularity']}"
     # https://t.me/catuserbot_support/19496
     cat = f"{jsonData['description']}"
-    msg += " __" + re.sub("<br>", "\n", cat) + "__"
-    msg = re.sub("<b>", "__**", msg)
-    msg = re.sub("</b>", "**__", msg)
+    msg += " __" + re.sub(r"<br>", "\n", cat) + "__"
+    msg = re.sub(r"<b>", "__**", msg)
+    msg = re.sub(r"</b>", "**__", msg)
     return msg
 
 
@@ -374,21 +372,13 @@ def shorten(description, info="anilist.co"):
         msg += f"\n**Description**:\n{description} [Read More]({info})"
     else:
         msg += f"\n**Description**: \n   {description}"
-    return (
-        msg.replace("<br>", "")
-        .replace("</br>", "")
-        .replace("<i>", "")
-        .replace("</i>", "")
-        .replace("__", "**")
-    )
+    return msg.replace("<br>", "").replace("</br>", "").replace("<i>", "").replace("</i>", "").replace("__", "**")
 
 
 async def anilist_user(input_str):
     "Fetch user details from anilist"
     username = {"search": input_str}
-    result = requests.post(
-        anilisturl, json={"query": user_query, "variables": username}
-    ).json()
+    result = requests.post(anilisturl, json={"query": user_query, "variables": username}).json()
     if error := result.get("errors"):
         error_sts = error[0].get("message")
         return [f"{error_sts}"]
@@ -396,7 +386,7 @@ async def anilist_user(input_str):
     stats = textwrap.dedent(
         f"""
 **User name :** [{user_data['name']}]({user_data['siteUrl']})
-**Anilist ID :** `{user_data['id']}` 
+**Anilist ID :** `{user_data['id']}`
 **Joined anilist :**`{datetime.fromtimestamp(user_data['createdAt'])}`
 **Last Updated :**`{datetime.fromtimestamp(user_data['updatedAt'])}`
 
@@ -419,9 +409,7 @@ async def anilist_user(input_str):
 async def anime_json_synomsis(query, vars_):
     """Makes a Post to https://graphql.anilist.co."""
     async with ClientSession() as session:
-        async with session.post(
-            anilisturl, json={"query": query, "variables": vars_}
-        ) as post_con:
+        async with session.post(anilisturl, json={"query": query, "variables": vars_}) as post_con:
             json_data = await post_con.json()
     return json_data
 
@@ -460,19 +448,197 @@ def getBannerLink(mal, kitsu_search=True, anilistid=0):
     }
     """
     data = {"query": query, "variables": {"idMal": int(mal)}}
-    if image := requests.post("https://graphql.anilist.co", json=data).json()["data"][
-        "Media"
-    ]["bannerImage"]:
+    if image := requests.post("https://graphql.anilist.co", json=data).json()["data"]["Media"]["bannerImage"]:
         return image
     return getPosterLink(mal)
+
+
+async def get_anime_manga(search_str, search_type, _user_id):  # sourcery no-metrics
+    # sourcery skip: low-code-quality
+    if search_type == "anime_anime":
+        variables = {"search": search_str}
+        query = anime_query
+        result = json.loads((requests.post(anilisturl, json={"query": query, "variables": variables})).text)
+        res = list(result.keys())
+        if "errors" in res:
+            return f"<b>Error</b> : <code>{result['errors'][0]['message']}</code>", None
+        result = result["data"]["Media"]
+        if result["trailer"]:
+            trailer = f'https://www.youtube.com/watch?v={result["trailer"]["id"]}'
+            TRAILER = f"<a href='{trailer}'>🎬 Trailer</a>"
+        else:
+            TRAILER = "🎬 <i>No Trailer Available</i>"
+        studio_string = ", ".join(nodes["name"] for nodes in result["studios"]["nodes"])
+    elif search_type == "anime_manga":
+        variables = {"search": search_str}
+        query = manga_query
+        result = json.loads((requests.post(anilisturl, json={"query": query, "variables": variables})).text)
+        res = list(result.keys())
+        if "errors" in res:
+            return f"<b>Error</b> : <code>{result['errors'][0]['message']}</code>", None
+        result = result["data"]["Media"]
+        image = f"https://img.anili.st/media/{result['id']}"
+    caption = f"📺 <a href='{result['siteUrl']}'>{result['title']['romaji']}</a>"
+    caption += f" ({result['title']['native']})\n"
+    alternative_names = []
+    if result["title"]["english"] is not None:
+        alternative_names.append(result["title"]["english"])
+    alternative_names.extend(result["synonyms"])
+    if alternative_names:
+        alternative_names_string = ", ".join(alternative_names[:3])
+        caption += f"\n<b>Also known as</b>: <i>{alternative_names_string}</i>"
+    genre_string = ", ".join(result["genres"])
+    if result["description"] is not None:
+        synopsis = result["description"].split(" ", 60)
+        with contextlib.suppress(IndexError):
+            synopsis.pop(60)
+        " ".join(synopsis) + "..."
+    for entity in result:
+        if result[entity] is None:
+            result[entity] = "Unknown"
+    if search_type == "anime_anime":
+        anime_malid = result["idMal"]
+        anime_result = await anime_json_synomsis(anime_query, {"idMal": anime_malid, "asHtml": True, "type": "ANIME"})
+        anime_data = anime_result["data"]["Media"]
+        html_char = ""
+        for character in anime_data["characters"]["nodes"]:
+            html_ = "" + "<br>"
+            html_ += f"""<a href="{character['siteUrl']}">"""
+            html_ += f"""<img src="{character['image']['large']}"/></a>"""
+            html_ += "<br>"
+            html_ += f"<h3>{character['name']['full']}</h3>"
+            html_ += f"<em>{character['name']['native']}</em><br>"
+            html_ += f"<b>Character ID</b>: {character['id']}<br>"
+            html_ += f"<h4>About Character and Role:</h4>{character.get('description', 'N/A')}"
+            html_char += f"{html_}<br><br>"
+        studios = "".join(f"""<a href='{studio["siteUrl"]}'>• {studio["name"]}</a> """ for studio in anime_data["studios"]["nodes"])
+
+        coverImg = anime_data.get("coverImage")["extraLarge"]
+        bannerImg = anime_data.get("bannerImage")
+        anilist_animelink = anime_data.get("siteUrl")
+        title_img = coverImg or bannerImg
+        romaji = anime_data["title"]["romaji"]
+        native = anime_data["title"]["native"]
+        english = anime_data["title"]["english"]
+        image = getBannerLink(result["idMal"], False, anime_data.get("id"))
+        # Telegraph Post mejik
+        html_pc = ""
+        html_pc += f"<h1>{native}</h1>"
+        html_pc += "<h3>Synopsis:</h3>"
+        html_pc += result["description"] or "Unknown"
+        html_pc += "<br>"
+        if html_char:
+            html_pc += "<h2>Main Characters:</h2>"
+            html_pc += html_char
+            html_pc += "<br><br>"
+        html_pc += "<h3>More Info:</h3>"
+        html_pc += f"<br><b>Studios:</b> {studios}<br>"
+        html_pc += f"<a href='https://myanimelist.net/anime/{anime_malid}'>View on MAL</a>"
+    else:
+        anime_malid = result["id"]
+        anime_result = await anime_json_synomsis(manga_query, {"id": anime_malid, "asHtml": True, "type": "MANGA"})
+        anime_data = anime_result["data"]["Media"]
+        html_char = ""
+        for character in anime_data["characters"]["nodes"]:
+            html_ = "" + "<br>"
+            html_ += f"""<a href="{character['siteUrl']}">"""
+            html_ += f"""<img src="{character['image']['large']}"/></a>"""
+            html_ += "<br>"
+            html_ += f"<h3>{character['name']['full']}</h3>"
+            html_ += f"<em>{character['name']['native']}</em><br>"
+            html_ += f"<b>Character ID</b>: {character['id']}<br>"
+            html_ += f"<h4>About Character and Role:</h4>{character.get('description', 'N/A')}"
+            html_char += f"{html_}<br><br>"
+        coverImg = anime_data.get("coverImage")["extraLarge"]
+        bannerImg = anime_data.get("bannerImage")
+        anilist_animelink = anime_data.get("siteUrl")
+        title_img = coverImg or bannerImg
+        romaji = anime_data["title"]["romaji"]
+        native = anime_data["title"]["native"]
+        english = anime_data["title"]["english"]
+        image = getBannerLink(result["idMal"], False, anime_data.get("id"))
+        # Telegraph Post mejik
+        html_pc = ""
+        html_pc += f"<h1>{native}</h1>"
+        html_pc += "<h3>Synopsis:</h3>"
+        html_pc += result["description"] or "Unknown"
+        html_pc += "<br>"
+        if html_char:
+            html_pc += "<h2>Main Characters:</h2>"
+            html_pc += html_char
+            html_pc += "<br><br>"
+        html_pc += "<h3>More Info:</h3>"
+        if result["idMal"]:
+            html_pc += f"<a href='https://myanimelist.net/anime/{result['idMal']}'>View on MAL</a>"
+    html_pc += f"<a href='{anilist_animelink}'> View on anilist.co</a>"
+    html_pc += f"<img src='{bannerImg}'/>"
+    title_h = english or romaji
+    if search_type == "anime_anime":
+        if result["startDate"]:
+            aired = "" + str(result["startDate"]["year"])
+            if result["startDate"]["month"]:
+                aired += "-" + str(result["startDate"]["month"])
+            if result["startDate"]["day"]:
+                aired += "-" + str(result["startDate"]["day"])
+        else:
+            aired = "Unknown"
+        if result["status"].lower() != "finished":
+            endaired = "Airing Now"
+        else:
+            endaired = "" + str(result["endDate"]["year"])
+            if result["endDate"]["month"]:
+                endaired += "-" + str(result["endDate"]["month"])
+            if result["endDate"]["day"]:
+                endaired += "-" + str(result["endDate"]["day"])
+        caption += textwrap.dedent(
+            f"""
+        🆎 <b>Type</b>: <i>{result['type'].lower()}</i>
+        🆔 <b>MAL ID</b>: <i>{result['idMal']}</i>
+        🆔 <b>AL ID</b>: <i>{result['id']}</i>
+        📡 <b>Status</b>: <i>{result['status'].lower()}</i>
+        ⏳ <b>Airing Started</b>: <i>{aired}</i>
+        ⌛️ <b>Airing Ended</b>: <i>{endaired}</i>
+        🔢 <b>Episodes</b>: <i>{result['episodes']}</i>
+        💯 <b>Score</b>: <i>{result['averageScore']}</i>
+        📊 <b>Popularity</b>: <i>{result['popularity']}</i>
+        🌐 <b>Premiered</b>: <i>{result['season'].lower()}</i>
+        ⌛ <b>Duration</b>: <i>{result['duration']}</i>
+        🎭 <b>Genres</b>: <i>{genre_string}</i>
+        🎙️ <b>Studios</b>: <i>{studio_string}</i>
+        """
+        )
+        synopsis_link = await post_to_telegraph(
+            title_h,
+            f"<img src='{title_img}' title={romaji}/>\n" + f"<code>{caption}</code>\n" + f"{TRAILER}\n" + html_pc,
+        )
+        caption += f"<b>{TRAILER}</b>\n📖 <a href='{synopsis_link}'><b>Synopsis</b></a> <b>&</b> <a href='{result['siteUrl']}'><b>Read More</b></a>"
+    elif search_type == "anime_manga":
+        caption += textwrap.dedent(
+            f"""
+        🆎 <b>Type</b>: <i>{result['type'].lower()}</i>
+        🆔 <b>MAL ID</b>: <i>{result['idMal']}</i>
+        🆔 <b>AL ID</b>: <i>{result['id']}</i>
+        📡 <b>Status</b>: <i>{result['status'].lower()}</i>
+        🔢 <b>Volumes</b>: <i>{result['volumes']}</i>
+        📃 <b>Chapters</b>: <i>{result['chapters']}</i>
+        💯 <b>Score</b>: <i>{result['averageScore']}</i>
+        📊 <b>Popularity</b>: <i>{result['popularity']}</i>
+        🎭 <b>Genres</b>: <i>{genre_string}</i>
+        """
+        )
+        synopsis_link = await post_to_telegraph(
+            title_h,
+            f"<img src='{title_img}' title={romaji}/>\n" + f"<code>{caption}</code>\n" + html_pc,
+        )
+        caption += f"📖 <a href='{synopsis_link}'><b>Synopsis</b></a> <b>&</b> <a href='{result['siteUrl']}'><b>Read More</b></a>"
+
+    return caption, image
 
 
 def get_poster(query):
     url_enc_name = query.replace(" ", "+")
     # Searching for query list in imdb
-    page = requests.get(
-        f"https://www.imdb.com/find?ref_=nv_sr_fn&q={url_enc_name}&s=all"
-    )
+    page = requests.get(f"https://www.imdb.com/find?ref_=nv_sr_fn&q={url_enc_name}&s=all")
     soup = bs4.BeautifulSoup(page.content, "lxml")
     odds = soup.findAll("tr", "odd")
     # Fetching the first post from search
@@ -505,11 +671,7 @@ def memory_file(name=None, contents=None, *, temp_bytes=True):
 def is_gif(file):
     # ngl this should be fixed, telethon.utils.is_gif but working
     # lazy to go to github and make an issue kek
-    return (
-        DocumentAttributeAnimated() in getattr(file, "document", file).attributes
-        if is_video(file)
-        else False
-    )
+    return DocumentAttributeAnimated() in getattr(file, "document", file).attributes if is_video(file) else False
 
 
 async def search_in_animefiller(query):
@@ -525,11 +687,7 @@ async def search_in_animefiller(query):
             cum = jk.text
             index[cum] = yum
     keys = list(index.keys())
-    return {
-        keys[i]: index[keys[i]]
-        for i in range(len(keys))
-        if query.lower() in keys[i].lower()
-    }
+    return {keys[i]: index[keys[i]] for i in range(len(keys)) if query.lower() in keys[i].lower()}
 
 
 async def get_filler_episodes(filler_id):  # sourcery no-metrics
@@ -567,9 +725,7 @@ async def get_filler_episodes(filler_id):  # sourcery no-metrics
         total_ep = ", ".join(total_no.text for total_no in total_episodes)
         filler_episodes = ", ".join(filler_no.text for filler_no in filler_ep)
         mixed_episodes = ", ".join(miixed_no.text for miixed_no in mixed_ep)
-        anime_canon_episodes = ", ".join(
-            animecanon_no.text for animecanon_no in animecanon_ep
-        )
+        anime_canon_episodes = ", ".join(animecanon_no.text for animecanon_no in animecanon_ep)
     return {
         "filler_id": filler_id,
         "total_ep": total_ep,
