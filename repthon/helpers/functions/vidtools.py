@@ -10,6 +10,19 @@ from ..utils.utils import runcmd
 LOGS = logging.getLogger(__name__)
 
 
+async def vid_to_gif(inputfile, outputfile, speed=None, starttime=None, endtime=None):
+    try:
+        clip = VideoFileClip(inputfile)
+        if starttime is not None and endtime is not None:
+            clip = clip.subclip(int(starttime), int(endtime))
+        if speed is not None:
+            clip = clip.speedx(float(speed))
+        clip.write_gif(outputfile, logger=None)
+        return outputfile
+    except Exception as e:
+        LOGS.error(e)
+        return None
+
 async def r_frames(image, w, h, outframes):
     for i in range(1, w, w // 30):
         img1 = img2 = image.copy()
