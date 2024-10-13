@@ -3,7 +3,6 @@ import time
 import emoji
 from datetime import datetime
 
-from emoji import get_emoji_regexp
 from telethon.tl.types import Channel, PollAnswer
 
 
