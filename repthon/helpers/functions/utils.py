@@ -1,5 +1,6 @@
 import re
 import time
+import emoji
 from datetime import datetime
 
 from emoji import get_emoji_regexp
