@@ -2,11 +2,11 @@ import os
 
 from PIL import Image
 
-from ..core.logger import logging
-from ..core.managers import edit_or_reply
-from ..helpers.functions.vidtools import take_screen_shot
-from ..helpers.tools import fileinfo, media_type, meme_type
-from ..helpers.utils.utils import runcmd
+from repthon.core.logger import logging
+from repthon.core.managers import edit_or_reply
+from repthon.helpers.functions.vidtools import take_screen_shot
+from repthon.helpers.tools import fileinfo, media_type, meme_type
+from repthon.helpers.utils.utils import runcmd
 
 LOGS = logging.getLogger(__name__)
 
