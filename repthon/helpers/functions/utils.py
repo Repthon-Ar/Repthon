@@ -2,7 +2,7 @@ import re
 import time
 from datetime import datetime
 
-import emoji
+from emoji import get_emoji_regexp
 from telethon.tl.types import Channel, PollAnswer
 
 
@@ -16,9 +16,7 @@ async def get_message_link(channelid, msgid):
 
 def utc_to_local(utc_datetime):
     now_timestamp = time.time()
-    offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(
-        now_timestamp
-    )
+    offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
     return utc_datetime + offset
 
 
@@ -51,11 +49,7 @@ async def admin_groups(zq_lo):
     repgroups = []
     async for dialog in zq_lo.iter_dialogs():
         entity = dialog.entity
-        if (
-            isinstance(entity, Channel)
-            and entity.megagroup
-            and (entity.creator or entity.admin_rights)
-        ):
+        if isinstance(entity, Channel) and entity.megagroup and (entity.creator or entity.admin_rights):
             repgroups.append(entity.id)
     return repgroups
 
@@ -82,14 +76,10 @@ async def extract_time(rep, time_val):
             bantime = int(time.time() + int(time_num) * 7 * 24 * 60 * 60)
         else:
             # how even...?
-            await rep.edit(
-                f"__Invalid time type specified. Expected s,  m , h , d or w but got:__ {time_val[-1]}"
-            )
+            await rep.edit(f"__Invalid time type specified. Expected s,  m , h , d or w but got:__ {time_val[-1]}")
             return None
         return bantime
-    await rep.edit(
-        f"__Invalid time type specified. Expected s,  m , h , d or w but got: __{time_val[-1]}"
-    )
+    await rep.edit(f"__Invalid time type specified. Expected s,  m , h , d or w but got: __{time_val[-1]}")
     return None
 
 
@@ -99,7 +89,8 @@ def Build_Poll(options):
 
 def deEmojify(inputString: str) -> str:
     """Remove emojis and other non-safe characters from string"""
-    return re.sub("[^a-zA-Z0-9 \\`~!@#$%^&*(){}[\\]_+=.:;\n'\",><?/-]", "", inputString)
+    return re.sub(r"[^a-zA-Z0-9 \\`~!@#$%^&*(){}[\]_+=.:;\n'\",><?/-]", "", inputString)
+
 
 def soft_deEmojify(inputString: str) -> str:
     """Remove emojis and other non-safe characters from string"""
