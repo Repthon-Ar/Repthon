@@ -1,30 +1,13 @@
-import logging
 import os
 import random
 from typing import Optional
 
-from moviepy.editor import VideoFileClip
 from PIL import Image, ImageOps
 
 from ...core.logger import logging
 from ..utils.utils import runcmd
 
 LOGS = logging.getLogger(__name__)
-
-
-
-async def vid_to_gif(inputfile, outputfile, speed=None, starttime=None, endtime=None):
-    try:
-        clip = VideoFileClip(inputfile)
-        if starttime is not None and endtime is not None:
-            clip = clip.subclip(int(starttime), int(endtime))
-        if speed is not None:
-            clip = clip.speedx(float(speed))
-        clip.write_gif(outputfile, logger=None)
-        return outputfile
-    except Exception as e:
-        LOGS.error(e)
-        return None
 
 
 async def r_frames(image, w, h, outframes):
@@ -86,12 +69,8 @@ async def invert_frames(image, w, h, outframes):
     return outframes
 
 
-async def take_screen_shot(
-    video_file: str, duration: int, path: str = ""
-) -> Optional[str]:
-    thumb_image_path = path or os.path.join(
-        "./temp/", f"{os.path.basename(video_file)}.jpg"
-    )
+async def take_screen_shot(video_file: str, duration: int, path: str = "") -> Optional[str]:
+    thumb_image_path = path or os.path.join("./temp/", f"{os.path.basename(video_file)}.jpg")
     command = f"ffmpeg -hide_banner -loglevel quiet -ss {duration} -i '{video_file}' -vframes 1 '{thumb_image_path}' -y"
     err = (await runcmd(command))[1]
     if err:
