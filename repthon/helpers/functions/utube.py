@@ -28,10 +28,10 @@ video_dl = "yt-dlp --force-ipv4 --write-thumbnail --add-metadata --embed-thumbna
 name_dl = "yt-dlp --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
 
 
-async def yt_search(cat):
+async def yt_search(rep):
     try:
-        cat = urllib.parse.quote(cat)
-        html = urllib.request.urlopen(f"https://www.youtube.com/results?search_query={cat}")
+        rep = urllib.parse.quote(rep)
+        html = urllib.request.urlopen(f"https://www.youtube.com/results?search_query={rep}")
 
         user_data = re.findall(r"watch\?v=(\S{11})", html.read().decode())
         video_link = []
@@ -81,8 +81,8 @@ class YT_Search_X:
 ytsearch_data = YT_Search_X()
 
 """
-async def yt_data(cat):
-    params = {"format": "json", "url": cat}
+async def yt_data(rep):
+    params = {"format": "json", "url": rep}
     url = "https://www.youtube.com/oembed"  # https://stackoverflow.com/questions/29069444/returning-the-urls-as-a-list-from-a-youtube-search-query
     query_string = urllib.parse.urlencode(params)
     url = f"{url}?{query_string}"
