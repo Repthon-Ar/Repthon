@@ -102,6 +102,24 @@ async def post_to_telegraph(
 
 
 # ----------------------------------------------## Media ##-----------------------------------------------------------#
+async def animator(media, mainevent, textevent=None):
+    # //Hope u dunt kang :/ @Jisan7509
+    if not os.path.isdir(Config.TEMP_DIR):
+        os.makedirs(Config.TEMP_DIR)
+    OldZed = await mainevent.client.download_media(media, Config.TEMP_DIR)
+    file = await fileinfo(OldZed)
+    h = file["height"]
+    w = file["width"]
+    w, h = (-1, 512) if h > w else (512, -1)
+    if textevent:
+        await textevent.edit("__🎞Converting into Animated sticker..__")
+    await runcmd(
+        f"ffmpeg -to 00:00:02.900 -i '{OldZed}' -vf scale={w}:{h} -c:v libvpx-vp9 -crf 30 -b:v 560k -maxrate 560k -bufsize 256k -an animate.webm"
+    )  # pain
+    os.remove(OldZed)
+    return "animate.webm"
+
+
 async def age_verification(event, reply_to_id):
     ALLOW_NSFW = gvarstatus("ALLOW_NSFW") or "False"
     if ALLOW_NSFW.lower() == "true":
