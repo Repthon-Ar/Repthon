@@ -13,7 +13,7 @@ while flag:
         from .progress import *
         from .qhelper import *
         from .tools import *
-        from .utils import _reputils, _format  # noqa F401
+        from .utils import _reputils, _reptools, _format  # noqa F401
 
         break
     except ModuleNotFoundError as e:
