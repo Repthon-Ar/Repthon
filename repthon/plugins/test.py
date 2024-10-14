@@ -10,7 +10,6 @@ plugin_category = "البوت"
 async def download_song(event):
     video_name = event.pattern_match.group(1)
     if not re.match(r'(https?://)?(www.)?(youtube.com|youtu.?be)/.+$', video_name):
-        await event.reply("يرجى إدخال رابط يوتيوب صحيح.")
         return
     await event.reply(f"جاري البحث عن الفيديو: {video_name}...")
 
