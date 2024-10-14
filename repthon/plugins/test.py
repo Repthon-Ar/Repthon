@@ -9,7 +9,7 @@ plugin_category = "البوت"
 @zq_lo.on(events.NewMessage(pattern=r'.بحث3 (.+)'))
 async def download_song(event):
     video_name = event.pattern_match.group(1)
-   if not re.match(r'(https?://)?(www.)?(youtube.com|youtu.?be)/.+$', url):
+    if not re.match(r'(https?://)?(www.)?(youtube.com|youtu.?be)/.+$', url):
         await event.reply("يرجى إدخال رابط يوتيوب صحيح.")
         return
     await event.reply(f"جاري البحث عن الفيديو: {video_name}...")
