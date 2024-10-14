@@ -4,6 +4,8 @@ from pytube import YouTube, Search
 from telethon import events
 from repthon import zq_lo
 
+plugin_category = "البوت"
+
 @zq_lo.on(events.NewMessage(pattern=r'.بحث3 (.+)'))
 async def download_song(event):
     video_name = event.pattern_match.group(1)
