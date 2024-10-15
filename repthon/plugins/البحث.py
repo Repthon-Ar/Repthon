@@ -3,7 +3,6 @@ import base64
 import io
 import urllib.parse
 import os
-import re
 from pathlib import Path
 import asyncio
 from asyncio import sleep
@@ -36,7 +35,7 @@ SONG_SENDING_STRING = "<b>╮ جـارِ تحميـل الاغنيـٓه... 🎧
 # =========================================================== #
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث(320)?(?:\\s|$)([\\s\\S]*)",
+    pattern="بحث(320)?(?:\\s|$)([\\s\\S]*)",
     command=("بحث", plugin_category),
     info={
         "header": "لـ تحميـل الاغـانـي مـن يـوتيـوب",
@@ -117,7 +116,7 @@ async def _(event):
 
 
 @zq_lo.rep_cmd(
-    pattern=r"فيديو(?:\\s|$)([\\s\\S]*)",
+    pattern="فيديو(?:\\s|$)([\\s\\S]*)",
     command=("فيديو", plugin_category),
     info={
         "header": "لـ تحميـل مقـاطـع الفيـديـو مـن يـوتيـوب",
@@ -187,7 +186,7 @@ async def _(event):
             os.remove(files)
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث2(?:\\s|$)([\\s\\S]*)",
+    pattern="بحث2(?:\\s|$)([\\s\\S]*)",
     command=("بحث2", plugin_category),
     info={
         "header": "To search songs and upload to telegram",
