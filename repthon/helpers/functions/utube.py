@@ -40,9 +40,8 @@ song_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --write-thumbnail 
 
 thumb_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 -o './temp/%(title)s.%(ext)s' --write-thumbnail --skip-download {video_link}"
 video_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' -f 'best[height<=480]' {video_link}"
-name_dl = (
-    "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
-)
+name_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
+
 
 async def yt_search(rep):
     try:
