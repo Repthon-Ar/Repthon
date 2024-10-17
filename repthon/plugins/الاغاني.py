@@ -41,7 +41,7 @@ async def _(event):
             await asyncio.sleep(5)
             baqir = await conv.get_response()
             if "⏳" not in baqir.text:
-                await baqir.click(0)
+                await baqir.click(1)
                 await asyncio.sleep(5)
                 baqir = await conv.get_response()
                 await event.delete()
@@ -62,7 +62,7 @@ async def _(event):
             baqir = await conv.get_response()
             baqir = await conv.get_response()
             if "⏳" not in baqir.text:
-                await baqir.click(0)
+                await baqir.click(1)
                 await asyncio.sleep(5)
                 baqir = await conv.get_response()
                 await event.delete()
