@@ -1,3 +1,5 @@
+import random
+import asyncio
 import yt_dlp
 import os
 from telethon import TelegramClient, events
@@ -6,6 +8,14 @@ from repthon import zq_lo
 from ..Config import Config
 
 plugin_category = "البوت"
+
+def get_cookies_file():
+    folder_path = f"{os.getcwd()}/rbaqir"
+    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
+    if not txt_files:
+        raise FileNotFoundError("No .txt files found in the specified folder.")
+    cookie_txt_file = random.choice(txt_files)
+    return cookie_txt_file
 
 
 @zq_lo.on(events.NewMessage(pattern='.بحث3 (.*)'))
@@ -19,8 +29,9 @@ async def get_song(event):
         'extractaudio': True,
         'audioformat': 'mp3',
         'outtmpl': '%(title)s.%(ext)s',
+        'no_warnings': True,
         'noplaylist': True,
-        'nocookies': True
+        "cookiefile" : get_cookies_file(),
     }
 
     with YoutubeDL(ydl_opts) as ydl:
