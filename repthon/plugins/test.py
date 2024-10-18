@@ -21,7 +21,7 @@ async def get_song(event):
         await event.reply(f"تم العثور على الأغنية: {results[0]['title']}nرابط: {video_url}")
         
         # تنزيل الأغنية بصيغة MP3 بدون استخدام الكوكيز
-        os.system(f'youtube-dl --no-cookies -x --audio-format mp3 {video_url} -o "{results[0]["title"]}.mp3"')
+        os.system(f'youtube-dl -x --audio-format mp3 {video_url} -o "{results[0]["title"]}.mp3"')
         
         # إرسال الأغنية في الدردشة
         await zq_lo.send_file(event.chat_id, f"{results[0]['title']}.mp3")
