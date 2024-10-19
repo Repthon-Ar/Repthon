@@ -26,7 +26,7 @@ async def get_song(event):
 
     # إعداد خيارات yt-dlp
     ydl_opts = {
-        "format": "(bestaudio[ext=mp3])",
+        "format": "bestaudio/best",
         "addmetadata": True,
         "key": "FFmpegMetadata",
         "writethumbnail": False,
@@ -34,10 +34,11 @@ async def get_song(event):
         "geo_bypass": True,
         "nocheckcertificate": True,
         "postprocessors": [
-            {"key": "FFmpegVideoConvertor", "preferedformat": "m4a"},
+            {"key": "FFmpegVideoConvertor", "preferedformat": "mp3"},
             {"key": "FFmpegMetadata"},
+            {"key": "FFmpegExtractAudio"},
         ],
-        "outtmpl": path,
+        "outtmpl": "%(title)s.%(ext)s",
         "logtostderr": False,
         "quiet": True,
         "no_warnings": True,
@@ -59,5 +60,3 @@ async def get_song(event):
             os.remove(filename)
         except Exception as e:
             await event.reply(f"حدث خطأ أثناء البحث عن الأغنية: {e}")
-    path = f"temp/{title.replace(' ', '_')}.mp3"
-    return path
