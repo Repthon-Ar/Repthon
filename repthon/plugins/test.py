@@ -25,7 +25,6 @@ async def get_song(event):
     await event.reply(f"جاري البحث عن الأغنية: {song_name}...")
 
     # إعداد خيارات yt-dlp
-    path = f"temp/{title.replace(' ', '_')}.mp3"
     ydl_opts = {
         "format": "(bestaudio[ext=mp3])",
         "addmetadata": True,
@@ -43,7 +42,7 @@ async def get_song(event):
         "quiet": True,
         "no_warnings": True,
         "cookiefile" : get_cookies_file(),
-    }
+   }
 
     with YoutubeDL(ydl_opts) as ydl:
         try:
@@ -60,4 +59,5 @@ async def get_song(event):
             os.remove(filename)
         except Exception as e:
             await event.reply(f"حدث خطأ أثناء البحث عن الأغنية: {e}")
+    path = f"temp/{title.replace(' ', '_')}.mp3"
     return path
