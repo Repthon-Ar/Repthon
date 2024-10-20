@@ -1,8 +1,10 @@
 import asyncio
 import base64
+import random
 import io
 import urllib.parse
 import os
+import glob
 from pathlib import Path
 import asyncio
 from asyncio import sleep
@@ -16,7 +18,8 @@ from validators.url import url
 
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
-from ..helpers.functions import delete_conv, name_dl, song_dl, video_dl, yt_search
+from ..helpers.functions import delete_conv
+from ..helpers.functions.utube import name_dl, song_dl, video_dl, yt_search
 from ..helpers.tools import media_type
 from ..helpers.utils import _reputils, reply_id
 from . import zq_lo, song_download
@@ -33,6 +36,14 @@ SONG_SENDING_STRING = "<b>╮ جـارِ تحميـل الاغنيـٓه... 🎧
 # =========================================================== #
 #                                                             𝙍𝙀𝙋𝙏𝙃𝙊𝙉
 # =========================================================== #
+
+def get_cookies_file():
+    folder_path = f"{os.getcwd()}/rbaqir"
+    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
+    if not txt_files:
+        raise FileNotFoundError("No .txt files found in the specified folder.")
+    cookie_txt_file = random.choice(txt_files)
+    return cookie_txt_file
 
 @zq_lo.rep_cmd(
     pattern="بحث(320)?(?:\s|$)([\s\S+]*)",
@@ -70,6 +81,7 @@ async def _(event):
     name_cmd = name_dl.format(video_link=video_link)
     try:
         stderr = (await _reputils.runcmd(song_cmd))[1]
+        await runcmd(f"yt-dlp --cookies {get_cookies_file()}  --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}")
         # if stderr:
         # await repevent.edit(f"**Error1 :** `{stderr}`")
         catname, stderr = (await _reputils.runcmd(name_cmd))[:2]
