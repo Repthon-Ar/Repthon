@@ -1,4 +1,5 @@
 import asyncio
+import random
 import glob
 import io
 import os
@@ -48,6 +49,15 @@ LOGS = logging.getLogger(__name__)
 plugin_category = "البحث"
 
 
+def get_cookies_file():
+    folder_path = f"{os.getcwd()}/rbaqir"
+    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
+    if not txt_files:
+        raise FileNotFoundError("No .txt files found in the specified folder.")
+    cookie_txt_file = random.choice(txt_files)
+    return cookie_txt_file
+
+
 video_opts = {
     "format": "best",
     "addmetadata": True,
@@ -63,6 +73,7 @@ video_opts = {
     "outtmpl": "cat_ytv.mp4",
     "logtostderr": False,
     "quiet": True,
+    "cookiefile": "get_cookies_file",
 }
 
 
