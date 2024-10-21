@@ -81,7 +81,7 @@ async def _(event):
     name_cmd = name_dl.format(video_link=video_link)
     try:
         stderr = (await _reputils.runcmd(song_cmd))[1]
-        await runcmd(f"yt-dlp --cookies {get_cookies_file()}  --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}")
+        await runcmd(f"yt-dlp --cookies {get_cookies_file()}")
         # if stderr:
         # await repevent.edit(f"**Error1 :** `{stderr}`")
         catname, stderr = (await _reputils.runcmd(name_cmd))[:2]
