@@ -14,7 +14,7 @@ from ...Config import Config
 from ...core import pool
 from ...core.logger import logging
 from ..progress import humanbytes
-from .functions-r import set_attributes, download_file, run_async
+from .functionsr import set_attributes, download_file, run_async
 
 
 def get_yt_link(query, ytd):
