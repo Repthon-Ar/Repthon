@@ -1,6 +1,6 @@
 from .findquote import *
 from .functions import *
-from .functions-r import *
+from .functionsr import *
 from .ialivetext import *
 from .imgtools import *
 from .jikan import *
