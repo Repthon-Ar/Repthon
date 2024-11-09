@@ -10,6 +10,8 @@ try:
 except ImportError:
     from ytdl import YoutubeDL
 
+from ...Config import Config
+from ...core import pool
 from ...core.logger import logging
 from ..progress import humanbytes
 from .functions-r import set_attributes, download_file, run_async
