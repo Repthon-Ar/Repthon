@@ -20,6 +20,7 @@ from youtubesearchpython import Playlist
 from yt_dlp import YoutubeDL
 from repthon import zq_lo
 from ..core.logger import logging
+from ..core.managers import edit_delete, edit_or_reply as eor
 from ..Config import Config
 from ..helpers.functions.youtube import download_yt, get_yt_link
 from ..helpers.functions.functionsr import is_url_work
