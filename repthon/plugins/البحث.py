@@ -20,7 +20,7 @@ from youtubesearchpython import Playlist
 from yt_dlp import YoutubeDL
 from repthon import zq_lo
 from ..core.logger import logging
-from ..core.managers import edit_delete, edit_or_reply as eor
+from ..core.managers import edit_delete, edit_or_reply
 from ..Config import Config
 from ..helpers.functions.youtube import download_yt, get_yt_link
 from ..helpers.functions.functionsr import is_url_work
@@ -38,7 +38,7 @@ ytd = {
 
 @zq_lo.rep_cmd(pattern="تحميل صوتي (.*)")
 async def down_voic(event):
-    bot = await event.eor("⌔∮ جار التحميل يرجى الأنتظار قليلا")
+    bot = await event.edit_or_reply("⌔∮ جار التحميل يرجى الأنتظار قليلا")
     ytd["format"] = "bestaudio"
     ytd["outtmpl"] = "%(id)s.m4a"
     ytd["postprocessors"].insert(
@@ -51,16 +51,16 @@ async def down_voic(event):
         )
     url = event.pattern_match.group(1)
     if not url:
-        return await bot.eor("⌔∮ يجب عليك وضع رابط للتحميل الصوتي")
+        return await bot.edit_or_reply("⌔∮ يجب عليك وضع رابط للتحميل الصوتي")
     try:
         await is_url_work(url)
     except BaseException:
-        return await bot.eor("⌔∮ يرجى وضع الرابط بشكل صحيح")
+        return await bot.edit_or_reply("⌔∮ يرجى وضع الرابط بشكل صحيح")
     await download_yt(bot, url, ytd)
 
 @zq_lo.rep_cmd(pattern="تحميل فيد (.*)")
 async def vidown(event):
-    bot = await event.eor("⌔∮ جار التحميل يرجى الأنتظار قليلا")
+    bot = await event.edit_or_reply("⌔∮ جار التحميل يرجى الأنتظار قليلا")
     ytd["format"] = "best"
     ytd["outtmpl"] = "%(id)s.mp4"
     ytd["postprocessors"].insert(
@@ -69,17 +69,17 @@ async def vidown(event):
     url = event.pattern_match.group(1)
     print(url)
     if not url:
-        return await bot.eor("⌔∮ يجب عليك وضع رابط لتحميل الفيد")
+        return await bot.edit_or_reply("⌔∮ يجب عليك وضع رابط لتحميل الفيد")
     try:
         await is_url_work(url)
     except BaseException:
-        return await bot.eor("⌔∮ يرجى وضع الرابط بشكل صحيح")
+        return await bot.edit_or_reply("⌔∮ يرجى وضع الرابط بشكل صحيح")
     await download_yt(bot, url, ytd)
 
 
 @zq_lo.rep_cmd(pattern="بحث( (.*)|$)")
 async def sotea(event):
-    bot = await event.eor("⌔∮ جار التحميل يرجى الأنتظار قليلا")
+    bot = await event.edit_or_reply("⌔∮ جار التحميل يرجى الأنتظار قليلا")
     ytd["format"] = "bestaudio"
     ytd["outtmpl"] = "%(id)s.m4a"
     ytd["postprocessors"].insert(
@@ -92,9 +92,9 @@ async def sotea(event):
     )
     query = event.pattern_match.group(2) if event.pattern_match.group(1) else None
     if not query:
-        return await bot.eor("**⌔∮ يجب عليك تحديد ما تريد تحميله اكتب عنوان مع الامر**")
+        return await bot.edit_or_reply("**⌔∮ يجب عليك تحديد ما تريد تحميله اكتب عنوان مع الامر**")
     url = get_yt_link(query, ytd)
     if not url:
-        return await bot.edit("**⌔∮ لم يتم العثور على الفيديو اكتب عنوان مفصل بشكل صحيح**")
+        return await bot.edit_or_reply("**⌔∮ لم يتم العثور على الفيديو اكتب عنوان مفصل بشكل صحيح**")
     await bot.eor("**⌔∮ جار تحميل الملف الصوتي أنتظر قليلا**")
     await download_yt(bot, url, ytd)
