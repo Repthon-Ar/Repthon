@@ -61,14 +61,21 @@ async def _(event):
     "To search songs"
     reply_to_id = await reply_id(event)
     reply = await event.get_reply_message()
-    if event.pattern_match.group(2):
+    query = None  # Initialize query to None
+
+    if event.pattern_match and event.pattern_match.group(2):  #Added pattern_match validation
         query = event.pattern_match.group(2)
         query = f"{query} mp3"
     elif reply and reply.message:
         query = reply.message
         query = f"{query} mp3"
+
+    if query:  # Check if query is not None or empty
+        # Now you can use the query safely
+        print(f"Searching for: {query}") #replace with your actual search logic.
     else:
-        return await edit_or_reply(event, "**⎉╎قم باضافـة الاغنيـه للامـر .. بحث + اسـم الاغنيـه**")
+        # No search term provided
+        return await edit_or_reply(event, "**⎉╎قم باضافـة الاغنيـه للامـر .. بحث + اسـم الاغنيـه**") #This will now be executed properly when query does not exist
     cat = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
     repevent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     video_link = await yt_search(str(query))
