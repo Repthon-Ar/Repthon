@@ -67,7 +67,7 @@ async def _(event):
         )
     cmd = event.pattern_match.group(1)
     q = "320k" if cmd == "320" else "128k"
-    song_cmd = song_dl.format(QUALITY=q, video_link=video_link, get_cookies_file=cookie_txt_file)
+    song_cmd = song_dl.format(QUALITY=q, video_link=video_link, get_cookies_file()=get_cookies_file())
     name_cmd = name_dl.format(video_link=video_link)
     try:
         cat = Get(cat)
