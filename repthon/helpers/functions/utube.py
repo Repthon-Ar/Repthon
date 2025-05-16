@@ -18,6 +18,7 @@ from ..aiohttp_helper import AioHttp
 from ..progress import humanbytes
 from .functions import sublists
 
+cookies_path = get_cookies_file()
 LOGS = logging.getLogger(__name__)
 
 
@@ -36,12 +37,12 @@ YOUTUBE_REGEX = re.compile(
 )
 PATH = "./repthon/cache/ytsearch.json"
 
-song_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality {QUALITY} {video_link}"
+song_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality {QUALITY} {video_link}"
 
-thumb_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 -o './temp/%(title)s.%(ext)s' --write-thumbnail --skip-download {video_link}"
-video_dl = "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' -f 'best[height<=480]' {video_link}"
+thumb_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 -o './temp/%(title)s.%(ext)s' --write-thumbnail --skip-download {video_link}"
+video_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' -f 'best[height<=480]' {video_link}"
 name_dl = (
-    "yt-dlp --cookies {get_cookies_file()} --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
+    "yt-dlp --cookies {cookies_path} --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
 )
 
 async def yt_search(rep):
