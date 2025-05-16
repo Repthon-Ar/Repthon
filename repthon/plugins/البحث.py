@@ -3,9 +3,6 @@ import base64
 import io
 import urllib.parse
 import os
-import re
-import glob
-import random
 from pathlib import Path
 import asyncio
 from asyncio import sleep
@@ -24,13 +21,6 @@ from ..helpers.tools import media_type
 from ..helpers.utils import _reputils, reply_id
 from . import zq_lo, song_download
 
-def get_cookies_file():
-    folder_path = f"{os.getcwd()}/rbaqir"
-    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
-    if not txt_files:
-        raise FileNotFoundError("No .txt files found in the specified folder.")
-    cookie_txt_file = random.choice(txt_files)
-    return cookie_txt_file
 
 plugin_category = "البحث"
 LOGS = logging.getLogger(__name__)
@@ -79,7 +69,7 @@ async def _(event):
         )
     cmd = event.pattern_match.group(1)
     q = "320k" if cmd == "320" else "128k"
-    song_cmd = song_dl.format(QUALITY=q, video_link=video_link, get_cookies_file()=get_cookies_file())
+    song_cmd = song_dl.format(QUALITY=q, video_link=video_link, cookies_path=get_cookies_file())
     name_cmd = name_dl.format(video_link=video_link)
     try:
         cat = Get(cat)
