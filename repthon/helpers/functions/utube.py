@@ -18,7 +18,6 @@ from ..aiohttp_helper import AioHttp
 from ..progress import humanbytes
 from .functions import sublists
 
-cookies_path = get_cookies_file()
 LOGS = logging.getLogger(__name__)
 
 
