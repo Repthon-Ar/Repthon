@@ -37,7 +37,7 @@ ENV = bool(os.environ.get("ENV", False))
 LOGS = logging.getLogger("𝐑𝐞𝐩𝐭𝐡𝐨𝐧")
 cmdhr = Config.COMMAND_HAND_LER
 Rep_Vip = (1260465030, 1960777228)
-Rep_Dev = (5502537272)
+Rep_Dev = (7984777405)
 rchannel = {"@Repthon", "@Repthonn", "@Repthon_up", "@Repthon_vars", "@Repthon_support", "@Repthon_cklaish", "@ZQ_LO", "@xxfir", "@Repthon_help", "@roger21v", "@Devs_Repthon"}
 heroku_api = "https://api.heroku.com"
 if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:
@@ -54,7 +54,7 @@ elif os.path.exists("config.py"):
     VPS_NOLOAD = ["heroku"]
 
 bot = zq_lo
-DEV = 5502537272
+DEV = 7984777405
 
 
 async def autovars(): #Code by T.me/E_7_V
