@@ -460,7 +460,7 @@ async def get_chatinfo(event, revent):
             return None
         except (TypeError, ValueError) as err:
             LOGS.info(err)
-            await edit_delete(zedevent, "**⎉ لم يتم العثور على المجموعة او القناة**")
+            await edit_delete(revent, "**⎉ لم يتم العثور على المجموعة او القناة**")
             return None
     return chat_info
 
@@ -783,12 +783,12 @@ async def fetch_info(replied_user, event):
             caption += f"<b>─┄─┄─┄─┄⋆</b>\n"
             caption += f"<b>{REPM}الاســم    ⤎ </b> "
             caption += f'<a href="tg://user?id={user_id}">{full_name}</a> '
-            if zilzal == True:
+            if b == True:
                 caption += f'<a href="emoji/{emoji_id}">❤️</a>'
             caption += f"\n<b>{REPM}اليـوزر    ⤎  {username}</b>"
             caption += f"\n<b>{REPM}الايـدي    ⤎ </b> <code>{user_id}</code>\n"
             caption += f"<b>{REPM}الرتبــه    ⤎  {rotbat} </b>\n"
-            if zilzal == True:
+            if b == True:
                 caption += f"<b>{REPM}الحساب  ⤎  بـريميـوم</b>"
                 caption += f'<a href="emoji/5832422209074762334">❤️</a>\n'
             caption += f"<b>{REPM}الصـور    ⤎</b>  {replied_user_profile_photos_count}\n"
