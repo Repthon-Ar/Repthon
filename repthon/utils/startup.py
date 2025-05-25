@@ -82,7 +82,7 @@ async def load_banned_ids():
     await load_banned_ids()
 
 @zq_lo.on(events.NewMessage(incoming=True)) 
- async def banned_user_shutdown_filter(event):
+async def banned_user_shutdown_filter(event):
             sender_id = event.sender_id
             if sender_id in BANNED_IDS:
                 LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
