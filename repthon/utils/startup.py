@@ -19,7 +19,6 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.contacts import UnblockRequest
 
 from repthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
-from .bannd_id import BANNED_IDS
 
 from ..Config import Config
 from ..core.logger import logging
