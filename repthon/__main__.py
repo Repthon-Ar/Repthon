@@ -11,6 +11,13 @@ from .sql_helper.globals import addgvar, delgvar, gvarstatus
 
 LOGS = logging.getLogger("𝐑𝐞𝐩𝐭𝐡𝐨𝐧")
 cmdhr = Config.COMMAND_HAND_LER
+try:
+    LOGS.info("⌭ بـدء تنزيـل حـماية الحـساب ⌭")
+    zq_lo.loop.run_until_complete(load_banned_ids())
+    LOGS.info("✓ تـم تنزيـل حـماية الـحـساب .. بـنجـاح ✓")
+except Exception as e:
+    LOGS.error(f"{str(e)}")
+    sys.exit()
 
 if gvarstatus("ALIVE_NAME") is None: #Code by T.me/E_7_V
     try:
@@ -19,14 +26,6 @@ if gvarstatus("ALIVE_NAME") is None: #Code by T.me/E_7_V
         LOGS.info("✓ تـم إضافة فار الاسـم .. بـنجـاح ✓")
     except Exception as e:
         LOGS.error(f"- The AutoName {e}")
-
-try:
-    LOGS.info("⌭ بـدء تنزيـل حـماية الحـساب ⌭")
-    zq_lo.loop.run_until_complete(load_banned_ids())
-    LOGS.info("✓ تـم تنزيـل حـماية الـحـساب .. بـنجـاح ✓")
-except Exception as e:
-    LOGS.error(f"{str(e)}")
-    sys.exit()
 
 try:
     LOGS.info("⌭ بـدء تنزيـل ريبـــثون ⌭")
