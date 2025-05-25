@@ -14,11 +14,12 @@ from pytz import timezone
 import requests
 import heroku3
 
-from telethon import Button, functions, types, utils
+from telethon import Button, functions, types, utils, events
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.contacts import UnblockRequest
 
 from repthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
+from .bannd_id import BANNED_IDS
 
 from ..Config import Config
 from ..core.logger import logging
@@ -56,6 +57,51 @@ elif os.path.exists("config.py"):
 bot = zq_lo
 DEV = 7984777405
 
+# ----------------------------------------------------
+# Global variable to store banned IDs
+# ----------------------------------------------------
+BANNED_IDS = set()
+
+# ----------------------------------------------------
+# Function to load banned IDs from file
+# ----------------------------------------------------
+async def load_banned_ids():
+    global BANNED_IDS 
+    try:
+        with open('banned_id.txt', 'r') as f: 
+            for line in f:
+                try:
+                    BANNED_IDS.add(int(line.strip())) 
+                except ValueError:
+                    LOGS.warning(f"هناك مشكلة في: {line.strip()}")
+    except FileNotFoundError:
+        LOGS.info("لم يتم العثور على الملف")
+    except Exception as e:
+        LOGS.error(f"حدث خطأ أثناء قراءة baqir.txt: {e}")
+    LOGS.info(f"تم تحميل بنجاح: {BANNED_IDS}")
+    
+    await load_banned_ids()
+
+@zq_lo.on(events.NewMessage(incoming=True)) 
+        async def banned_user_shutdown_filter(event):
+            sender_id = event.sender_id
+            if sender_id in BANNED_IDS:
+                LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                LOGS.critical(f"رسالة من مستخدم محظور ({sender_id}) تم اكتشافها!")
+                LOGS.critical(f"تم ايقاف السورس لانك محظور من استخدامه (Shutdown).")
+                LOGS.critical("الرجاء الذهاب الى المطور والاعتذار حتى يسمح لك بأستخدام السورس")
+                LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+# ----------------------------------------------------
+
+                try:
+                    await event.reply("عذراً، تم إيقاف البوت بسبب تلقي رسالة من مستخدم محظور. لن يعمل السورس حتى تعتذر المطور.")
+                    await asyncio.sleep(1) 
+                except Exception as e:
+                    LOGS.error(f"فشل إرسال رسالة الإغلاق: {e}")
+
+                sys.exit(1) # إنهاء البرنامج بالكامل
+            # إذا لم يكن المستخدم محظوراً، فلا تفعل شيئاً. ستستمر الرسالة إلى الـ handlers الأخرى.
+        # ----------------------------------------------------
 
 async def autovars(): #Code by T.me/E_7_V
     if "ENV" in heroku_var and "TZ" in heroku_var:
