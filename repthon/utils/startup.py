@@ -67,7 +67,7 @@ BANNED_IDS = set()
 async def load_banned_ids():
     global BANNED_IDS 
     try:
-        with open('banned_id.txt', 'r') as f: 
+        with open('repthon/utils/bannd_id.txt', 'r') as f: 
             for line in f:
                 try:
                     BANNED_IDS.add(int(line.strip())) 
@@ -78,18 +78,17 @@ async def load_banned_ids():
     except Exception as e:
         LOGS.error(f"حدث خطأ أثناء قراءة baqir.txt: {e}")
     LOGS.info(f"تم تحميل بنجاح: {BANNED_IDS}")
-    
     await load_banned_ids()
 
 @zq_lo.on(events.NewMessage(incoming=True)) 
 async def banned_user_shutdown_filter(event):
-            sender_id = event.sender_id
-            if sender_id in BANNED_IDS:
-                LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                LOGS.critical(f"رسالة من مستخدم محظور ({sender_id}) تم اكتشافها!")
-                LOGS.critical(f"تم ايقاف السورس لانك محظور من استخدامه (Shutdown).")
-                LOGS.critical("الرجاء الذهاب الى المطور والاعتذار حتى يسمح لك بأستخدام السورس")
-                LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        sender_id = event.sender_id
+        if sender_id in BANNED_IDS:
+            LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            LOGS.critical(f"رسالة من مستخدم محظور ({sender_id}) تم اكتشافها!")
+            LOGS.critical(f"تم ايقاف السورس لانك محظور من استخدامه (Shutdown).")
+            LOGS.critical("الرجاء الذهاب الى المطور والاعتذار حتى يسمح لك بأستخدام السورس")
+            LOGS.critical(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 # ----------------------------------------------------
 
                 try:
