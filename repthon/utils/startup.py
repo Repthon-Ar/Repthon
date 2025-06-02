@@ -52,54 +52,11 @@ if ENV:
     VPS_NOLOAD = ["vps"]
 elif os.path.exists("config.py"):
     VPS_NOLOAD = ["heroku"]
-
+# ----------------------------------------------------
 bot = zq_lo
 DEV = 7984777405
 
 # ----------------------------------------------------
-# Global variable to store banned IDs
-# ----------------------------------------------------
-BANNED_IDS = set()
-
-# ----------------------------------------------------
-# Function to load banned IDs from file
-# ----------------------------------------------------
-async def load_banned_ids():
-    global BANNED_IDS 
-    try:
-        with open('repthon/utils/bannd_id.txt', 'r') as f: 
-            for line in f:
-                try:
-                    BANNED_IDS.add(int(line.strip())) 
-                except ValueError:
-                    LOGS.warning(f"هناك مشكلة في: {line.strip()}")
-    except FileNotFoundError:
-        LOGS.info("لم يتم العثور على الملف")
-    except Exception as e:
-        LOGS.error(f"حدث خطأ أثناء قراءة baqir.txt: {e}")
-    LOGS.info(f"تم تحميل بنجاح: {BANNED_IDS}")
-    await load_banned_ids()
-
-@zq_lo.on(events.NewMessage(incoming=True)) 
-async def banned_user_shutdown_filter(event):
-        sender_id = event.sender_id
-        if sender_id in BANNED_IDS:
-            LOGS.info(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            LOGS.info(f"رسالة من مستخدم محظور ({sender_id}) تم اكتشافها!")
-            LOGS.info(f"تم ايقاف السورس لانك محظور من استخدامه (Shutdown).")
-            LOGS.info("الرجاء الذهاب الى المطور والاعتذار حتى يسمح لك بأستخدام السورس")
-            LOGS.info(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-# ----------------------------------------------------
-
-            # السطر 94 (try:) هو هنا. يجب أن يكون بنفس مستوى مسافة LOGS.critical
-            try: # هذا هو السطر 94 الذي يسبب الخطأ
-                await event.reply("عذراً، تم إيقاف البوت بسبب تلقي رسالة من مستخدم محظور. لن يعمل السورس حتى تعتذر المطور.")
-                await asyncio.sleep(1) 
-            except Exception as e: # هذا السطر بنفس مستوى مسافة try:
-                LOGS.error(f"فشل إرسال رسالة الإغلاق: {e}")
-
-            sys.exit(1) # هذا السطر بنفس مستوى مسافة try: و except
-        # إذا لم يكن المستخدم محظوراً، فلا تفعل شيئاً. ستستمر الرسالة إلى الـ handlers الأخرى.
 async def autovars(): #Code by T.me/E_7_V
     if "ENV" in heroku_var and "TZ" in heroku_var:
         return
