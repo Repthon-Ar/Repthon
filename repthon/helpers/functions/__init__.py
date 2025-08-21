@@ -7,5 +7,4 @@ from .jikan import *
 from .nekos import *
 from .utils import *
 from .utube import *
-from .youtube import *
 from .vidtools import *
