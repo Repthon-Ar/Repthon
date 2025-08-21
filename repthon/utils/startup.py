@@ -252,9 +252,23 @@ async def saves():
    for Rcc in rchannel:
         try:
              await zq_lo(JoinChannelRequest(channel=Rcc))
+             await asyncio.sleep(9)
+        except FloodWaitError as rep:
+            wait_time = int(rep.seconds)
+            waitime = wait_time + 1
+            LOGS.error(f"Getting FloodWaitError ({rep.seconds}) - (ImportChatInviteRequest)")
+            await asyncio.sleep(waitime) # Add a buffer
+            continue
         except OverflowError:
             LOGS.error("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
             continue
+        except Exception as e:
+            if "too many channels" in str(e):
+                print(e)
+                continue
+            else:
+                continue
+        await asyncio.sleep(1)
 
 
 async def load_plugins(folder, extfolder=None):
