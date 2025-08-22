@@ -17,6 +17,7 @@ import heroku3
 from telethon import Button, functions, types, utils, events
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.contacts import UnblockRequest
+from telethon.errors import FloodWaitError, FloodError, BadRequestError
 
 from repthon import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
 
