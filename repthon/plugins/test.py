@@ -32,9 +32,8 @@ async def handler(event):
                 video_url = f"https://www.youtube.com{results[0]['url_suffix']}"
                 print(f"تم العثور على الفيديو: {results[0]['title']}")
                 
-                # تحميل الفيديو باستخدام pytube مع الكوكيز
-                cookies_file = get_cookies_file()  # الحصول على ملف الكوكيز
-                yt = YouTube(video_url, cookies=cookies_file)  # تمرير ملف الكوكيز
+                # تحميل الفيديو باستخدام pytube
+                yt = YouTube(video_url)  # لا نمرر الكوكيز هنا
                 
                 video = yt.streams.filter(only_audio=True).first()
                 
