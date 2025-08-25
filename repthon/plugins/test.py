@@ -82,20 +82,44 @@ async def download_youtube_audio(event):
         ydl_opts['cookiefile'] = cookie_file_path
         print(f"[*] yt-dlp will use cookie file: {cookie_file_path}")
 
+    # ... داخل دالة download_youtube_audio ...
     try:
-        # استخدام youtube-search-python للبحث عن أفضل نتيجة
         search_results = YoutubeSearch(input_message, max_results=1).to_dict()
 
         if not search_results:
             await processing_message.edit(f"**• لم يتم العثور على نتائج لـ `{input_message}`**")
             return
 
-        video_url = f"https://youtube.com{search_results[0]['url_suffix']}"
+        # تأكد من أننا حصلنا على نتيجة صالحة قبل محاولة الوصول إلى عناصرها
+        first_result = search_results[0] # احصل على أول نتيجة في متغير واحد
 
-        # تنزيل الصورة المصغرة (اختياري، لكنه يعطي مظهرًا أفضل)
-        thumbnail_url = search_results[0].get('thumbnails', [{}])[0].get('url')
+        # تحقق من وجود المفاتيح المطلوبة قبل استخدامها
+        if 'url_suffix' not in first_result:
+            await processing_message.edit(f"**• مشكلة في بيانات البحث، لم يتم العثور على رابط الفيديو.**")
+            return
+
+        video_url = f"https://youtube.com{first_result['url_suffix']}"
+
+        # تنزيل الصورة المصغرة
+        # استخدم .get() ليكون أكثر أمانًا
+        thumbnail_url = first_result.get('thumbnails', [{}])[0].get('url')
         thumb_name = None
         if thumbnail_url:
+            safe_title_thumb = "".join([c if c.isalnum() or c in (' ', '_', '-') else '_' for c in first_result.get('title', 'thumbnail')[:40]])
+            thumb_name = f"{safe_title_thumb}.jpg"
+            try:
+                response = requests.get(thumbnail_url, allow_redirects=True, timeout=10)
+                if response.status_code == 200:
+                    with open(thumb_name, "wb") as f:
+                        f.write(response.content)
+                else:
+                    thumb_name = None # فشل التنزيل
+            except Exception as e:
+                print(f"[!] Error downloading thumbnail: {e}")
+                thumb_name = None
+
+        # ... بقية الكود (تنزيل الصوت والتحويل والإرسال) ...
+
             thumb_name = f"{search_results[0]['title'][:40].replace('/', '_').replace(':', '_').replace('?', '_')}.jpg" # تنظيف اسم الملف
             try:
                 # استخدام requests للتنزيل، لا نحتاج لـ yt-dlp هنا
