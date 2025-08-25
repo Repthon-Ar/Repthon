@@ -4,7 +4,7 @@ import random
 import asyncio
 from pytube import YouTube
 from telethon import events
-from telethon.errors import ChatAdminRequiredError, FloodWait, ChatAdminRequired
+from telethon.errors import ChatAdminRequiredError, FloodWaitError, ChatAdminRequired
 from repthon import zq_lo
 from ..Config import Config
 
@@ -47,7 +47,7 @@ async def handler(event):
         
         except FileNotFoundError as e:
             await event.reply(f'خطأ: {str(e)}')
-        except errors.FloodWait as e:
+        except errors.FloodWaitError as e:
             await event.reply(f'خطأ: يجب الانتظار {e.seconds} ثانية قبل المحاولة مرة أخرى.')
             await asyncio.sleep(e.seconds)  # انتظر لمدة الوقت المحدد
         except errors.ChatAdminRequired as e:
