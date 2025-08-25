@@ -2,9 +2,9 @@ import os
 import glob
 import random
 import asyncio
-from pytube import YouTube
-from telethon import events
 from youtube_search import YoutubeSearch
+from youtube_dl import YoutubeDL
+from telethon import events
 from repthon import zq_lo
 from ..Config import Config
 
@@ -17,6 +17,7 @@ def get_cookies_file():
         raise FileNotFoundError("No .txt files found in the specified folder.")
     cookie_txt_file = random.choice(txt_files)
     return cookie_txt_file
+
 
 @zq_lo.on(events.NewMessage)
 async def handler(event):
@@ -31,24 +32,29 @@ async def handler(event):
             if results:
                 video_url = f"https://www.youtube.com{results[0]['url_suffix']}"
                 print(f"تم العثور على الفيديو: {results[0]['title']}")
+                print(f"رابط الفيديو: {video_url}")  # طباعة رابط الفيديو
                 
-                # تحميل الفيديو باستخدام pytube
-                yt = YouTube(video_url)  # لا نمرر الكوكيز هنا
+                # إعداد خيارات التحميل مع ملفات تعريف الارتباط
+                ydl_opts = {
+                    'format': 'bestaudio/best',
+                    'extractaudio': True,  # استخراج الصوت فقط
+                    'audioformat': 'mp3',  # تنسيق الصوت
+                    'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
+                    'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
+                }
                 
-                video = yt.streams.filter(only_audio=True).first()
-                
-                if video is None:
-                    await event.reply('لم يتم العثور على فيديوهات مناسبة.')
-                    return
-                
-                # قم بتحميل الفيديو
+                # تحميل الفيديو باستخدام youtube-dl
                 await event.reply('جاري تحميل الموسيقى...')
-                output_path = 'downloads'
-                os.makedirs(output_path, exist_ok=True)  # تأكد من وجود مجلد التحميل
-                video.download(output_path=output_path, filename='music.mp4')
+                os.makedirs('downloads', exist_ok=True)  # تأكد من وجود مجلد التحميل
+                
+                with YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([video_url])
+                
+                # احصل على اسم الملف المحمل
+                filename = f'downloads/{results[0]["title"]}.mp3'
                 
                 # أرسل الملف إلى Telegram
-                await zq_lo.send_file(event.chat_id, os.path.join(output_path, 'music.mp4'))
+                await zq_lo.send_file(event.chat_id, filename)
                 await event.reply('تم تحميل وإرسال الموسيقى بنجاح!')
             else:
                 await event.reply("لم يتم العثور على نتائج.")
