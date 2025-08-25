@@ -4,7 +4,7 @@ import random
 import asyncio
 from pytube import YouTube
 from telethon import events
-from telethon.errors import ChatAdminRequiredError, FloodWaitError, UserNotParticipantError
+from youtube_search import YoutubeSearch
 from repthon import zq_lo
 from ..Config import Config
 
@@ -25,34 +25,34 @@ async def handler(event):
             query = event.message.text.split(' ', 1)[1]  # احصل على استعلام البحث
             await event.reply('جاري البحث عن الموسيقى...')
             
-            # احصل على ملف الكوكيز العشوائي
-            cookies_file = get_cookies_file()
+            # ابحث عن الفيديو على يوتيوب باستخدام youtube-search-python
+            results = YoutubeSearch(query, max_results=1).to_dict()
             
-            # ابحث عن الفيديو على يوتيوب باستخدام الكوكيز
-            yt = YouTube(f'https://www.youtube.com/results?search_query={query}', cookies=cookies_file)
-            
-            # اختر أول فيديو في نتائج البحث
-            video = yt.streams.filter(only_audio=True).first()
-            if video is None:
-                await event.reply('لم يتم العثور على فيديوهات مناسبة.')
-                return
-            
-            # قم بتحميل الفيديو
-            await event.reply('جاري تحميل الموسيقى...')
-            video.download(output_path='downloads', filename='music.mp4')
-            
-            # أرسل الملف إلى Telegram
-            await zq_lo.send_file(event.chat_id, 'downloads/music.mp4')
-            await event.reply('تم تحميل وإرسال الموسيقى بنجاح!')
-        
-        except FileNotFoundError as e:
-            await event.reply(f'خطأ: {str(e)}')
-        except errors.FloodWaitError as e:
-            await event.reply(f'خطأ: يجب الانتظار {e.seconds} ثانية قبل المحاولة مرة أخرى.')
-            await asyncio.sleep(e.seconds)  # انتظر لمدة الوقت المحدد
-        except errors.ChatAdminRequiredError as e:
-            await event.reply('خطأ: تحتاج إلى أذونات المسؤول في هذه الدردشة.')
-        except errors.UserNotParticipantError as e:
-            await event.reply('خطأ: يجب أن تكون عضوًا في القناة لاستخدام هذه الميزة.')
+            if results:
+                video_url = f"https://www.youtube.com{results[0]['url_suffix']}"
+                print(f"تم العثور على الفيديو: {results[0]['title']}")
+                
+                # تحميل الفيديو باستخدام pytube مع الكوكيز
+                cookies_file = get_cookies_file()  # الحصول على ملف الكوكيز
+                yt = YouTube(video_url, cookies=cookies_file)  # تمرير ملف الكوكيز
+                
+                video = yt.streams.filter(only_audio=True).first()
+                
+                if video is None:
+                    await event.reply('لم يتم العثور على فيديوهات مناسبة.')
+                    return
+                
+                # قم بتحميل الفيديو
+                await event.reply('جاري تحميل الموسيقى...')
+                output_path = 'downloads'
+                os.makedirs(output_path, exist_ok=True)  # تأكد من وجود مجلد التحميل
+                video.download(output_path=output_path, filename='music.mp4')
+                
+                # أرسل الملف إلى Telegram
+                await zq_lo.send_file(event.chat_id, os.path.join(output_path, 'music.mp4'))
+                await event.reply('تم تحميل وإرسال الموسيقى بنجاح!')
+            else:
+                await event.reply("لم يتم العثور على نتائج.")
+
         except Exception as e:
             await event.reply(f'حدث خطأ أثناء البحث أو التحميل: {str(e)}')
