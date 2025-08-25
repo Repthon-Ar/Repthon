@@ -3,7 +3,8 @@ import glob
 import random
 import asyncio
 from pytube import YouTube
-from telethon import events, errors
+from telethon import events
+from telethon.errors import ChatAdminRequiredError, FloodWait, ChatAdminRequired
 from repthon import zq_lo
 from ..Config import Config
 
