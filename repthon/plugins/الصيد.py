@@ -1060,7 +1060,7 @@ async def customhunter(event):
                     f"- Done : @{username} ✅\n- By : @Repthon\n- Custom Hunting Log {srys[0]}",
                 )
                 await event.client.send_message(
-                    "@ZQ_L1", f"- Done : @{username} ✅\n- By : @Repthon\n- Hunting Log {srys[0]}",
+                    "@RR0RT", f"- Done : @{username} ✅\n- By : @Repthon\n- Hunting Log {srys[0]}",
                 )
                 break
             except FloodWaitError as rep:
@@ -1385,7 +1385,7 @@ async def _(event):
     baqir = str(event.pattern_match.group(1))
     if not baqir.startswith('@'):
         return await edit_or_reply(event, "⚈ **عـذراً عـزيـزي المدخـل خطـأ ❌**\n⚈ **استخـدم الامـر كالتالـي**\n⚈ **ارسـل (**`.تثبيت_بوت`** + اليـوزر)**")
-    await edit_or_reply(event, f"⚈ **تم بـدء التثبيت .. بنجـاح ☑️**\n⚈ **اليـوزر المثبت ( {zelzal} )**\n⚈ **لمعرفـة تقـدم عمليـة التثبيت (**`.حالة تثبيت_البوت`**)**\n⚈ **لـ ايقـاف عمليـة التثبيت (**`.ايقاف تثبيت_البوت`**)**")
+    await edit_or_reply(event, f"⚈ **تم بـدء التثبيت .. بنجـاح ☑️**\n⚈ **اليـوزر المثبت ( {baqir} )**\n⚈ **لمعرفـة تقـدم عمليـة التثبيت (**`.حالة تثبيت_البوت`**)**\n⚈ **لـ ايقـاف عمليـة التثبيت (**`.ايقاف تثبيت_البوت`**)**")
     isbuto.clear()
     isbuto.append("on")
     username = baqir.replace("@", "") 
