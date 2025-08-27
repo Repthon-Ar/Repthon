@@ -1,21 +1,12 @@
 import os
-import glob
-import random
 import asyncio
+import yt_dlp
 from yt_dlp import YoutubeDL
 from telethon import events
 from repthon import zq_lo
 from ..Config import Config
 
 plugin_category = "الادوات"
-
-def get_cookies_file():
-    folder_path = f"{os.getcwd()}/rbaqir"
-    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
-    if not txt_files:
-        raise FileNotFoundError("No .txt files found in the specified folder.")
-    cookie_txt_file = random.choice(txt_files)
-    return cookie_txt_file
 
 
 @zq_lo.on(events.NewMessage)
@@ -31,7 +22,7 @@ async def handler(event):
                 'extractaudio': True,  # استخراج الصوت فقط
                 'audioformat': 'mp3',  # تنسيق الصوت
                 'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
-                'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
+                # 'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
             }
             
             # البحث عن الفيديو باستخدام yt-dlp
