@@ -1,4 +1,6 @@
 import os
+import glob
+import random
 import asyncio
 import yt_dlp
 from yt_dlp import YoutubeDL
