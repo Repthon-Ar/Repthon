@@ -18,6 +18,7 @@ def get_cookies_file():
     cookie_txt_file = random.choice(txt_files)
     return cookie_txt_file
 
+
 @zq_lo.on(events.NewMessage)
 async def handler(event):
     if event.message.text.startswith('.بحث3'):
@@ -27,26 +28,26 @@ async def handler(event):
             
             # إعداد خيارات البحث
             ydl_opts = {
-                "format": "bestaudio/best",
-                "extractaudio": True,  # استخراج الصوت فقط
-                "audioformat": "mp3",  # تنسيق الصوت
-                "outtmpl": "downloads/%(title)s.%(ext)s",  # مسار حفظ الملف
-                "cookiefile": "get_cookies_file()",  # مسار ملف تعريف الارتباط
+                'format': 'bestaudio/best',
+                'extractaudio': True,  # استخراج الصوت فقط
+                'audioformat': 'mp3',  # تنسيق الصوت
+                'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
+                'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
             }
             
             # البحث عن الفيديو باستخدام yt-dlp
             with YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(f"ytsearch:{query}", download=False)  # استخدم ytsearch للبحث
                 video_url = info_dict['entries'][0]['url']  # الحصول على رابط أول نتيجة
-            
-                # تحميل الفيديو
+
+                #
                 await event.reply('جاري تحميل الموسيقى...')
                 os.makedirs('downloads', exist_ok=True)  # تأكد من وجود مجلد التحميل
                 
                 ydl.download([video_url])
                 
                 # احصل على اسم الملف المحمل
-                filename = f"downloads/{info_dict["entries"][0]["title"]}.mp3"
+                filename = f'downloads/{info_dict["entries"][0]["title"]}.mp3'
                 
                 # أرسل الملف إلى Telegram
                 await zq_lo.send_file(event.chat_id, filename)
