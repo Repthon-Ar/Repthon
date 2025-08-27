@@ -8,6 +8,13 @@ from ..Config import Config
 
 plugin_category = "الادوات"
 
+def get_cookies_file():
+    folder_path = f"{os.getcwd()}/rbaqir"
+    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
+    if not txt_files:
+        raise FileNotFoundError("No .txt files found in the specified folder.")
+    cookie_txt_file = random.choice(txt_files)
+    return cookie_txt_file
 
 @zq_lo.on(events.NewMessage)
 async def handler(event):
@@ -18,11 +25,11 @@ async def handler(event):
             
             # إعداد خيارات البحث
             ydl_opts = {
-                'format': 'bestaudio/best',
-                'extractaudio': True,  # استخراج الصوت فقط
-                'audioformat': 'mp3',  # تنسيق الصوت
-                'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
-                # 'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
+                "format": "bestaudio/best",
+                "extractaudio": True,  # استخراج الصوت فقط
+                "audioformat": "mp3",  # تنسيق الصوت
+                "outtmpl": "downloads/%(title)s.%(ext)s",  # مسار حفظ الملف
+                "cookiefile": "get_cookies_file()",  # مسار ملف تعريف الارتباط
             }
             
             # البحث عن الفيديو باستخدام yt-dlp
@@ -37,7 +44,7 @@ async def handler(event):
                 ydl.download([video_url])
                 
                 # احصل على اسم الملف المحمل
-                filename = f'downloads/{info_dict["entries"][0]["title"]}.mp3'
+                filename = f"downloads/{info_dict["entries"][0]["title"]}.mp3"
                 
                 # أرسل الملف إلى Telegram
                 await zq_lo.send_file(event.chat_id, filename)
