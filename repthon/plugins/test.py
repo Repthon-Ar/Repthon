@@ -35,7 +35,6 @@ async def download_music(event):
     video_url = f"https://www.youtube.com{results[0]['url_suffix']}"
     await event.reply(f"جاري تحميل: {results[0]['title']}...")
 
-    # تحميل الموسيقى باستخدام yt-dlp
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -44,16 +43,19 @@ async def download_music(event):
             'preferredquality': '192',
         }],
         'outtmpl': '%(title)s.%(ext)s',
+        'quiet': False,
         'cookiefile': get_cookies_file(),
     }
 
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([video_url])
 
-    # إرسال الملف إلى المحادثة
     file_name = f"{results[0]['title']}.mp3"
-    if os.path.exists(file_name):
-        await zq_lo.send_file(event.chat_id, file_name)
-        os.remove(file_name)  # حذف الملف بعد الإرسال
-    else:
-        await event.reply("حدث خطأ أثناء تحميل الموسيقى.")
+        if os.path.exists(file_name):
+            await zq_lo.send_file(event.chat_id, file_name)
+            os.remove(file_name)
+        else:
+            await event.reply("حدث خطأ أثناء تحميل الموسيقى.")
+    
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء تحميل الموسيقى: {str(e)}")
