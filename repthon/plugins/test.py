@@ -45,6 +45,7 @@ async def download_music(event):
         }],
         'outtmpl': '%(title)s.%(ext)s',
         'cookiefile': get_cookies_file(),
+    }
 
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([video_url])
