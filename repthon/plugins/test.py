@@ -4,6 +4,7 @@ import random
 import asyncio
 import yt_dlp
 from yt_dlp import YoutubeDL
+from youtube_search import YoutubeSearch
 from telethon import events
 from repthon import zq_lo
 from ..Config import Config
@@ -17,44 +18,41 @@ def get_cookies_file():
         raise FileNotFoundError("No .txt files found in the specified folder.")
     cookie_txt_file = random.choice(txt_files)
     return cookie_txt_file
+    
 
+@zq_lo.on(events.NewMessage(pattern='.بحث3 (.+)'))
+async def download_music(event):
+    query = event.pattern_match.group(1)
+    await event.reply(f"جاري البحث عن: {query}...")
 
-@zq_lo.on(events.NewMessage)
-async def handler(event):
-    if event.message.text.startswith('.بحث3'):
-        try:
-            query = event.message.text.split(' ', 1)[1]  # احصل على استعلام البحث
-            await event.reply('جاري البحث عن الموسيقى...')
+    # البحث عن الموسيقى
+    results = YoutubeSearch(query, max_results=1).to_dict()
+    
+    if not results:
+        await event.reply("لم يتم العثور على أي نتائج.")
+        return
 
-            
-            # إعداد خيارات البحث
-            ydl_opts = {
-                'format': 'bestaudio[ext=m4a]',
-                'prefer_ffmpeg': True,  # استخراج الصوت فقط
-                'geo_bypass': True,  # تنسيق الصوت
-                'outtmpl': '%(title)s.%(ext)s',  # مسار حفظ الملف
-                'quiet': True,
-                'no_warnings': True,
-                'cookiefile': get_cookies_file(), # مسار ملف تعريف الارتباط
-                'verbose': True,
-            }
-            
-            # البحث عن الفيديو باستخدام yt-dlp
-            with YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(f"ytsearch:{query}", download=False)  # استخدم ytsearch للبحث
-                video_url = info_dict['entries'][0]['url']  # الحصول على رابط أول نتيجة
+    video_url = f"https://www.youtube.com{results[0]['url_suffix']}"
+    await event.reply(f"جاري تحميل: {results[0]['title']}...")
 
-                #
-                await event.reply('جاري تحميل الموسيقى...')
-                
-                ydl.download([video_url])
-                
-                # احصل على اسم الملف المحمل
-                filename = f'{info_dict["entries"][0]["title"]}.mp3'
-                
-                # أرسل الملف إلى Telegram
-                await zq_lo.send_file(event.chat_id)
-                await event.reply('تم تحميل وإرسال الموسيقى بنجاح!')
+    # تحميل الموسيقى باستخدام yt-dlp
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'outtmpl': '%(title)s.%(ext)s',
+        'cookiefile': get_cookies_file(),
 
-        except Exception as e:
-            await event.reply(f'حدث خطأ أثناء البحث أو التحميل: {str(e)}')
+    with YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
+
+    # إرسال الملف إلى المحادثة
+    file_name = f"{results[0]['title']}.mp3"
+    if os.path.exists(file_name):
+        await zq_lo.send_file(event.chat_id, file_name)
+        os.remove(file_name)  # حذف الملف بعد الإرسال
+    else:
+        await event.reply("حدث خطأ أثناء تحميل الموسيقى.")
