@@ -25,14 +25,18 @@ async def handler(event):
         try:
             query = event.message.text.split(' ', 1)[1]  # احصل على استعلام البحث
             await event.reply('جاري البحث عن الموسيقى...')
+
             
             # إعداد خيارات البحث
             ydl_opts = {
-                'format': 'bestaudio/best',
-                'extractaudio': True,  # استخراج الصوت فقط
-                'audioformat': 'mp3',  # تنسيق الصوت
-                'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
-                'cookiefile': get_cookies_file(),  # مسار ملف تعريف الارتباط
+                'format': 'bestaudio[ext=m4a]',
+                'prefer_ffmpeg': True,  # استخراج الصوت فقط
+                'geo_bypass': True,  # تنسيق الصوت
+                'outtmpl': '%(title)s.%(ext)s',  # مسار حفظ الملف
+                'quiet': True,
+                'no_warnings': True,
+                'cookiefile': get_cookies_file(), # مسار ملف تعريف الارتباط
+                'verbose': True,
             }
             
             # البحث عن الفيديو باستخدام yt-dlp
@@ -42,15 +46,14 @@ async def handler(event):
 
                 #
                 await event.reply('جاري تحميل الموسيقى...')
-                os.makedirs('downloads', exist_ok=True)  # تأكد من وجود مجلد التحميل
                 
                 ydl.download([video_url])
                 
                 # احصل على اسم الملف المحمل
-                filename = f'downloads/{info_dict["entries"][0]["title"]}.mp3'
+                filename = f'{info_dict["entries"][0]["title"]}.mp3'
                 
                 # أرسل الملف إلى Telegram
-                await zq_lo.send_file(event.chat_id, filename)
+                await zq_lo.send_file(event.chat_id)
                 await event.reply('تم تحميل وإرسال الموسيقى بنجاح!')
 
         except Exception as e:
