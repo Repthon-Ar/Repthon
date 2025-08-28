@@ -32,7 +32,7 @@ async def handler(event):
                 'extractaudio': True,  # استخراج الصوت فقط
                 'audioformat': 'mp3',  # تنسيق الصوت
                 'outtmpl': 'downloads/%(title)s.%(ext)s',  # مسار حفظ الملف
-                'cookiefile': 'get_cookies_file()',  # مسار ملف تعريف الارتباط
+                'cookiefile': get_cookies_file(),  # مسار ملف تعريف الارتباط
             }
             
             # البحث عن الفيديو باستخدام yt-dlp
