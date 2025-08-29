@@ -6,7 +6,8 @@ import os
 from telethon import events
 from yt_dlp import YoutubeDL
 from repthon import zq_lo
-from ..Config import Config
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, APIC
 
 plugin_category = "البوت"
 
@@ -28,7 +29,7 @@ async def get_song(event):
         "format": "bestaudio/best",
         "addmetadata": True,
         "key": "FFmpegMetadata",
-        "writethumbnail": False,
+        "writethumbnail": True,
         "prefer_ffmpeg": True,
         "geo_bypass": True,
         "nocheckcertificate": True,
@@ -41,19 +42,37 @@ async def get_song(event):
         "logtostderr": False,
         "quiet": True,
         "no_warnings": True,
-        "cookiefile" : get_cookies_file(),
-   }
+        "cookiefile": get_cookies_file(),
+    }
 
     with YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(f"ytsearch:{song_name}", download=True)
             title = info['entries'][0]['title']
             filename = f"{title}.mp3"
+            thumbnail_filename = f"{title}.jpg"
 
-            await event.reply(f"تم العثور على الأغنية: {title}جاري إرسال الملف...")
+            await event.reply(f"تم العثور على الأغنية: {title} جاري إرسال الملف...")
+
+            if os.path.exists(thumbnail_filename):
+                audio = MP3(filename, ID3=ID3)
+                with open(thumbnail_filename, 'rb') as img_file:
+                    audio.tags.add(
+                        APIC(
+                            encoding=3,
+                            mime='image/jpeg',
+                            type=3,
+                            desc='Cover',
+                            data=img_file.read()
+                        )
+                    )
+                audio.save()
 
             await zq_lo.send_file(event.chat_id, filename)
 
             os.remove(filename)
+            if os.path.exists(thumbnail_filename):
+                os.remove(thumbnail_filename)
+
         except Exception as e:
             await event.reply(f"حدث خطأ أثناء البحث عن الأغنية: {e}")
