@@ -24,7 +24,6 @@ async def get_song(event):
     song_name = event.pattern_match.group(1)
     await event.reply(f"جاري البحث عن الأغنية: {song_name}...")
 
-    # إعداد خيارات yt-dlp
     ydl_opts = {
         "format": "bestaudio/best",
         "addmetadata": True,
@@ -51,12 +50,10 @@ async def get_song(event):
             title = info['entries'][0]['title']
             filename = f"{title}.mp3"
 
-            await event.reply(f"تم العثور على الأغنية: {title}nجاري إرسال الملف...")
+            await event.reply(f"تم العثور على الأغنية: {title}جاري إرسال الملف...")
 
-            # إرسال الملف إلى تيليجرام
             await zq_lo.send_file(event.chat_id, filename)
 
-            # حذف الملف بعد الإرسال
             os.remove(filename)
         except Exception as e:
             await event.reply(f"حدث خطأ أثناء البحث عن الأغنية: {e}")
