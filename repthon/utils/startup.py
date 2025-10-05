@@ -15,6 +15,7 @@ import requests
 import heroku3
 
 from telethon import Button, functions, types, utils, events
+from telethon.tl.types import ChatAdminRights
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.contacts import UnblockRequest
 from telethon.errors import FloodWaitError, FloodError, BadRequestError
