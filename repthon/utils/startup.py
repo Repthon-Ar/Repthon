@@ -332,7 +332,6 @@ async def load_plugins(folder, extfolder=None):
         )
 
 
-
 async def verifyLoggerGroup():
     """
     Will verify the both loggers group
@@ -364,14 +363,23 @@ async def verifyLoggerGroup():
                 + str(e)
             )
     else:
-        descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن كـل سجـلات وعمليـات البـوت.)"
-        photozed = await zq_lo.upload_file(file="baqir/taiba/Repthon1.jpg")
-        _, groupid = await create_supergroup(
-            "كـروب السجـل ريبـــثون", zq_lo, Config.TG_BOT_USERNAME, descript, photozed
-        )
-        addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
-        print("تم إنشاء مجموعة السجل .. بنجاح ✅")
-        flag = True
+        try:
+            descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن كـل سجـلات وعمليـات البـوت.)"
+            photorep = await zq_lo.upload_file(file="baqir/taiba/Repthon1.jpg")
+            _, groupid = await create_supergroup(
+                "مجمـوعـة السجـل ريبـــثون", zq_lo, Config.TG_BOT_USERNAME, descript, photorep
+            )
+            addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
+            print(
+                "المجموعه الخاصه لفار الـ PRIVATE_GROUP_BOT_API_ID تم حفظه بنجاح و اضافه الفار اليه."
+            )
+            flag = True
+        except Exception as e:
+            if "can't create channels or chat" in str(e):
+                print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")
+            else:
+                print(str(e))
+
     if PM_LOGGER_GROUP_ID != -100:
         try:
             entity = await zq_lo.get_entity(PM_LOGGER_GROUP_ID)
@@ -391,19 +399,25 @@ async def verifyLoggerGroup():
         except Exception as e:
             LOGS.error("حدث خطأ اثناء التعرف على فار PM_LOGGER_GROUP_ID.\n" + str(e))
     else:
-        descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن رسـائل الخـاص.)"
-        photozed = await zq_lo.upload_file(file="baqir/taiba/Repthon2.jpg")
-        _, groupid = await create_supergroup(
-            "مجمـوعـة التخـزيـن", zq_lo, Config.TG_BOT_USERNAME, descript, photozed
-        )
-        addgvar("PM_LOGGER_GROUP_ID", groupid)
-        print("تم إنشاء مجموعة التخزين .. بنجاح ✅")
-        flag = True
-    if flag:
-        executable = sys.executable.replace(" ", "\\ ")
-        args = [executable, "-m", "repthon"]
-        os.execle(executable, *args, os.environ)
-        sys.exit(0)
+        try:
+            descript = "لا تقم بحذف هذه المجموعة أو التغيير إلى مجموعة عامه (وظيفتهـا تخزيـن رسـائل الخـاص.)"
+            photorep = await zq_lo.upload_file(file="baqir/taiba/Repthon2.jpg")
+            _, groupid = await create_supergroup(
+                "مجمـوعـة التخـزين", zq_lo, Config.TG_BOT_USERNAME, descript, photorep
+            )
+            addgvar("PM_LOGGER_GROUP_ID", groupid)
+            print("تم عمل المجموعة التخزين بنجاح واضافة الفارات اليه.")
+            flag = True
+            if flag:
+                executable = sys.executable.replace(" ", "\\ ")
+                args = [executable, "-m", "repthon"]
+                os.execle(executable, *args, os.environ)
+                sys.exit(0)
+        except Exception as e:
+            if "can't create channels or chat" in str(e):
+                print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")
+            else:
+                print(str(e))
 
 
 async def install_externalrepo(repo, branch, cfolder):
