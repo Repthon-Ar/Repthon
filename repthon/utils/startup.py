@@ -247,6 +247,22 @@ async def add_bot_to_logger_group(chat_id):
             )
         except Exception as e:
             LOGS.error(str(e))
+    if chat_id == BOTLOG_CHATID:
+        new_rights = ChatAdminRights(
+            add_admins=False,
+            invite_users=True,
+            change_info=False,
+            ban_users=False,
+            delete_messages=True,
+            pin_messages=True,
+        )
+        rank = "admin"
+        try:
+            await zq_lo(EditAdminRequest(chat_id, bot_details.username, new_rights, rank))
+        except BadRequestError as e:
+            LOGS.error(str(e))
+        except Exception as e:
+            LOGS.error(str(e))
 
 
 async def saves():
