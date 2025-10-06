@@ -1,21 +1,20 @@
 import signal
 import sys
 import time
-
 import heroku3
 
 from .Config import Config
 from .core.logger import logging
 from .core.session import zq_lo
 from .helpers.functions.converter import Convert
+from .helpers.functions.musictool import *
 from .helpers.utils.utils import runasync
 from .sql_helper.globals import addgvar, delgvar, gvarstatus
-from .helpers.functions.musictool import *
 
 __version__ = "3.1.3"
 __license__ = "حقـوق سـورس ريبـــثون"
 __author__ = "ريبـــثون <https://T.me/Repthon>"
-__copyright__ = "Repthon Source (C) 2020 - 2024  " + __author__
+__copyright__ = "Repthon Source (C) 2022 - 2025" + __author__
 
 zq_lo.version = __version__
 LOGS = logging.getLogger("𝐑𝐞𝐩𝐭𝐡𝐨𝐧")
@@ -24,7 +23,7 @@ bot = zq_lo
 StartTime = time.time()
 repversion = "3.1.3"
 
-if Config.UPSTREAM_REPO == "Repthon":
+if Config.UPSTREAM_REPO == "Repthon-Bot":
     UPSTREAM_REPO_URL = "https://github.com/Repthon-Ar/Repthon"
 else:
     UPSTREAM_REPO_URL = Config.UPSTREAM_REPO
@@ -76,7 +75,6 @@ SUDO_LIST = {}
 # for later purposes
 INT_PLUG = ""
 LOAD_PLUG = {}
-
 # Variables
 BOTLOG = Config.BOTLOG
 BOTLOG_CHATID = Config.BOTLOG_CHATID
