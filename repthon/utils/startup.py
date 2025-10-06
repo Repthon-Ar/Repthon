@@ -78,14 +78,14 @@ async def autovars(): #Code by T.me/RR0RT
         heroku_var["TZ"] = rrrtz
         LOGS.info("تم اضافـة بقيـة الفـارات .. بنجـاح")
 
-async def autoname(): #Code by T.me/RR0RT
-    if Config.ALIVE_NAME:
+async def autoname(): #Code by T.me/E_7_V
+    if gvarstatus("ALIVE_NAME"):
         return
     await bot.start()
     await asyncio.sleep(15)
     LOGS.info("جـارِ اضافة فـار الاسـم التلقـائـي .. انتظـر قليـلاً")
     baqir = await bot.get_me()
-    rrname = f"{baqir.first_name}"
+    rrname = f"{baqir.first_name} {baqir.last_name}" if baqir.last_name else f"{baqir.first_name}"
     tz = Config.TZ
     tzDateTime = dt.now(timezone(tz))
     rdate = tzDateTime.strftime('%Y/%m/%d')
@@ -96,10 +96,11 @@ async def autoname(): #Code by T.me/RR0RT
     if gvarstatus("r_date") is None:
         rd = "r_date"
         rt = "r_time"
+        rn = "ALIVE_NAME"
         addgvar(rd, rrd)
         addgvar(rt, rrt)
+        addgvar(rn, rrname)
     LOGS.info(f"تم اضافـة اسـم المستخـدم {rrname} .. بنجـاح")
-    heroku_var["ALIVE_NAME"] = rrname
 
 
 async def setup_bot():
