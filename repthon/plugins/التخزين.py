@@ -2,7 +2,6 @@ import asyncio
 
 from . import zq_lo
 from ..core.logger import logging
-
 from ..Config import Config
 from ..core.managers import edit_delete
 from ..helpers.tools import media_type
@@ -12,9 +11,7 @@ from ..sql_helper.globals import addgvar, gvarstatus, delgvar
 from . import BOTLOG, BOTLOG_CHATID
 
 LOGS = logging.getLogger(__name__)
-
 plugin_category = "البوت"
-
 
 class LOG_CHATS:
     def __init__(self):
@@ -22,9 +19,7 @@ class LOG_CHATS:
         self.NEWPM = None
         self.COUNT = 0
 
-
 LOG_CHATS_ = LOG_CHATS()
-
 
 @zq_lo.rep_cmd(incoming=True, func=lambda e: e.is_private, edited=False, forword=None)
 async def monito_p_m_s(event):  # sourcery no-metrics
@@ -35,6 +30,8 @@ async def monito_p_m_s(event):  # sourcery no-metrics
     sender = await event.get_sender()
     if not sender.bot:
         chat = await event.get_chat()
+        fullname = f"{sender.first_name}{sender.last_name}" if sender.last_name else sender.first_name #Write Code By T.me/Repthon
+        user_name = f"@{sender.username}" if sender.username else "لا يوجـد" #Write Code By T.me/Repthon
         if not no_log_pms_sql.is_approved(chat.id) and chat.id != 777000:
             if LOG_CHATS_.RECENT_USER != chat.id:
                 LOG_CHATS_.RECENT_USER = chat.id
@@ -42,7 +39,7 @@ async def monito_p_m_s(event):  # sourcery no-metrics
                     LOG_CHATS_.COUNT = 0
                 LOG_CHATS_.NEWPM = await event.client.send_message(
                     Config.PM_LOGGER_GROUP_ID,
-                    f"**🚹┊المسـتخـدم :** {_format.mentionuser(sender.first_name , sender.id)} .\n**🎟┊الايـدي :** `{chat.id}`\n**💌┊قام بـ إرسـال رسائـل جـديـده**",
+                    f"**🚹┊المسـتخـدم :** {_format.mentionuser(fullname, sender.id)} .\n**🎟┊الايـدي :** `{chat.id}`\n**🌀┊اليـوزر :** {user_name}\n\n**💌┊قام بـ إرسـال رسائـل جـديـده**",
                 )
             try:
                 if event.message:
@@ -52,7 +49,6 @@ async def monito_p_m_s(event):  # sourcery no-metrics
                 LOG_CHATS_.COUNT += 1
             except Exception as e:
                 LOGS.warn(str(e))
-
 
 @zq_lo.rep_cmd(incoming=True, func=lambda e: e.mentioned, edited=False, forword=None)
 async def log_tagged_messages(event):
@@ -79,13 +75,13 @@ async def log_tagged_messages(event):
         resalt += f"\n<b>⌔ الاسـم : </b> {hmm.title}"
         resalt += f"\n<b>⌔ الايـدي : </b> <code>{hmm.id}</code>"
         if full is not None:
-            fullusername = f"@{full.username}" if full.username else "لايوجد"
+            fullusername = f"@{full.username}" if full.username else "لايوجد" #Write Code By T.me/Repthon
             fullid = full.id
             fullname = f"{full.first_name} {full.last_name}" if full.last_name else full.first_name
             resalt += f"\n\n<b>¶ معـلومـات المـرسـل :</b>"
             resalt += f"\n<b>⌔ الاسـم : </b> {fullname}"
             resalt += f"\n<b>⌔ الايـدي : </b> <code>{fullid}</code>"
-            resalt += f"\n<b>⌔ اليـوزر : </b> {fullusername}"
+            resalt += f"\n<b>⌔ اليـوزر : </b> {fullusername}" #Write Code By T.me/Repthon
         if messaget is not None:
             resalt += f"\n\n<b>⌔ رسـالـة ميـديـا : </b><code>{messaget}</code>"
         else:
@@ -105,9 +101,8 @@ async def log_tagged_messages(event):
             except Exception as e:
                 LOGS.warn(str(e))
 
-
 @zq_lo.rep_cmd(
-    pattern="خزن(?:\\s|$)([\\s\\S]*)",
+    pattern="خزن(?:\s|$)([\s\S]*)",
     command=("خزن", plugin_category),
     info={
         "header": "To log the replied message to bot log group so you can check later.",
@@ -135,7 +130,6 @@ async def log(log_text):
     await asyncio.sleep(2)
     await log_text.delete()
 
-
 @zq_lo.rep_cmd(
     pattern="تفعيل التخزين$",
     command=("تفعيل التخزين", plugin_category),
@@ -156,7 +150,6 @@ async def set_no_log_p_m(event):
                 event, "**⌔ تـم تفعيـل التخـزين لهـذه الدردشـه .. بنجـاح ✓**", 5
             )
 
-
 @zq_lo.rep_cmd(
     pattern="تعطيل التخزين$",
     command=("تعطيل التخزين", plugin_category),
@@ -176,7 +169,6 @@ async def set_no_log_p_m(event):
             await edit_delete(
                 event, "**⌔ تـم تعطيـل التخـزين لهـذه الدردشـه .. بنجـاح ✓**", 5
             )
-
 
 @zq_lo.rep_cmd(
     pattern="تخزين الخاص (تفعيل|تعطيل)$",
@@ -216,7 +208,6 @@ async def set_pmlog(event):
     else:
         addgvar("PMLOG", h_type)
         await event.edit("**- تخزين الخاص بالفعـل معطـل ✓**")
-
 
 @zq_lo.rep_cmd(
     pattern="تخزين الكروبات (تفعيل|تعطيل)$",
