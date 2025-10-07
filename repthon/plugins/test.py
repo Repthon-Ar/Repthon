@@ -26,7 +26,7 @@ async def download_from_url(session: aiohttp.ClientSession, url: str, dest: str)
         with open(dest, "wb") as f:
             f.write(content)
 
-@zq_lo.on(events.NewMessage(pattern=r'\.بحث3 (.*)'))
+@zq_lo.on(events.NewMessage(pattern='.بحث3 (.*)'))
 async def get_song(event):
     song_name = event.pattern_match.group(1).strip()
     await event.reply(f"🎵 جارٍ البحث عن: {song_name}")
