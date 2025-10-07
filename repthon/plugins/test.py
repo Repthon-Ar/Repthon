@@ -7,7 +7,7 @@ from telethon import events
 from repthon import zq_lo
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC
-from jiosaavn import Client as SaavnClient  
+from jiosaavn import Client as SaavnClient
 
 plugin_category = "البوت"
 
