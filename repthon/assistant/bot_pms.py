@@ -698,7 +698,7 @@ async def send_flood_alert(user_) -> None:
             FloodConfig.ALERT[user_.id]["count"] = 1
         except Exception as e:
             if BOTLOG:
-                await zedub.tgbot.send_message(
+                await zq_lo.tgbot.send_message(
                     BOTLOG_CHATID,
                     f"**- خطـأ :**\nعنـد تحديث عدد مرات التكرار\n`{e}`",
                 )
@@ -725,7 +725,7 @@ async def send_flood_alert(user_) -> None:
                     "**- قـام بالتكـرار في بوتك المسـاعد,لتنزيلـه استخـدم الامـر** تنزيل مطور + الايدي"
                 )
                 if BOTLOG:
-                    await zedub.tgbot.send_message(BOTLOG_CHATID, sudo_spam)
+                    await zq_lo.tgbot.send_message(BOTLOG_CHATID, sudo_spam)
             else:
                 await ban_user_from_bot(
                     user_,
@@ -876,7 +876,7 @@ async def settings_toggle(c_q: CallbackQuery):
 
 @zq_lo.tgbot.on(CallbackQuery(data=re.compile(b"styleback$")))
 async def settings_toggle(event):
-    user = await zedub.get_me()
+    user = await zq_lo.get_me()
     my_mention = f"[{user.first_name}](tg://user?id={user.id})"
     my_first = user.first_name
     my_last = user.last_name
