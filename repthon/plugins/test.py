@@ -32,7 +32,7 @@ async def get_song(event):
         "geo_bypass": True,
         "nocheckcertificate": True,
         "postprocessors": [
-            {"key": "FFmpegExtractAudio", "preferredformat": "mp3"},
+            {"key": "FFmpegVideoConvertor", "preferedformat": "mp3"},
             {"key": "FFmpegMetadata"},
         ],
         "outtmpl": "%(title)s.%(ext)s",
