@@ -106,9 +106,9 @@ async def bot_start(event):
     else:
         rr_txt = "⌔ قنـاة السـورس ⌔"
         rr_ch = "Repthon"
-    rid = 666822865
+    rid = 7984777405
     if gvarstatus("Repthon_Vip") is None:
-        rid = 666822865
+        rid = 7984777405
     else:
         rid = int(gvarstatus("Repthon_Vip"))
     custompic = gvarstatus("BOT_START_PIC") or None
@@ -739,7 +739,7 @@ async def send_flood_alert(user_) -> None:
         if not fa_id:
             return
         try:
-            msg_ = await zedub.tgbot.get_messages(BOTLOG_CHATID, fa_id)
+            msg_ = await zq_lo.tgbot.get_messages(BOTLOG_CHATID, fa_id)
             if msg_.text != flood_msg:
                 await msg_.edit(flood_msg, buttons=buttons)
         except Exception as fa_id_err:
@@ -891,9 +891,9 @@ async def settings_toggle(event):
     else:
         rr_txt = "⌔ قنـاة السـورس ⌔"
         rr_ch = "Repthon"
-    rid = 666822865
+    rid = 7984777405
     if gvarstatus("Repthon_Vip") is None:
-        rid = 666822865
+        rid = 7984777405
     else:
         rid = int(gvarstatus("Repthon_Vip"))
     if event.query.user_id != Config.OWNER_ID:
