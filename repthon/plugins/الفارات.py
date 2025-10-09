@@ -1269,7 +1269,7 @@ async def alive_repthon(event):
         input_str = event.pattern_match.group(1)
         media = await reply.download_media()
         response = telegraph.upload_file(media)
-        url = 'https://graph.org' + response[0]['src']
+        url = 'https://telegra.ph' + response[0]['src']
         addgvar("ALIVE_PIC", url)
         await event.edit(f"**⎉╎ تم بنجاح اضافة صورة  {input_str} ✓ **")
         if BOTLOG_CHATID:
