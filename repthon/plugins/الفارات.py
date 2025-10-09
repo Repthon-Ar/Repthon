@@ -1258,27 +1258,36 @@ async def variable(event):
         addgvar("TZ", "Europe/Berlin")
 
 
-telegraph = Telegraph()
-r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
-auth_url = r["auth_url"]
-
 @zq_lo.rep_cmd(pattern="اضف صورة (الفحص|فحص) ?(.*)")
 async def alive_repthon(event):
     reply = await event.get_reply_message()
     if reply and reply.media:
         input_str = event.pattern_match.group(1)
-        media = await reply.download_media()
-        response = telegraph.upload_file(media)
-        url = 'https://telegra.ph' + response[0]['src']
-        addgvar("ALIVE_PIC", url)
-        await event.edit(f"**⎉╎ تم بنجاح اضافة صورة  {input_str} ✓ **")
-        if BOTLOG_CHATID:
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                f"#اضف_فار\n**{input_str}** تم تحديثه بنجاح في قاعدة البيانات كـ: {url}",
-            )
-        else:
-            await event.edit("**⎉╎ حدث خطأ أثناء تحميل الصورة على Telegraph**")
+        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الفحص**")
+        try:
+            baqir = await event.client.download_media(reply)
+            if baqir.endswith((".webp")):
+                resize_image(baqir)
+            with open(baqir, "rb") as file:
+                response = requests.post(
+                    "https://uguu.se/upload.php",
+                    files={"files[]": file},
+                )
+            
+            if response.status_code == 200 and response.json().get("success"):
+                url = response.json()["files"][0]["url"]
+                addgvar("ALIVE_PIC", url)
+                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى الفحص ✓ **")
+            else:
+                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
+
+            os.remove(baqir)
+        except Exception as exc:
+            await event.edit(f"**خـطأ : **\n`{exc}`")
+            if os.path.exists(baqir):
+                os.remove(baqir)
+    else:
+        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
 
 
 @zq_lo.rep_cmd(pattern="اضف صورة (الحمايه|الحماية) ?(.*)")
