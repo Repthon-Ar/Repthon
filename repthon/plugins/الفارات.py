@@ -13,7 +13,6 @@
 import asyncio
 import math
 import os
-import re
 
 import heroku3
 import requests
@@ -28,7 +27,6 @@ from telethon.tl.types import MessageEntityMentionName
 from telethon.errors.rpcerrorlist import ChatSendMediaForbiddenError
 from telethon.utils import get_display_name
 from urlextract import URLExtract
-from telegraph import Telegraph
 
 from . import zq_lo
 
