@@ -1203,7 +1203,7 @@ async def hunterusername(event):
                 elif "A wait of" in str(eee):
                     break
                 else: # تبعي
-                    #await zedub.send_message(event.chat_id, f"**• خطأ بصيـد اليـوزر** {username} ؟!\n**• الخطأ:**\n{str(eee)}\n\n**• حسناً .. سوف استمـر بالصيـد ♾**")
+                    #await zq_lo.send_message(event.chat_id, f"**• خطأ بصيـد اليـوزر** {username} ؟!\n**• الخطأ:**\n{str(eee)}\n\n**• حسناً .. سوف استمـر بالصيـد ♾**")
                     pass
         else:
             pass
