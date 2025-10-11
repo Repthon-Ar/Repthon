@@ -891,12 +891,12 @@ async def settings_toggle(event):
     else:
         rr_txt = "⌔ قنـاة السـورس ⌔"
         rr_ch = "Repthon"
-   # rid = 7984777405
-    #if gvarstatus("Repthon_Vip") is None:
-        #rid = 7984777405
-    #else:
-       # rid = int(gvarstatus("Repthon_Vip"))
-    """if event.query.user_id != Config.OWNER_ID:
+    rid = 7984777405
+    if gvarstatus("Repthon_Vip") is None:
+        rid = 7984777405
+    else:
+        rid = int(gvarstatus("Repthon_Vip"))
+    if event.query.user_id != Config.OWNER_ID:
         start_msg = f"**⌔ مـرحباً بـك مجـدداً ⛹🏻‍♀**\
                     \n\n**⌔ انـا البـوت الخـاص بـ** {my_fullname}\
                     \n**⌔ يمكنك التواصـل مـع مـالكـي مـن هنـا 💌.**\
@@ -920,7 +920,7 @@ async def settings_toggle(event):
             [
                 Button.url(rr_txt, f"https://t.me/{rr_ch}")
             ]
-        ]"""
+        ]
     elif event.query.user_id == Config.OWNER_ID:
         start_msg = "**⌔ مـرحبـاً عـزيـزي المـالك 🧑🏻‍💻..**\n**⌔ انا البـوت المسـاعـد الخـاص بـك (تواصـل📨 + زخرفـه🎨) 🤖🦾**\n**⌔ يستطيـع اي شخص التواصل بك من خـلالي 💌**\n\n**⌔ لـ زخرفـة اسـم اضغـط الـزر بالاسفـل**\n**⌔ لرؤيـة اوامـري الخاصـه بـك اضغـط :  /help **"
         buttons = [
@@ -947,7 +947,7 @@ async def settings_toggle(event):
                 Button.url(rr_txt, f"https://t.me/{rr_ch}")
             ]
         ]
-    """else:
+    else:
         start_msg = "**⌔ مـرحبـاً عـزيـزي المـالك 🧑🏻‍💻..**\n**⌔ انا البـوت المسـاعـد الخـاص بـك (تواصـل📨 + زخرفـه🎨) 🤖🦾**\n**⌔ يستطيـع اي شخص التواصل بك من خـلالي 💌**\n\n**⌔ لـ زخرفـة اسـم اضغـط الـزر بالاسفـل**\n**⌔ لرؤيـة اوامـري الخاصـه بـك اضغـط :  /help **"
         buttons = [
             [
@@ -967,7 +967,7 @@ async def settings_toggle(event):
                 Button.url(rr_txt, f"https://t.me/{rr_ch}")
             ]
         ]
-    await event.edit(start_msg, buttons=buttons, link_preview=False)"""
+    await event.edit(start_msg, buttons=buttons, link_preview=False)
 
 
 @zq_lo.tgbot.on(CallbackQuery(data=re.compile(b"rrk_bot-1$")))
