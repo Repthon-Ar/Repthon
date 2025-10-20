@@ -1041,42 +1041,42 @@ async def who(event):
 
 
 @zq_lo.rep_cmd(pattern="الانشاء(?: |$)(.*)")
-async def zelzalll(event):
-    zed = await edit_or_reply(event, "**- جـارِ جلب المعلومـات . . .**")
-    zthon_user = await get_user_from_event(event)
+async def baa(event):
+    rep = await edit_or_reply(event, "**- جـارِ جلب المعلومـات . . .**")
+    rep_user = await get_user_from_event(event)
     try:
-        ZThon = await zzz_info(zthon_user, event)
+        Repthon = await rrr_info(rep_user, event)
     except (AttributeError, TypeError):
-        return await edit_or_reply(zed, "**- لـم استطـع العثــور ع الشخــص ؟!**")
+        return await edit_or_reply(rep, "**- لـم استطـع العثــور ع الشخــص ؟!**")
     message_id_to_reply = event.message.reply_to_msg_id
     if not message_id_to_reply:
         message_id_to_reply = None
-    #zedub.parse_mode = CustomParseMode('html')  # TODO: Choose parsemode
-    mypremium = (await event.client.get_entity(Zel_Uid)).premium
+    #zq_lo.parse_mode = CustomParseMode('html')  # TODO: Choose parsemode
+    mypremium = (await event.client.get_entity(Rep_Uid)).premium
     if mypremium == True:
         try:
             await event.client.send_message(
                 event.chat_id,
-                ZThon,
+                Repthon,
                 link_preview=False,
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("html"),
             )
-            await zed.delete()
+            await rep.delete()
         except Exception:
-            await zed.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
+            await rep.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
     else:
         try:
             await event.client.send_message(
                 event.chat_id,
-                ZThon,
+                Repthon,
                 link_preview=False,
                 reply_to=message_id_to_reply,
                 parse_mode="html",
             )
-            await zed.delete()
+            await rep.delete()
         except Exception:
-            await zed.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
+            await rep.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
 
 """
 @zedub.zed_cmd(pattern=f"{ZIDA}(?: |$)(.*)")
