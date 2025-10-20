@@ -644,16 +644,15 @@ async def rrr_info(repthon_user, event):
     if (b == True and mypremium == True):
         emoji_status = (await event.client.get_entity(user_id)).emoji_status
         if isinstance(emoji_status, EmojiStatusEmpty): 
-            emoji_id = 5424605254614262924
+            emoji_id = 5834880210268329130
         else:
             try:
                 emoji_id = emoji_status.document_id
                 if emoji_id is None:
-                    emoji_id = 5424605254614262924
+                    emoji_id = 5834880210268329130
             except Exception:
-                    emoji_id = 5424605254614262924
+                    emoji_id = 5834880210268329130
     if mypremium == True:
-        ################# Dev Baqir #################
         Repthon = f'<a href="t.me/Repthon">ᯓ 𝗥𝗲𝗽𝘁𝗵𝗼𝗻 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗗𝗮𝘁𝗮</a>.'
         Repthon += f'<a href="emoji/5832391341144805776">❤️</a>\n'
         Repthon += f"<b>⋆─┄─┄─┄─┄─┄┄─┄┄─┄─⋆</b>\n"
@@ -662,13 +661,13 @@ async def rrr_info(repthon_user, event):
         Repthon += f"<b>- الاسـم    ⤎  </b> "
         Repthon += f'<a href="tg://user?id={user_id}">{full_name}</a> '
         if b == True:
-            Repthon += f'<a href="t.me/Repthon">"emoji/{emoji_id}">❤️</a>'
+            Repthon += f'<a href="emoji/{emoji_id}">❤️</a>'
         Repthon += f"\n<b>- الايــدي  ⤎ </b> <code>{user_id}</code>"
         Repthon += f"\n<b>- اليـوزر    ⤎  {username}</b>\n"
         if b == True:
             Repthon += f"<b>- الحساب ⤎  بـريميـوم</b>"
             Repthon += f'<a href="emoji/5832422209074762334">❤️</a>\n'
-        Repthon += f"<b>- الإنشـاء  ⤎</b>  {rrrsinc}  " 
+        Repthon += f"<b>- الإنشـاء  ⤎</b>  {rrrsinc}  " 
         Repthon += f'<a href="emoji/5472026645659401564">❤️</a>'
         return Repthon
     else:
@@ -682,7 +681,7 @@ async def rrr_info(repthon_user, event):
         Repthon += f"\n<b>- اليـوزر    ⤎  {username}</b>\n"
         if b == True:
             Repthon += f"<b>- الحساب ⤎  بـريميـوم 🌟</b>\n"
-        Repthon += f"<b>- الإنشـاء  ⤎</b>  {rrrsinc}  🗓" 
+        Repthon = f"<b>- الإنشـاء  ⤎</b>  {rrrsinc}  🗓" 
         return Repthon
 
 async def fetch_info(replied_user, event):
