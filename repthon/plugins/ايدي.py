@@ -644,14 +644,14 @@ async def rrr_info(repthon_user, event):
     if (b == True and mypremium == True):
         emoji_status = (await event.client.get_entity(user_id)).emoji_status
         if isinstance(emoji_status, EmojiStatusEmpty): 
-            emoji_id = 5834880210268329130
+            emoji_id = 5424605254614262924
         else:
             try:
                 emoji_id = emoji_status.document_id
                 if emoji_id is None:
-                    emoji_id = 5834880210268329130
+                    emoji_id = 5424605254614262924
             except Exception:
-                    emoji_id = 5834880210268329130
+                    emoji_id = 5424605254614262924
     if mypremium == True:
         ################# Dev Baqir #################
         Repthon = f'<a href="t.me/Repthon">ᯓ 𝗥𝗲𝗽𝘁𝗵𝗼𝗻 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗗𝗮𝘁𝗮</a>.'
@@ -722,14 +722,14 @@ async def fetch_info(replied_user, event):
     if (b == True and mypremium == True):
         emoji_status = (await event.client.get_entity(user_id)).emoji_status
         if isinstance(emoji_status, EmojiStatusEmpty): 
-            emoji_id = 5834880210268329130
+            emoji_id = 5424605254614262924
         else:
             try:
                 emoji_id = emoji_status.document_id
                 if emoji_id is None:
-                    emoji_id = 5834880210268329130
+                    emoji_id = 5424605254614262924
             except Exception:
-                    emoji_id = 5834880210268329130
+                    emoji_id = 5424605254614262924
     photo = await event.client.download_profile_photo(
         user_id,
         Config.TMP_DOWNLOAD_DIRECTORY + str(user_id) + ".jpg",
