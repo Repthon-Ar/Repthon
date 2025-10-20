@@ -1037,10 +1037,10 @@ async def who(event):
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("markdown"),
             )
-            return await zed.delete()
+            return await zed.delete()"""
 
 
-@zedub.zed_cmd(pattern="الانشاء(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="الانشاء(?: |$)(.*)")
 async def zelzalll(event):
     zed = await edit_or_reply(event, "**- جـارِ جلب المعلومـات . . .**")
     zthon_user = await get_user_from_event(event)
@@ -1078,7 +1078,7 @@ async def zelzalll(event):
         except Exception:
             await zed.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
 
-
+"""
 @zedub.zed_cmd(pattern=f"{ZIDA}(?: |$)(.*)")
 async def hwo(event):
     if (event.chat_id in ZED_BLACKLIST) and (Zel_Uid not in Zed_Vip):
