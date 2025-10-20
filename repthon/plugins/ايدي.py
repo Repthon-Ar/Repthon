@@ -618,7 +618,7 @@ async def get_creation_date(user_id):
 
 
 async def rrr_info(repthon_user, event):
-    FullUser = (await event.client(GetFullUserRequest(zthon_user.id))).full_user
+    FullUser = (await event.client(GetFullUserRequest(repthon_user.id))).full_user
     first_name = repthon_user.first_name
     full_name = FullUser.private_forward_name
     user_id = repthon_user.id
