@@ -1237,7 +1237,7 @@ async def _(event):
     },
 )
 async def permalink(event):
-    Generates a link to the user's PM with a custom text.
+    """Generates a link to the user's PM with a custom text."""
     user, custom = await get_user_from_event(event)
     if not user:
         return
