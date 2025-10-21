@@ -41,7 +41,9 @@ RID = gvarstatus("R_RRID") or "ايديه"
 Rep_Uid = zq_lo.uid
 #zq_lo.parse_mode = CustomParseMode('markdown')  # TODO: Choose parsemode
 dev_baqir = (1260465030, 7984777405)
-REP_BLACKLIST = []
+REP_BLACKLIST = [
+    -1001526282589,
+    ]
 
 
 def parse_registration_time(reg_time: int):
@@ -855,7 +857,7 @@ async def who(event):
         #if not input_str and not reply:
             #return
     if (event.chat_id in REP_BLACKLIST) and (Rep_Uid not in Rep_Dev):
-        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات زدثــون ؟!**")
+        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات ريبـــثون ؟!**")
     rep = await edit_or_reply(event, "⇆")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
@@ -940,8 +942,8 @@ async def who(event):
             )
             return await rep.delete()
 
-""""
-@zedub.zed_cmd(
+
+@zq_lo.rep_cmd(
     pattern="ا(?: |$)(.*)",
     command=("ا", plugin_category),
     info={
@@ -951,25 +953,25 @@ async def who(event):
 )
 async def who(event):
     "Gets info of an user"
-    #if gvarstatus("ZThon_Vip") is not None or Zel_Uid in Zed_Dev:
+    #if gvarstatus("Repthon_Vip") is not None or Rep_Uid in Rep_Dev:
         #input_str = event.pattern_match.group(1)
         #reply = event.reply_to_msg_id
         #if not input_str and not reply:
             #return
-    if (event.chat_id in ZED_BLACKLIST) and (Zel_Uid not in Zed_Dev):
-        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات زدثــون ؟!**")
-    zed = await edit_or_reply(event, "⇆")
+    if (event.chat_id in REP_BLACKLIST) and (Rep_Uid not in Rep_Dev):
+        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات ريبـــثون ؟!**")
+    rep = await edit_or_reply(event, "⇆")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     replied_user = await get_user_from_event(event)
     try:
         photo, caption = await fetch_info(replied_user, event)
     except (AttributeError, TypeError):
-        return await edit_or_reply(zed, "**- لـم استطـع العثــور ع الشخــص ؟!**")
+        return await edit_or_reply(rep, "**- لـم استطـع العثــور ع الشخــص ؟!**")
     message_id_to_reply = event.message.reply_to_msg_id
     if not message_id_to_reply:
         message_id_to_reply = None
-    if gvarstatus("ZID_TEMPLATE") is None:
+    if gvarstatus("RID_TEMPLATE") is None:
         #event.client.parse_mode = CustomParseMode('html')  # TODO: Choose parsemode
         try:
             await event.client.send_file(
@@ -983,9 +985,9 @@ async def who(event):
             )
             if not photo.startswith("http"):
                 os.remove(photo)
-            await zed.delete()
+            await rep.delete()
         except ChatSendMediaForbiddenError:
-            #await zed.edit(caption, parse_mode=CustomParseMode("html"))
+            #await rep.edit(caption, parse_mode=CustomParseMode("html"))
             await event.client.send_message(
                 event.chat_id,
                 caption,
@@ -993,7 +995,7 @@ async def who(event):
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("html"),
             )
-            await zed.delete()
+            await rep.delete()
         except Exception:
             await event.client.send_message(
                 event.chat_id,
@@ -1002,7 +1004,7 @@ async def who(event):
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("html"),
             )
-            return await zed.delete()
+            return await rep.delete()
     else:
         #event.client.parse_mode = CustomParseMode('markdown')  # TODO: Choose parsemode
         try:
@@ -1017,9 +1019,9 @@ async def who(event):
             )
             if not photo.startswith("http"):
                 os.remove(photo)
-            await zed.delete()
+            await rep.delete()
         except ChatSendMediaForbiddenError:
-            #await zed.edit(caption, parse_mode=CustomParseMode("markdown"))
+            #await rep.edit(caption, parse_mode=CustomParseMode("markdown"))
             await event.client.send_message(
                 event.chat_id,
                 caption,
@@ -1027,7 +1029,7 @@ async def who(event):
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("markdown"),
             )
-            await zed.delete()
+            await rep.delete()
         except Exception:
             await event.client.send_message(
                 event.chat_id,
@@ -1036,7 +1038,7 @@ async def who(event):
                 reply_to=message_id_to_reply,
                 parse_mode=CustomParseMode("markdown"),
             )
-            return await zed.delete()"""
+            return await rep.delete()
 
 
 @zq_lo.rep_cmd(pattern="الانشاء(?: |$)(.*)")
@@ -1077,19 +1079,19 @@ async def baa(event):
         except Exception:
             await rep.edit("**- غيـر معلـوم او هنـاك خطـأ ؟!**", parse_mode="html")
 
-"""
-@zedub.zed_cmd(pattern=f"{ZIDA}(?: |$)(.*)")
+
+@zq_lo.rep_cmd(pattern=f"{RID}(?: |$)(.*)")
 async def hwo(event):
-    if (event.chat_id in ZED_BLACKLIST) and (Zel_Uid not in Zed_Vip):
-        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات زدثــون ؟!**")
-    zed = await edit_or_reply(event, "⇆")
+    if (event.chat_id in REP_BLACKLIST) and (Rep_Uid not in Rep_Vip):
+        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات ريبـــثون ؟!**")
+    rep = await edit_or_reply(event, "⇆")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     replied_user = await get_user_from_event(event)
     try:
         photo, caption = await fetch_info(replied_user, event)
     except (AttributeError, TypeError):
-        return await edit_or_reply(zed, "**- لـم استطـع العثــور ع الشخــص ؟!**")
+        return await edit_or_reply(rep, "**- لـم استطـع العثــور ع الشخــص ؟!**")
     message_id_to_reply = event.message.reply_to_msg_id
     if not message_id_to_reply:
         message_id_to_reply = None
@@ -1105,12 +1107,12 @@ async def hwo(event):
         )
         if not photo.startswith("http"):
             os.remove(photo)
-        await zed.delete()
+        await rep.delete()
     except TypeError:
-        await zed.edit(caption, parse_mode="html")
+        await rep.edit(caption, parse_mode="html")
 
 
-@zedub.zed_cmd(
+@zq_lo.rep_cmd(
     pattern="صورته(?:\\s|$)([\\s\\S]*)",
     command=("صورته", plugin_category),
     info={
@@ -1124,8 +1126,8 @@ async def hwo(event):
 )
 async def potocmd(event):
     "To get user or group profile pic"
-    if (event.chat_id in ZED_BLACKLIST) and (Zel_Uid not in Zed_Vip):
-        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات زدثــون ؟!**")
+    if (event.chat_id in REP_BLACKLIST) and (Rep_Uid not in Rep_Vip):
+        return await edit_or_reply(event, "**- عـذراً .. عـزيـزي 🚷\n- لا تستطيـع استخـدام هـذا الامـر 🚫\n- فـي مجموعـة استفسـارات ريبـــثون ؟!**")
     uid = "".join(event.raw_text.split(maxsplit=1)[1:])
     user = await event.get_reply_message()
     chat = event.input_chat
@@ -1176,7 +1178,7 @@ async def potocmd(event):
     await event.delete()
 
 
-@zedub.zed_cmd(
+@zq_lo.rep_cmd(
     pattern="(الايدي|id)(?:\\s|$)([\\s\\S]*)",
     command=("id", plugin_category),
     info={
@@ -1226,7 +1228,7 @@ async def _(event):
         await edit_or_reply(event, f"**⎉ ايـدي الدردشـه : **`{event.chat_id}`")
 
 
-@zedub.zed_cmd(
+@zq_lo.rep_cmd(
     pattern="رابطه(?:\\s|$)([\\s\\S]*)",
     command=("رابطه", plugin_category),
     info={
@@ -1245,14 +1247,14 @@ async def permalink(event):
     await edit_or_reply(event, f"[{tag}](tg://user?id={user.id})")
 
 
-@zedub.zed_cmd(pattern="اسمي$")
+@zq_lo.rep_cmd(pattern="اسمي$")
 async def permalink(event):
     user = await event.client.get_me()
     tag = user.first_name.replace("\u2060", "") if user.first_name else user.username
     await edit_or_reply(event, f"[{tag}](tg://user?id={user.id})")
 
 
-@zedub.zed_cmd(
+@zq_lo.rep_cmd(
     pattern="اسمه(?:\\s|$)([\\s\\S]*)",
     command=("اسمه", plugin_category),
     info={
@@ -1271,7 +1273,7 @@ async def permalink(event):
     await edit_or_reply(event, f"[{tag}](tg://user?id={user.id})")
 
 
-@zedub.zed_cmd(pattern="الصور(?:\\s|$)([\\s\\S]*)")
+@zq_lo.rep_cmd(pattern="الصور(?:\\s|$)([\\s\\S]*)")
 async def potocmd(event):
     uid = "".join(event.raw_text.split(maxsplit=1)[1:])
     user = await get_user_from_event(event)
@@ -1305,12 +1307,12 @@ async def potocmd(event):
     await event.delete()
 
 
-@zedub.zed_cmd(pattern="معنى(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="معنى(?: |$)(.*)")
 async def get_name_meaning(event):
     nms = event.pattern_match.group(1)
     if not nms:
         return await edit_or_reply(event, "**- ارسـل (.معنى) + الاسـم**\n**- مثـال :**\n.معنى محمد")
-    zzz = await edit_or_reply(event, "**⎉ جـارِ البحث عـن معنـى الاسـم ...**")
+    rrr = await edit_or_reply(event, "**⎉ جـارِ البحث عـن معنـى الاسـم ...**")
     url = "https://meaningnames.net/mean.php"
     headers = {
         'authority': 'meaningnames.net',
@@ -1331,120 +1333,14 @@ async def get_name_meaning(event):
         caption=f"**- معنى اسم ( {nms} )** :\n{ma}"
         await edit_or_reply(event, caption)
     except:
-        await zzz.edit("**- لم يتم العثـور على معنى الاسم ؟!\n- جرب الكتابة بدون اخطاء املائيـه**")
+        await rrr.edit("**- لم يتم العثـور على معنى الاسم ؟!\n- جرب الكتابة بدون اخطاء املائيـه**")
 
 
-@zedub.zed_cmd(pattern="حساب(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="حساب(?: |$)(.*)")
 async def openacc(event):
     acc = event.pattern_match.group(1)
     if not acc:
         return await edit_or_reply(event, "**- ارسـل الامـر والايـدي فقـط**")
-    zzz = await edit_or_reply(event, "**⎉ جـارِ صنـع رابـط دخـول لـ الحسـاب ▬▭ ...**")
+    rrr = await edit_or_reply(event, "**⎉ جـارِ صنـع رابـط دخـول لـ الحسـاب ▬▭ ...**")
     caption=f"**- رابـط صاحب الايدي ( {acc} )** :\n**- الرابـط ينفتـح عبـر تطبيـق تيليكرام بلاس فقـط**\n\n[اضـغـط هـنـا](tg://openmessage?user_id={acc})"
     await edit_or_reply(event, caption)
-
-
-@zedub.zed_cmd(pattern="اضف كليشة (الايدي|ايدي|الفحص|فحص|الحماية|الحمايه|الخاص) ?(.*)")
-async def variable(event):
-    input_str = event.pattern_match.group(1)
-    reply = await event.get_reply_message()
-    vinfo = reply.text
-    zed = await edit_or_reply(event, "**⎉ جـاري اضـافة الكليشـة الـى بـوتك ...**")
-    if input_str == "الايدي" or input_str == "ايدي":
-        variable = "ZID_TEMPLATE"
-        await asyncio.sleep(1.5)
-        if gvarstatus("ZID_TEMPLATE") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.ايدي` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.ايدي` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("ZID_TEMPLATE", vinfo)
-    elif input_str == "الفحص" or input_str == "فحص":
-        variable = "ALIVE_TEMPLATE"
-        await asyncio.sleep(1.5)
-        if gvarstatus("ALIVE_TEMPLATE") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.فحص` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.فحص` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("ALIVE_TEMPLATE", vinfo)
-    elif input_str == "الحماية" or input_str == "الحمايه" or input_str == "الخاص":
-        variable = "pmpermit_txt"
-        await asyncio.sleep(1.5)
-        if gvarstatus("pmpermit_txt") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.الحمايه تفعيل` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.الحمايه تفعيل` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("pmpermit_txt", vinfo)
-    else:
-        if input_str:
-            return await zed.edit("**⎉ عـذࢪاً .. لايوجـد هنالك فـار بإسـم {} ؟!.. ارسـل (.اوامر الفارات) لـعرض قائمـة الفـارات**".format(input_str))
-        return await edit_or_reply(event, "**⎉ عـذࢪاً .. لايوجـد هنالك فـار بإسـم {} ؟!.. ارسـل (.اوامر الفارات) لـعرض قائمـة الفـارات**".format(input_str))
-
-
-@zedub.zed_cmd(pattern="اضف كليشه (الايدي|ايدي|الفحص|فحص|الحماية|الحمايه|الخاص) ?(.*)")
-async def variable(event):
-    input_str = event.pattern_match.group(1)
-    reply = await event.get_reply_message()
-    vinfo = reply.text
-    zed = await edit_or_reply(event, "**⎉ جـاري اضـافة الكليشـة الـى بـوتك ...**")
-    if input_str == "الايدي" or input_str == "ايدي":
-        variable = "ZID_TEMPLATE"
-        await asyncio.sleep(1.5)
-        if gvarstatus("ZID_TEMPLATE") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.ايدي` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.ايدي` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("ZID_TEMPLATE", vinfo)
-    elif input_str == "الفحص" or input_str == "فحص":
-        variable = "ALIVE_TEMPLATE"
-        await asyncio.sleep(1.5)
-        if gvarstatus("ALIVE_TEMPLATE") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.فحص` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.فحص` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("ALIVE_TEMPLATE", vinfo)
-    elif input_str == "الحماية" or input_str == "الحمايه" or input_str == "الخاص":
-        variable = "pmpermit_txt"
-        await asyncio.sleep(1.5)
-        if gvarstatus("pmpermit_txt") is None:
-            await zed.edit("**⎉ تم تغييـر كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة الجـديده** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.الحمايه تفعيل` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        else:
-            await zed.edit("**⎉ تم اضـافـة كليشـة {} بنجـاح ☑️**\n**⎉ الكليشـة المضـافه** \n {} \n\n**⎉ الان قـم بـ ارسـال الامـر ↶** `.الحمايه تفعيل` **لـ التحقـق مـن الكليشـة . .**".format(input_str, vinfo))
-        addgvar("pmpermit_txt", vinfo)
-    else:
-        if input_str:
-            return await zed.edit("**⎉ عـذࢪاً .. لايوجـد هنالك فـار بإسـم {} ؟!.. ارسـل (.اوامر الفارات) لـعرض قائمـة الفـارات**".format(input_str))
-        return await edit_or_reply(event, "**⎉ عـذࢪاً .. لايوجـد هنالك فـار بإسـم {} ؟!.. ارسـل (.اوامر الفارات) لـعرض قائمـة الفـارات**".format(input_str))
-
-
-@zedub.on(admin_cmd(pattern="(خط التشويش|خط تشويش|تفعيل تشويش|تفعيل التشويش)"))
-async def _(event):
-    is_cllear = gvarstatus("cllear")
-    if not is_cllear:
-        addgvar ("cllear", "on")
-        await edit_delete(event, "**⎉ تم تفعيـل خـط التشـويش .. بنجـاح ✓**\n**⎉ لـ تعطيله اكتب (.تعطيل تشويش) **")
-        return
-    if is_cllear:
-        await edit_delete(event, "**⎉ خـط التشـويش مغعـل .. مسبقـاً ✓**\n**⎉ لـ تعطيله اكتب (.تعطيل تشويش) **")
-        return
-
-@zedub.on(admin_cmd(pattern="(تعطيل تشويش|تعطيل التشويش)"))
-async def _(event):
-    is_cllear = gvarstatus("cllear")
-    if is_cllear:
-        delgvar("cllear")
-        await edit_delete(event, "**⎉ تم تعطيـل خـط التشـويش .. بنجـاح ✓**\n**⎉ لـ تفعيله اكتب (.تفعيل تشويش) **")
-        return
-    if not is_cllear:
-        await edit_delete(event, "**⎉ خـط التشـويش مغعـل .. مسبقـاً ✓**\n**⎉ لـ تفعيله اكتب (.تفعيل تشويش) **")
-        return
-
-
-@zedub.on(events.NewMessage(outgoing=True))
-async def comming(event):
-    if event.message.text and not event.message.media and "." not in event.message.text:
-        is_cllear = gvarstatus("cllear")
-        if is_cllear:
-            try:
-                await event.edit(f"[{event.message.text}](spoiler)", parse_mode=CustomParseMode("markdown"))
-            except MessageIdInvalidError:
-                pass"""
