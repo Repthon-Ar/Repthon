@@ -2,6 +2,9 @@ import base64
 import contextlib
 import io
 import os
+import re
+import glob
+import random
 
 from ShazamAPI import Shazam
 from telethon import types
@@ -19,6 +22,14 @@ from . import zq_lo, song_download
 
 plugin_category = "البحث"
 LOGS = logging.getLogger(__name__)
+
+def get_cookies_file():
+    folder_path = f"{os.getcwd()}/rbaqir"
+    txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
+    if not txt_files:
+        raise FileNotFoundError("No .txt files found in the specified folder.")
+    cookie_txt_file = random.choice(txt_files)
+    return cookie_txt_file
 
 # =========================================================== #
 #                           STRINGS                           #
@@ -58,9 +69,10 @@ async def song(event):
     video_link = await yt_search(str(query))
     if not url(video_link):
         return await catevent.edit(f"Sorry!. I can't find any related video/audio for `{query}`")
-    cmd = event.pattern_match.group(1)
+        cmd = event.pattern_match.group(1)
     q = "320k" if cmd == "320" else "128k"
-    song_file, catthumb, title = await song_download(video_link, catevent, quality=q)
+    cookies_path = get_cookies_file()
+    song_file, catthumb, title = await song_download(video_link, catevent, quality=q, cookies_path=cookies_path)
     await event.client.send_file(
         event.chat_id,
         song_file,
