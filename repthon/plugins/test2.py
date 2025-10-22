@@ -59,30 +59,36 @@ async def song(event):
     "To search songs"
     reply_to_id = await reply_id(event)
     reply = await event.get_reply_message()
+    
     if event.pattern_match.group(2):
         query = event.pattern_match.group(2)
     elif reply and reply.message:
         query = reply.message
     else:
-        return await edit_or_reply(event, "`What I am Supposed to find `")
-    catevent = await edit_or_reply(event, "`wi8..! I am finding your song....`")
+        return await edit_or_reply(event, "What I am Supposed to find ")
+    
+    catevent = await edit_or_reply(event, SONG_SEARCH_STRING)
     video_link = await yt_search(str(query))
+    
     if not url(video_link):
-        return await catevent.edit(f"Sorry!. I can't find any related video/audio for `{query}`")
-        cmd = event.pattern_match.group(1)
+        return await catevent.edit(f"Sorry!. I can't find any related video/audio for {query}")
+    cmd = event.pattern_match.group(1) if event.pattern_match.group(1) else None
     q = "320k" if cmd == "320" else "128k"
     cookies_path = get_cookies_file()
     song_file, catthumb, title = await song_download(video_link, catevent, quality=q, cookies_path=cookies_path)
+    
     await event.client.send_file(
         event.chat_id,
         song_file,
         force_document=False,
-        caption=f"**Title:** `{title}`",
+        caption=f"**Title:** {title}",
         thumb=catthumb,
         supports_streaming=True,
         reply_to=reply_to_id,
     )
+    
     await catevent.delete()
+    
     for files in (catthumb, song_file):
         if files and os.path.exists(files):
             os.remove(files)
