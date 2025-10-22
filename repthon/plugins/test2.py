@@ -32,7 +32,7 @@ SONG_SENDING_STRING = "<code>yeah..! i found something wi8..🥰...</code>"
 
 
 @zq_lo.rep_cmd(
-    pattern=r"بحث3(320)?(?:\s|$)([\s\S]*)",
+    pattern=r"بحث4(320)?(?:\s|$)([\s\S]*)",
     command=("song", plugin_category),
     info={
         "header": "To get songs from youtube.",
