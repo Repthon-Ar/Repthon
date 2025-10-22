@@ -1,5 +1,8 @@
 import contextlib
 import os
+import re
+import glob
+import random
 from pathlib import Path
 
 import lyricsgenius
