@@ -92,7 +92,7 @@ async def song_download(url, event, quality="128k", video=False, title=True, coo
         cookies_path = get_cookies_file()  # استدعاء الدالة للحصول على ملف الكوكيز
 
     media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path)
-    name_cmd = name_dl.format(video_link=url)
+    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path)
 
     if video:
         media_type = "الفيديو"
