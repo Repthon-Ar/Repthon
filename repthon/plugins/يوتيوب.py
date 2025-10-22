@@ -500,14 +500,13 @@ async def _(event): #Code by T.me/RR0RT
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     ydl_ops = {
         "format": "bestaudio[ext=m4a]",
-        "keepvideo": False,
-        "prefer_ffmpeg": True,
+        "keepvideo": True,
+        "prefer_ffmpeg": False,
         "geo_bypass": True,
         "outtmpl": "%(title)s.%(ext)s",
-        "quite": False,
+        "quite": True,
         "no_warnings": True,
         "cookiefile" : get_cookies_file(),
-        "verbose": True,
     }
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
@@ -524,7 +523,7 @@ async def _(event): #Code by T.me/RR0RT
         duration = results[0]["duration"]
 
     except Exception as e:
-        if "Requested format is not available." in str(e): # تبعي
+        if "Requested format is not available." in str(e):
             await revent.edit("**• هنالك تحديث جديد لـ مكتبة يوتيوب 📡**\n**• ارسـل الامـر** ( `.تحديث البوت` )\n**• ثم انتظر 5 دقائق لـ إعادة تشغيـل البوت ⏳**\n**• بعدها تستطيع استخدام اوامر التحميل .. بدون مشاكـل ☑️**")
         else:
             await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`\n\n**• قم بـ ارسال هذا الخلل لـ مطور السورس لـ اصلاحه**\n**• تواصـل مطـور السـورس @RR0RT**")
