@@ -2,7 +2,6 @@ import signal
 import sys
 import time
 import heroku3
-import yt-dlp
 
 from .Config import Config
 from .core.logger import logging
