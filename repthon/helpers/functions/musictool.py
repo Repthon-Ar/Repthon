@@ -3,6 +3,7 @@ import os
 import re
 import glob
 import random
+import yt-dlp
 from pathlib import Path
 
 import lyricsgenius
@@ -87,36 +88,61 @@ LyricsGen = LyricGenius()
 async def song_download(url, event, quality="128k", video=False, title=True, cookies_path=None):
     media_type = "المقطع الصوتي"
     media_ext = ["mp3", "mp4a"]
-    
-    if cookies_path is None:
-        cookies_path = get_cookies_file()  # استدعاء الدالة للحصول على ملف الكوكيز
 
-    media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path)
-    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path)
+    if cookies_path is None:
+        cookies_path = get_cookies_file()
+
+    name_cmd_for_filename = f'yt-dlp --get-filename --skip-download "{url}" --cookies "{cookies_path}"'
+
+    name_stdout, name_stderr, _, _ = await runcmd(name_cmd_for_filename)
+
+    if name_stderr:
+        LOGS.error(f"Error getting filename: {name_stderr}")
+        return await edit_or_reply(event, f"**خطـأ في الحصول على اسم الملف :: {name_stderr}**")
+
+    filename_only = os.path.basename(name_stdout)
+    base_name, _ = os.path.splitext(filename_only)
+    safe_base_name = re.sub(r'[\\/*?:"<>|]', "", base_name)
+    download_dir = os.path.dirname(name_stdout) if os.path.dirname(name_stdout) else '.'
+    if not download_dir.startswith('.'):
+        download_dir = '.'
+
+    actual_media_file_path = None
+    for ext in media_ext:
+        potential_file = Path(download_dir) / f"{safe_base_name}.{ext}"
+        if potential_file.exists():
+            actual_media_file_path = potential_file
+            break
+
+    if not actual_media_file_path:
+        LOGS.error(f"Media file not found. Tried extensions: {media_ext} in dir: {download_dir} with base name: {safe_base_name}")
+        return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️ (الملف غير موجود)**")
+
+    media_file = actual_media_file_path
 
     if video:
         media_type = "الفيديو"
         media_ext = ["mp4", "mkv"]
-        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path)
+        
+        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path) 
+    else:
+        media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path)
 
-    with contextlib.suppress(Exception):
-        stderr = (await runcmd(media_cmd))[1]
-        media_name, stderr = (await runcmd(name_cmd))[:2]
-        if stderr:
-            return await edit_or_reply(event, f"**خطـأ :: {stderr}**")
-        media_name = os.path.splitext(media_name)[0]
-        media_file = Path(f"{media_name}.{media_ext[0]}")
-    if not os.path.exists(media_file):
-        media_file = Path(f"{media_name}.{media_ext[1]}")
-    elif not os.path.exists(media_file):
-        return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**")
+    stdout_dl, stderr_dl, _, _ = await runcmd(media_cmd)
+    if stderr_dl:
+        LOGS.error(f"Error during download command: {stderr_dl}")
+        return await edit_or_reply(event, f"**خطـأ أثناء تنزيل {media_type} :: {stderr_dl}**")
+
     await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
-    media_thumb = Path(f"{media_name}.jpg")
-    if not os.path.exists(media_thumb):
-        media_thumb = Path(f"{media_name}.webp")
-    elif not os.path.exists(media_thumb):
+
+    media_thumb = Path(f"{download_dir}/{safe_base_name}.jpg")
+    if not media_thumb.exists():
+        media_thumb = Path(f"{download_dir}/{safe_base_name}.webp")
+
+    if not media_thumb.exists():
         media_thumb = None
+
     if title:
-        media_title = media_name.replace("./temp/", "").replace("_", "|")
-        return media_file, media_thumb, media_title
-    return media_file, media_thumb
+        media_title = actual_media_file_path.name.replace("_", "|") 
+        return actual_media_file_path, media_thumb, media_title
+    return actual_media_file_path, media_thumb
