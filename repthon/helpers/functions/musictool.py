@@ -3,7 +3,7 @@ import os
 import re
 import glob
 import random
-import yt-dlp
+import yt_dlp
 from pathlib import Path
 
 import lyricsgenius
