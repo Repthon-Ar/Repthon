@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 from ...Config import Config
 from ...core.managers import edit_or_reply
+from ...core.logger import logging
 from ...helpers.google_tools import chromeDriver
 from ..utils.utils import runcmd
 from .utube import name_dl, song_dl, video_dl
