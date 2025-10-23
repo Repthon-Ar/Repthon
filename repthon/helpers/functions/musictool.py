@@ -17,6 +17,7 @@ from ...helpers.google_tools import chromeDriver
 from ..utils.utils import runcmd
 from .utube import name_dl, song_dl, video_dl
 
+LOGS = logging.getLogger(__name__)
 GENIUS = Config.GENIUS_API_TOKEN
 
 def get_cookies_file():
