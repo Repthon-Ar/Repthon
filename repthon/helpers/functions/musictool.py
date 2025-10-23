@@ -105,9 +105,9 @@ async def song_download(url, event, quality="128k", video=False, title=True, coo
     filename_only = os.path.basename(name_stdout)
     base_name, _ = os.path.splitext(filename_only)
     safe_base_name = re.sub(r'[\\/*?:"<>|]', "", base_name)
-    download_dir = os.path.dirname(name_stdout) if os.path.dirname(name_stdout) else '.'
-    if not download_dir.startswith('.'):
-        download_dir = '.'
+    download_dir = os.path.dirname(name_stdout) if os.path.dirname(name_stdout) else './temp/'
+    if not download_dir.startswith('./temp/'):
+        download_dir = './temp/'
 
     actual_media_file_path = None
     for ext in media_ext:
