@@ -36,7 +36,7 @@ from .managers import edit_delete
 from .pluginManager import get_message_link, restart_script
 
 LOGS = logging.getLogger(__name__)
-RDEV = (5502537272)
+RDEV = (7984777405)
 
 class REGEX:
     def __init__(self):
