@@ -99,24 +99,35 @@ async def song_download(url, event, quality="128k", video=False, title=True, coo
         media_ext = ["mp4", "mkv"]
         media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path)
 
-    with contextlib.suppress(Exception):
+    try:
         stderr = (await runcmd(media_cmd))[1]
         media_name, stderr = (await runcmd(name_cmd))[:2]
         if stderr:
             return await edit_or_reply(event, f"**خطـأ :: {stderr}**")
+        
         media_name = os.path.splitext(media_name)[0]
         media_file = Path(f"{media_name}.{media_ext[0]}")
-    if not os.path.exists(media_file):
-        media_file = Path(f"{media_name}.{media_ext[1]}")
-    elif not os.path.exists(media_file):
-        return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**")
-    await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
-    media_thumb = Path(f"{media_name}.jpg")
-    if not os.path.exists(media_thumb):
-        media_thumb = Path(f"{media_name}.webp")
-    elif not os.path.exists(media_thumb):
-        media_thumb = None
-    if title:
-        media_title = media_name.replace("./temp/", "").replace("_", "|")
-        return media_file, media_thumb, media_title
-    return media_file, media_thumb
+
+        if not os.path.exists(media_file):
+            media_file = Path(f"{media_name}.{media_ext[1]}")
+        
+        if not os.path.exists(media_file):
+            return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**")
+
+        await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
+        
+        media_thumb = Path(f"{media_name}.jpg")
+        if not os.path.exists(media_thumb):
+            media_thumb = Path(f"{media_name}.webp")
+        
+        if not os.path.exists(media_thumb):
+            media_thumb = None
+        
+        if title:
+            media_title = media_name.replace("./temp/", "").replace("_", "|")
+            return media_file, media_thumb, media_title
+        
+        return media_file, media_thumb
+
+    except Exception as e:
+        return await edit_or_reply(event, f"**خطـأ غير متوقع: {str(e)}**")
