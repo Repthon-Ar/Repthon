@@ -77,21 +77,20 @@ async def song(event):
         cmd = event.pattern_match.group(1)
         q = "320k" if cmd == "320" else "128k"
         cookies_path = get_cookies_file()
-        song_file, catthumb, title = await song_download(video_link, revent, quality=q, cookies_path=cookies_path)
+        song_file, title = await song_download(video_link, revent, quality=q, cookies_path=cookies_path)
         
         await event.client.send_file(
             event.chat_id,
             song_file,
             force_document=False,
             caption=f"**⎉╎البحث :** {title}",
-            thumb=catthumb,
             supports_streaming=True,
             reply_to=reply_to_id,
         )
         
     finally:    
         await revent.delete()
-        for files in (catthumb, song_file):
+        for files in (song_file):
             if files and os.path.exists(files):
                 os.remove(files)
 
