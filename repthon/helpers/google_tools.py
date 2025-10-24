@@ -60,7 +60,7 @@ class chromeDriver:
 
     @staticmethod
     def get_rayso(inputstr, file_name="Rayso.png", title="CatUB", theme="crimson", darkMode=True):
-        url = f'https://ray.so/#code={base64.b64encode(inputstr.encode()).decode().replace("+","-")}&title={title}&theme={theme}&padding=64&darkMode={darkMode}&language=python'
+        url = f"https://ray.so/#code={base64.b64encode(inputstr.encode()).decode().replace('+', '-')}&title={title}&theme={theme}&padding=64&darkMode={darkMode}&language=python"
         driver, error = chromeDriver.start_driver()
         if error:
             return None, error
@@ -139,7 +139,7 @@ class GooglePic:
                     if html:
                         if flag:
                             data["image_set"] = set()
-                            for link in re.findall(r"https://www.google.com/imgres\?imgurl.+?(?=\")", html):
+                            for link in re.findall(r"https://www.google.com/imgres\?[^\"]+", html):
                                 image = re.search(r"imgurl=(.+?)&", link)[1]
                                 site = re.search(r"imgrefurl=(.+?)&", link)[1]
                                 if image.endswith((".jpg", ".jpeg", ".png", ".gif")) or site.endswith((".jpg", ".jpeg", ".png", ".gif")):
