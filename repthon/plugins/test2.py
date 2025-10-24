@@ -44,19 +44,18 @@ SONG_SENDING_STRING = "<code>yeah..! i found something wi8..🥰...</code>"
 
 @zq_lo.rep_cmd(
     pattern=r"بحث4(320)?(?:\s|$)([\s\S]*)",
-    command=("song", plugin_category),
+    command=("بحث", plugin_category),
     info={
-        "header": "To get songs from youtube.",
-        "description": "Basically this command searches youtube and send the first video as audio file.",
-        "flags": {
-            "320": "if you use song320 then you get 320k quality else 128k quality",
+        "header": "لـ تحميـل الاغـانـي مـن يـوتيـوب",
+        "امـر مضـاف": {
+            "320": "لـ البحـث عـن الاغـانـي وتحميـلهـا بـدقـه عـاليـه 320k",
         },
-        "usage": "{tr}song <song name>",
-        "examples": "{tr}song memories song",
+        "الاسـتخـدام": "{tr}بحث + اسـم الاغنيـه",
+        "مثــال": "{tr}بحث حسين الجسمي احبك",
     },
 )
 async def song(event):
-    "To search songs"
+    "لـ تحميـل الاغـانـي مـن يـوتيـوب"
     reply_to_id = await reply_id(event)
     reply = await event.get_reply_message()
     
@@ -65,33 +64,35 @@ async def song(event):
     elif reply and reply.message:
         query = reply.message
     else:
-        return await edit_or_reply(event, "What I am Supposed to find ")
+        return await edit_or_reply(event, "**⎉╎قم باضافـة الاغنيـه للامـر .. بحث + اسـم الاغنيـه**")
     
-    catevent = await edit_or_reply(event, SONG_SEARCH_STRING)
-    video_link = await yt_search(str(query))
+    rep = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+    revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن الاغنيـٓه... 🎧♥️╰**")
     
-    if not url(video_link):
-        return await catevent.edit(f"Sorry!. I can't find any related video/audio for {query}")
-    cmd = event.pattern_match.group(1) if event.pattern_match.group(1) else None
-    q = "320k" if cmd == "320" else "128k"
-    cookies_path = get_cookies_file()
-    song_file, catthumb, title = await song_download(video_link, catevent, quality=q, cookies_path=cookies_path)
-    
-    await event.client.send_file(
-        event.chat_id,
-        song_file,
-        force_document=False,
-        caption=f"**Title:** {title}",
-        thumb=catthumb,
-        supports_streaming=True,
-        reply_to=reply_to_id,
-    )
-    
-    await catevent.delete()
-    
-    for files in (catthumb, song_file):
-        if files and os.path.exists(files):
-            os.remove(files)
+    try:
+        video_link = await yt_search(str(query))
+        if not url(video_link):
+            return await revent.edit(f"**⎉╎لم نتمكن من العثور على الأغنية: {query}**")
+        
+        cmd = event.pattern_match.group(1)
+        q = "320k" if cmd == "320" else "128k"
+        song_file, repthumb, title = await song_download(video_link, repevent, quality=q, cookies_path=cookies_path)
+        
+        await event.client.send_file(
+            event.chat_id,
+            song_file,
+            force_document=False,
+            caption=f"**⎉╎البحث :** {title}",
+            thumb=repthumb,
+            supports_streaming=True,
+            reply_to=reply_to_id,
+        )
+        
+    finally:    
+        await revent.delete()
+        for files in (repthumb, song_file):
+            if files and os.path.exists(files):
+                os.remove(files)
 
 """
 @catub.cat_cmd(
