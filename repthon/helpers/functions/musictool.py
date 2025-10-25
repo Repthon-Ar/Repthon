@@ -1,4 +1,3 @@
-import contextlib
 import os
 import re
 import glob
@@ -85,38 +84,69 @@ LyricsGen = LyricGenius()
 
 
 async def song_download(url, event, quality="128k", video=False, title=True, cookies_path=None):
+   
     media_type = "المقطع الصوتي"
-    media_ext = ["mp3", "mp4a"]
+    media_exts = ["mp3", "mp4a"]
     
     if cookies_path is None:
-        cookies_path = get_cookies_file()  # استدعاء الدالة للحصول على ملف الكوكيز
+        try:
+            cookies_path = get_cookies_file()
+        except FileNotFoundError:
+            # إذا لم يتم العثور على ملف الكوكيز، تابع بدونه
+            cookies_path = None 
 
-    media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path)
-    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path)
-
+    media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path or "")
+    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path or "")
+    
     if video:
         media_type = "الفيديو"
-        media_ext = ["mp4", "mkv"]
-        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path)
+        media_exts = ["mp4", "mkv"]
+        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path or "")
 
-    with contextlib.suppress(Exception):
-        stderr = (await runcmd(media_cmd))[1]
-        media_name, stderr = (await runcmd(name_cmd))[:2]
-        if stderr:
-            return await edit_or_reply(event, f"**خطـأ :: {stderr}**")
-        media_name = os.path.splitext(media_name)[0]
-        media_file = Path(f"{media_name}.{media_ext[0]}")
-    if not os.path.exists(media_file):
-        media_file = Path(f"{media_name}.{media_ext[1]}")
-    elif not os.path.exists(media_file):
-        return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**")
-    await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
-    media_thumb = Path(f"{media_name}.jpg")
-    if not os.path.exists(media_thumb):
-        media_thumb = Path(f"{media_name}.webp")
-    elif not os.path.exists(media_thumb):
-        media_thumb = None
-    if title:
-        media_title = media_name.replace("./temp/", "").replace("_", "|")
-        return media_file, media_thumb, media_title
-    return media_file, media_thumb
+    media_file = None
+    media_thumb = None
+    media_name = None
+    media_title = "Unknown Title"
+    
+    try:
+        media_name, stderr_name = (await runcmd(name_cmd))[:2]
+        if stderr_name:
+            return await edit_or_reply(event, f"**خطأ في جلب اسم الملف :: {stderr_name}**")
+
+        media_name = media_name.strip()
+        media_name_base = os.path.splitext(media_name)[0]
+        
+        await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
+        stderr_dl = (await runcmd(media_cmd))[1]
+        
+        if stderr_dl:
+            return await edit_or_reply(event, f"**خطـأ أثناء التنزيل :: {stderr_dl}**")
+
+        found_ext = None
+        for ext in media_exts:
+            temp_file = Path(f"{media_name_base}.{ext}")
+            if os.path.exists(temp_file):
+                media_file = temp_file
+                found_ext = ext
+                break
+
+        if not media_file:
+            return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} بعد التنزيل ⁉️**")
+
+        thumb_exts = ["jpg", "webp"]
+        for ext in thumb_exts:
+            temp_thumb = Path(f"{media_name_base}.{ext}")
+            if os.path.exists(temp_thumb):
+                media_thumb = temp_thumb
+                break
+
+        if title:
+            media_title = media_name_base.replace("./temp/", "").replace("_", "|")
+            return media_file, media_thumb, media_title
+        
+        return media_file, media_thumb
+    
+    except Exception as e:
+        LOGS.error(f"خطأ غير متوقع: {e}")
+        await edit_or_reply(event, f"**حدث خطأ غير متوقع: {e}**")
+        return None, None, None
