@@ -103,50 +103,56 @@ async def song_download(url, event, quality="128k", video=False, title=True, coo
         media_exts = ["mp4", "mkv"]
         media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path or "")
 
-    media_file = None
-    media_thumb = None
     media_name = None
-    media_title = "Unknown Title"
     
     try:
-        media_name, stderr_name = (await runcmd(name_cmd))[:2]
-        if stderr_name:
-            return await edit_or_reply(event, f"**خطأ في جلب اسم الملف :: {stderr_name}**")
+        # 1. الحصول على اسم الملف المتوقع
+        result = await runcmd(name_cmd)
+        media_name, stderr = result[:2]
+        
+        if stderr:
+            await edit_or_reply(event, f"**خطـأ في الحصول على الاسم :: {stderr}**")
+            return None, None, None # العودة بـ 3 قيم لتجنب TypeError
 
-        media_name = media_name.strip()
-        media_name_base = os.path.splitext(media_name)[0]
+        media_name_base = os.path.splitext(media_name.strip())[0].strip()
         
         await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
-        stderr_dl = (await runcmd(media_cmd))[1]
         
-        if stderr_dl:
-            return await edit_or_reply(event, f"**خطـأ أثناء التنزيل :: {stderr_dl}**")
+        # 2. تنزيل الملف فعلياً
+        result = await runcmd(media_cmd)
+        _, stderr_dl = result[:2]
 
-        found_ext = None
-        for ext in media_exts:
-            temp_file = Path(f"{media_name_base}.{ext}")
-            if os.path.exists(temp_file):
-                media_file = temp_file
-                found_ext = ext
-                break
-
-        if not media_file:
-            return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} بعد التنزيل ⁉️**")
-
-        thumb_exts = ["jpg", "webp"]
-        for ext in thumb_exts:
-            temp_thumb = Path(f"{media_name_base}.{ext}")
-            if os.path.exists(temp_thumb):
-                media_thumb = temp_thumb
-                break
-
-        if title:
-            media_title = media_name_base.replace("./temp/", "").replace("_", "|")
-            return media_file, media_thumb, media_title
-        
-        return media_file, media_thumb
-    
+        if stderr_dl and "ERROR: unable to download" in stderr_dl:
+            await edit_or_reply(event, f"**خطـأ أثناء التنزيل :: {stderr_dl}**")
+            return None, None, None # العودة بـ 3 قيم لتجنب TypeError
+            
     except Exception as e:
-        LOGS.error(f"خطأ غير متوقع: {e}")
-        await edit_or_reply(event, f"**حدث خطأ غير متوقع: {e}**")
-        return None, None, None
+        await edit_or_reply(event, f"**خطأ غير متوقع أثناء التنزيل :: {e}**")
+        return None, None, None # العودة بـ 3 قيم لتجنب TypeError
+
+    # 3. التحقق من وجود الملفات بعد التنزيل
+    media_file = None
+    for ext in media_ext:
+        temp_file = Path(f"{media_name_base}.{ext}")
+        if os.path.exists(temp_file):
+            media_file = temp_file
+            break
+
+    if not media_file:
+        await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ({media_name_base}) بعد التنزيل ⁉️**")
+        return None, None, None # العودة بـ 3 قيم لتجنب TypeError
+    
+    # 4. تحديد صورة مصغرة (Thumb)
+    media_thumb = None
+    for ext in ["jpg", "webp"]:
+        temp_thumb = Path(f"{media_name_base}.{ext}")
+        if os.path.exists(temp_thumb):
+            media_thumb = temp_thumb
+            break
+
+    # 5. إرجاع النتيجة
+    if title:
+        media_title = os.path.basename(media_name_base).replace("./temp/", "").replace("_", "|")
+        return media_file, media_thumb, media_title
+        
+    return media_file, media_thumb, None
