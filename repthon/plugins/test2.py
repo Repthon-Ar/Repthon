@@ -37,6 +37,7 @@ def get_cookies_file():
 SONG_SEARCH_STRING = "<code>wi8..! I am finding your song....</code>"
 SONG_NOT_FOUND = "<code>Sorry !I am unable to find any song like that</code>"
 SONG_SENDING_STRING = "<code>yeah..! i found something wi8..🥰...</code>"
+SONG_FILE_ERROR = "<code>⚠️ عذراً، فشل في إيجاد/تحميل ملف الصوت. قد يكون الرابط غير صالح أو حدث خطأ في عملية التحويل.</code>"
 # =========================================================== #
 #                                                             #
 # =========================================================== #
@@ -87,11 +88,28 @@ async def song(event):
         reply_to=reply_to_id,
     )
     
-    await catevent.delete()
+
+files_to_clean = []
+if song_file:
+    files_to_clean.append(song_file)
+if catthumb:
+    files_to_clean.append(catthumb)
     
-    for files in (catthumb, song_file):
-        if files and os.path.exists(files):
-            os.remove(files)
+try:
+    if not song_file or not os.path.exists(song_file):
+        return await catevent.edit(SONG_FILE_ERROR)
+
+except Exception as e:
+    LOGS.error(e)
+    
+finally:
+    for file_path in files_to_clean:
+        try:
+            if file_path and os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception as cleanup_e:
+            LOGS.error(f"Failed to remove temporary file {file_path}: {cleanup_e}")
+
 
 """
 @catub.cat_cmd(
