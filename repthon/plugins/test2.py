@@ -73,42 +73,49 @@ async def song(event):
     
     if not url(video_link):
         return await catevent.edit(f"Sorry!. I can't find any related video/audio for {query}")
+        
     cmd = event.pattern_match.group(1) if event.pattern_match.group(1) else None
     q = "320k" if cmd == "320" else "128k"
     cookies_path = get_cookies_file()
+    
     song_file, catthumb, title = await song_download(video_link, catevent, quality=q, cookies_path=cookies_path)
     
-    await event.client.send_file(
-        event.chat_id,
-        song_file,
-        force_document=False,
-        caption=f"**Title:** {title}",
-        thumb=catthumb,
-        supports_streaming=True,
-        reply_to=reply_to_id,
-    )
-    
+    files_to_clean = []
+    if song_file:
+        files_to_clean.append(song_file)
+    if catthumb:
+        files_to_clean.append(catthumb)
+        
+    try:
+        if not song_file or not os.path.exists(song_file):
+            return await catevent.edit(SONG_FILE_ERROR)
 
-files_to_clean = []
-if song_file:
-    files_to_clean.append(song_file)
-if catthumb:
-    files_to_clean.append(catthumb)
-    
-try:
-    if not song_file or not os.path.exists(song_file):
-        return await catevent.edit(SONG_FILE_ERROR)
-
-except Exception as e:
-    LOGS.error(e)
-    
-finally:
-    for file_path in files_to_clean:
-        try:
-            if file_path and os.path.exists(file_path):
-                os.remove(file_path)
-        except Exception as cleanup_e:
-            LOGS.error(f"Failed to remove temporary file {file_path}: {cleanup_e}")
+        await catevent.edit(SONG_SENDING_STRING)
+        
+        await event.client.send_file(
+            event.chat_id,
+            song_file,
+            force_document=False,
+            caption=f"**Title:** {title}",
+            thumb=catthumb if catthumb and os.path.exists(catthumb) else None, 
+            supports_streaming=True,
+            reply_to=reply_to_id,
+        )
+        
+        await catevent.delete()
+        
+    except Exception as e:
+        LOGS.error(e)
+        if catevent.is_edit:
+            await catevent.edit(f"حدث خطأ أثناء إرسال الملف: \n`{e}`")
+        
+    finally:
+        for file_path in files_to_clean:
+            try:
+                if file_path and os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception as cleanup_e:
+                LOGS.error(f"Failed to remove temporary file {file_path}: {cleanup_e}")
 
 
 """
