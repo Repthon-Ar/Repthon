@@ -198,7 +198,7 @@ async def inline_handler(event):  # sourcery no-metrics
                 rchannel = controlpmch.replace("@", "")
                 buttons = [[Button.url("⌔ قنـاتـي ⌔", f"https://t.me/{rchannel}")]]
             else:
-                buttons = [[Button.url("𝗥𝗲𝗽𝘁𝗵𝗼𝗻", "https://t.me/Repthon")]]
+                buttons = [[Button.url("𝗦𝗼𝘂𝗿𝗰𝗲 𝗥𝗲𝗽𝘁𝗵𝗼𝗻", "https://t.me/Repthon")]]
             PM_PIC = gvarstatus("pmpermit_pic")
             if PM_PIC:
                 CAT = [x for x in PM_PIC.split()]
@@ -210,20 +210,20 @@ async def inline_handler(event):  # sourcery no-metrics
             if CAT_IMG and CAT_IMG.endswith((".jpg", ".jpeg", ".png")):
                 result = builder.photo(
                     CAT_IMG,
-                    # title="Alive rep",
+                    # title="Alive Rep",
                     text=query,
                     buttons=buttons,
                 )
             elif CAT_IMG:
                 result = builder.document(
                     CAT_IMG,
-                    title="Alive rep",
+                    title="Alive Rep",
                     text=query,
                     buttons=buttons,
                 )
             else:
                 result = builder.article(
-                    title="Alive rep",
+                    title="Alive Rep",
                     text=query,
                     buttons=buttons,
                 )
