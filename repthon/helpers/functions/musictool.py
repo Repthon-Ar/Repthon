@@ -84,29 +84,32 @@ class LyricGenius:
 LyricsGen = LyricGenius()
 
 
-async def song_download(url, event, quality="128k", video=False, title=True):
+async def song_download(url, event, quality="128k", video=False, title=True, cookies_path=None):
     media_type = "المقطع الصوتي"
     media_ext = ["mp3", "mp4a"]
-    media_cmd = song_dl.format(QUALITY=quality, video_link=url)
-    name_cmd = name_dl.format(video_link=url)
+    
+    if cookies_path is None:
+        cookies_path = get_cookies_file()  # استدعاء الدالة للحصول على ملف الكوكيز
+
+    media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path)
+    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path)
+
     if video:
         media_type = "الفيديو"
         media_ext = ["mp4", "mkv"]
-        media_cmd = video_dl.format(video_link=url)
+        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path)
 
     with contextlib.suppress(Exception):
         stderr = (await runcmd(media_cmd))[1]
         media_name, stderr = (await runcmd(name_cmd))[:2]
         if stderr:
-            return await edit_or_reply(event, f"**خطـأ ::** `{stderr}`")
+            return await edit_or_reply(event, f"**خطـأ :: {stderr}**")
         media_name = os.path.splitext(media_name)[0]
         media_file = Path(f"{media_name}.{media_ext[0]}")
     if not os.path.exists(media_file):
         media_file = Path(f"{media_name}.{media_ext[1]}")
     elif not os.path.exists(media_file):
-        return await edit_or_reply(
-            event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**"
-        )
+        return await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**")
     await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
     media_thumb = Path(f"{media_name}.jpg")
     if not os.path.exists(media_thumb):
