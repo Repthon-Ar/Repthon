@@ -36,13 +36,11 @@ YOUTUBE_REGEX = re.compile(
 )
 PATH = "./repthon/cache/ytsearch.json"
 
-song_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail --no-playlist -o './temp/%(title)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality {QUALITY} {video_link}"
+song_dl = "yt-dlp --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality {QUALITY} {video_link}"
 
-thumb_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 --no-playlist -o './temp/%(title)s.%(ext)s' --write-thumbnail --skip-download {video_link}"
-video_dl = "yt-dlp --cookies {cookies_path} --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail --no-playlist -o './temp/%(title)s.%(ext)s' -f 'best[height<=480]' {video_link}"
-name_dl = (
-    "yt-dlp --cookies {cookies_path} --force-ipv4 --no-playlist --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
-)
+thumb_dl = "yt-dlp --force-ipv4 -o './temp/%(title)s.%(ext)s' --write-thumbnail --skip-download {video_link}"
+video_dl = "yt-dlp --force-ipv4 --write-thumbnail --add-metadata --embed-thumbnail -o './temp/%(title)s.%(ext)s' -f 'best[height<=480]' {video_link}"
+name_dl = "yt-dlp --force-ipv4 --get-filename -o './temp/%(title)s.%(ext)s' {video_link}"
 
 async def yt_search(rep):
     try:
