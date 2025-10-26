@@ -83,76 +83,36 @@ class LyricGenius:
 LyricsGen = LyricGenius()
 
 
-async def song_download(url, event, quality="128k", video=False, title=True, cookies_path=None):
-   
+async def song_download(url, event, quality="128k", video=False, title=True):
     media_type = "المقطع الصوتي"
-    media_exts = ["mp3", "mp4a"]
-    
-    if cookies_path is None:
-        try:
-            cookies_path = get_cookies_file()
-        except FileNotFoundError:
-            # إذا لم يتم العثور على ملف الكوكيز، تابع بدونه
-            cookies_path = None 
-
-    media_cmd = song_dl.format(QUALITY=quality, video_link=url, cookies_path=cookies_path or "")
-    name_cmd = name_dl.format(video_link=url, cookies_path=cookies_path or "")
-    
+    media_ext = ["mp3", "mp4a"]
+    media_cmd = song_dl.format(QUALITY=quality, video_link=url)
+    name_cmd = name_dl.format(video_link=url)
     if video:
         media_type = "الفيديو"
-        media_exts = ["mp4", "mkv"]
-        media_cmd = video_dl.format(video_link=url, cookies_path=cookies_path or "")
+        media_ext = ["mp4", "mkv"]
+        media_cmd = video_dl.format(video_link=url)
 
-    media_name = None
-    
-    try:
-        # 1. الحصول على اسم الملف المتوقع
-        result = await runcmd(name_cmd)
-        media_name, stderr = result[:2]
-        
+    with contextlib.suppress(Exception):
+        stderr = (await runcmd(media_cmd))[1]
+        media_name, stderr = (await runcmd(name_cmd))[:2]
         if stderr:
-            await edit_or_reply(event, f"**خطـأ في الحصول على الاسم :: {stderr}**")
-            return None, None, None # العودة بـ 3 قيم لتجنب TypeError
-
-        media_name_base = os.path.splitext(media_name.strip())[0].strip()
-        
-        await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
-        
-        # 2. تنزيل الملف فعلياً
-        result = await runcmd(media_cmd)
-        _, stderr_dl = result[:2]
-
-        if stderr_dl and "ERROR: unable to download" in stderr_dl:
-            await edit_or_reply(event, f"**خطـأ أثناء التنزيل :: {stderr_dl}**")
-            return None, None, None # العودة بـ 3 قيم لتجنب TypeError
-            
-    except Exception as e:
-        await edit_or_reply(event, f"**خطأ غير متوقع أثناء التنزيل :: {e}**")
-        return None, None, None # العودة بـ 3 قيم لتجنب TypeError
-
-    # 3. التحقق من وجود الملفات بعد التنزيل
-    media_file = None
-    for ext in media_ext:
-        temp_file = Path(f"{media_name_base}.{ext}")
-        if os.path.exists(temp_file):
-            media_file = temp_file
-            break
-
-    if not media_file:
-        await edit_or_reply(event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ({media_name_base}) بعد التنزيل ⁉️**")
-        return None, None, None # العودة بـ 3 قيم لتجنب TypeError
-    
-    # 4. تحديد صورة مصغرة (Thumb)
-    media_thumb = None
-    for ext in ["jpg", "webp"]:
-        temp_thumb = Path(f"{media_name_base}.{ext}")
-        if os.path.exists(temp_thumb):
-            media_thumb = temp_thumb
-            break
-
-    # 5. إرجاع النتيجة
+            return await edit_or_reply(event, f"**خطـأ ::** `{stderr}`")
+        media_name = os.path.splitext(media_name)[0]
+        media_file = Path(f"{media_name}.{media_ext[0]}")
+    if not os.path.exists(media_file):
+        media_file = Path(f"{media_name}.{media_ext[1]}")
+    elif not os.path.exists(media_file):
+        return await edit_or_reply(
+            event, f"**- عـذراً .. لا يمكنني العثور على {media_type} ⁉️**"
+        )
+    await edit_or_reply(event, f"**- جـارِ تحميـل {media_type} ▬▭...**")
+    media_thumb = Path(f"{media_name}.jpg")
+    if not os.path.exists(media_thumb):
+        media_thumb = Path(f"{media_name}.webp")
+    elif not os.path.exists(media_thumb):
+        media_thumb = None
     if title:
-        media_title = os.path.basename(media_name_base).replace("./temp/", "").replace("_", "|")
+        media_title = media_name.replace("./temp/", "").replace("_", "|")
         return media_file, media_thumb, media_title
-        
-    return media_file, media_thumb, None
+    return media_file, media_thumb
