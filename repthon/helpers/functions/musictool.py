@@ -86,7 +86,7 @@ LyricsGen = LyricGenius()
 
 async def song_download(url, event, quality="128k", video=False, title=True, cookies_path=None):
     media_type = "المقطع الصوتي"
-    media_ext = ["mp3", "mp4a"]
+    media_ext = ["mp3"]
     
     if cookies_path is None:
         cookies_path = get_cookies_file()  # استدعاء الدالة للحصول على ملف الكوكيز
