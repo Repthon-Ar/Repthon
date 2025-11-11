@@ -1,4 +1,3 @@
-import user_agent
 import random
 import glob
 import os
@@ -9,6 +8,20 @@ from repthon import zq_lo
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC
 from ..Config import Config
+
+# إذا كنت تستخدم مكتبة لتوليد وكيل المستخدم، يجب استيرادها بشكل صحيح
+# على سبيل المثال، إذا كنت تستخدم 'fake-useragent' أو 'user_agent' (التي يجب تثبيتها):
+try:
+    from fake_useragent import UserAgent
+    ua = UserAgent()
+except ImportError:
+    # استخدام قيمة افتراضية إذا لم يتم العثور على المكتبة
+    print("تحذير: لم يتم العثور على مكتبة fake_useragent. سيتم استخدام وكيل مستخدم ثابت.")
+    class StaticUserAgent:
+        def random(self):
+            return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    ua = StaticUserAgent()
+
 
 plugin_category = "البوت"
 
@@ -45,6 +58,8 @@ async def get_song(event):
             "prefer_ffmpeg": True,
             "geo_bypass": True,
             "nocheckcertificate": True,
+            # إضافة وكيل المستخدم لتقليل احتمالية الحظر
+            "user_agent": ua.random(),
             "postprocessors": [
                 {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "320"},
                 {"key": "FFmpegMetadata"},
@@ -57,8 +72,10 @@ async def get_song(event):
         }
 
         with YoutubeDL(ydl_opts) as ydl:
+            # التحميل يتم مباشرة من الرابط
             info = ydl.extract_info(video_url, download=True)
             
+            # استخلاص اسم الملف بعد المعالجة اللاحقة (Postprocessor)
             filename = ydl.prepare_filename(info).replace(info.get('ext'), 'mp3')
             thumbnail_filename = ydl.prepare_filename(info).replace(info.get('ext'), 'jpg')
 
@@ -86,6 +103,8 @@ async def get_song(event):
                 os.remove(thumbnail_filename)
 
     except Exception as e:
-        # R
-        print(f"حدث خطأ أثناء التحميل: {e}")
+        # تأكد من أنك ترى هذا الخطأ في الطرفية الآن
+        print(f"=========================================")
+        print(f"⚠️ خطأ أثناء البحث/التحميل: {e}")
+        print(f"=========================================")
         await message.edit("عذرًا، حدثت مشكلة أثناء البحث أو التحميل. يرجى المحاولة مرة أخرى.")
