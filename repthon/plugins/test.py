@@ -1,3 +1,4 @@
+import user_agent
 import random
 import glob
 import os
@@ -40,6 +41,7 @@ async def get_song(event):
         "quiet": True,
         "no_warnings": True,
         "cookiefile": get_cookies_file(),
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     }
 
     with YoutubeDL(ydl_opts) as ydl:
