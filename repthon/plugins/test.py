@@ -4,6 +4,7 @@ import glob
 import os
 import asyncio
 from yt_dlp import YoutubeDL
+from youtubesearchpython import VideosSearch 
 from repthon import zq_lo
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC
@@ -22,37 +23,46 @@ def get_cookies_file():
 @zq_lo.rep_cmd(pattern="بحث3(?: |$)(.*)")
 async def get_song(event):
     song_name = event.pattern_match.group(1)
-    message = await event.reply(f"جاري البحث عن الأغنية: {song_name}...")
+    message = await event.reply(f"جاري البحث عن الأغنية: **{song_name}**...")
 
-    ydl_opts = {
-        "format": "bestaudio/best",
-        "addmetadata": True,
-        "key": "FFmpegMetadata",
-        "writethumbnail": True,
-        "prefer_ffmpeg": True,
-        "geo_bypass": True,
-        "nocheckcertificate": True,
-        "postprocessors": [
-            {"key": "FFmpegVideoConvertor", "preferedformat": "mp3"},
-            {"key": "FFmpegMetadata"},
-        ],
-        "outtmpl": "%(title)s.%(ext)s",
-        "logtostderr": False,
-        "quiet": True,
-        "no_warnings": True,
-        "cookiefile": get_cookies_file(),
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    }
+    try:
+        videosSearch = VideosSearch(song_name, limit = 1)
+        results = videosSearch.result()
+        
+        if not results['result']:
+            await message.edit("عذرًا، لم يتم العثور على أي نتائج لهذا البحث.")
+            return
+            
+        video_url = results['result'][0]['link']
+        title = results['result'][0]['title']
+        uploader = results['result'][0]['channel']['name']
+        
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "addmetadata": True,
+            "key": "FFmpegMetadata",
+            "writethumbnail": True,
+            "prefer_ffmpeg": True,
+            "geo_bypass": True,
+            "nocheckcertificate": True,
+            "postprocessors": [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "320"},
+                {"key": "FFmpegMetadata"},
+            ],
+            "outtmpl": f"{title}.%(ext)s",
+            "logtostderr": False,
+            "quiet": True,
+            "no_warnings": True,
+            "cookiefile": get_cookies_file(),
+        }
 
-    with YoutubeDL(ydl_opts) as ydl:
-        try:
-            info = ydl.extract_info(f"ytsearch:{song_name}", download=True)
-            title = info['entries'][0]['title']
-            uploader = info['entries'][0]['uploader']
-            filename = f"{title}.mp3"
-            thumbnail_filename = f"{title}.jpg"
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            
+            filename = ydl.prepare_filename(info).replace(info.get('ext'), 'mp3')
+            thumbnail_filename = ydl.prepare_filename(info).replace(info.get('ext'), 'jpg')
 
-            await message.edit(f"تم العثور على الأغنية: {title}، جاري إرسال الملف...")
+            await message.edit(f"تم العثور على الأغنية: **{title}**، جاري إرسال الملف...")
 
             if os.path.exists(thumbnail_filename):
                 audio = MP3(filename, ID3=ID3)
@@ -68,12 +78,14 @@ async def get_song(event):
                     )
                 audio.save()
 
-            caption = f"بحثك: {title}\nالمغني أو الناشر: {uploader}\nتم التحميل بواسطة @Repthon"
+            caption = f"بحثك: **{title}**\nالمغني أو الناشر: **{uploader}**\nتم التحميل بواسطة @Repthon"
             await zq_lo.send_file(event.chat_id, filename, caption=caption)
 
             os.remove(filename)
             if os.path.exists(thumbnail_filename):
                 os.remove(thumbnail_filename)
 
-        except Exception:
-            await message.edit("عذرًا، حدثت مشكلة أثناء البحث عن الأغنية. يرجى المحاولة مرة أخرى.")
+    except Exception as e:
+        # R
+        print(f"حدث خطأ أثناء التحميل: {e}")
+        await message.edit("عذرًا، حدثت مشكلة أثناء البحث أو التحميل. يرجى المحاولة مرة أخرى.")
