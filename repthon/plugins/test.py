@@ -45,6 +45,7 @@ async def get_song(event):
             "addmetadata": True,
             "key": "FFmpegMetadata",
             "writethumbnail": True,
+            "convert_thumbnails": "jpg",
             "prefer_ffmpeg": True,
             "geo_bypass": True,
             "nocheckcertificate": True,
@@ -57,9 +58,12 @@ async def get_song(event):
                 {"key": "FFmpegMetadata"},
                 {"key": "EmbedThumbnail"},
             ],
-            "outtmpl": f"%(id)s.%(ext)s",  # استخدام ID بدلاً من العنوان لتجنب مشاكل الأسماء
+            "outtmpl": f"%(id)s.%(ext)s", # استخدام ID بدلاً من العنوان لتجنب مشاكل الأسماء
             "quiet": True,
             "no_warnings": True,
+            "embedthumbnail": True,  # تأكيد إضافة الصورة
+            "embed_metadata": True,  # تأكيد إضافة البيانات الوصفية
+            "already_have_thumbnail": False,
         }
         
         # إضافة cookies إذا وجدت
@@ -100,7 +104,7 @@ async def get_song(event):
                                 mime='image/jpeg',
                                 type=3,
                                 desc='Cover',
-                                data=img.read()
+                                data=img_file.read()
                             )
                         )
                     audio.save()
