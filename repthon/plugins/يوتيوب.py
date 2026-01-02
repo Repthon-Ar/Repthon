@@ -504,9 +504,10 @@ async def _(event): #Code by T.me/RR0RT
         "prefer_ffmpeg": False,
         "geo_bypass": True,
         "outtmpl": "%(title)s.%(ext)s",
-        "quite": True,
+        "quiet": True,
         "no_warnings": True,
         "cookiefile" : get_cookies_file(),
+        "noplaylist": True,
     }
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
@@ -527,8 +528,6 @@ async def _(event): #Code by T.me/RR0RT
             await revent.edit("**• هنالك تحديث جديد لـ مكتبة يوتيوب 📡**\n**• ارسـل الامـر** ( `.تحديث البوت` )\n**• ثم انتظر 5 دقائق لـ إعادة تشغيـل البوت ⏳**\n**• بعدها تستطيع استخدام اوامر التحميل .. بدون مشاكـل ☑️**")
         else:
             await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`\n\n**• قم بـ ارسال هذا الخلل لـ مطور السورس لـ اصلاحه**\n**• تواصـل مطـور السـورس @RR0RT**")
-            #await zq_lo.send_message(event.chat_id, "**- استخدم امر التحميل البديـل**\n**- ارسـل (.تحميل + اسم المقطع الصوتي)**")
-            #return
     await revent.edit("**╮ جـارِ التحميل ▬▭ . . .🎧♥️╰**")
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
@@ -550,7 +549,6 @@ async def _(event): #Code by T.me/RR0RT
         )
         await revent.delete()
     except ChatSendMediaForbiddenError: # Code By T.me/RR0RT
-        #LOGS.error(str(err))
         return await revent.edit("**- عـذراً .. الوسـائـط مغلقـه هنـا ؟!**")
     except Exception as e:
         if "Requested format is not available." in str(e):
@@ -562,7 +560,6 @@ async def _(event): #Code by T.me/RR0RT
         remove_if_exists(thumb_name)
     except Exception as e:
         print(e)
-
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
