@@ -499,15 +499,20 @@ async def _(event): #Code by T.me/RR0RT
         return await edit_or_reply(event, "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**")
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     ydl_ops = {
-        "format": "bestaudio[ext=m4a]",
-        "keepvideo": True,
-        "prefer_ffmpeg": False,
+        "format": "bestaudio/best",  # تغيير من m4a إلى bestaudio
+        "keepvideo": False,  # تغيير إلى False لأننا نريد الصوت فقط
+        "prefer_ffmpeg": True,  # تغيير إلى True لتحويل التنسيق
         "geo_bypass": True,
         "outtmpl": "%(title)s.%(ext)s",
         "quiet": True,
         "no_warnings": True,
-        "cookiefile" : get_cookies_file(),
+        "cookiefile": get_cookies_file(),
         "noplaylist": True,
+        "postprocessors": [{  # إضافة postprocessor لتحويل إلى mp3
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }],
     }
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
@@ -520,46 +525,90 @@ async def _(event): #Code by T.me/RR0RT
             open(thumb_name, "wb").write(thumb.content)
         except Exception:
             thumb_name = None
-            pass
         duration = results[0]["duration"]
 
     except Exception as e:
-        if "Requested format is not available." in str(e):
-            await revent.edit("**• هنالك تحديث جديد لـ مكتبة يوتيوب 📡**\n**• ارسـل الامـر** ( `.تحديث البوت` )\n**• ثم انتظر 5 دقائق لـ إعادة تشغيـل البوت ⏳**\n**• بعدها تستطيع استخدام اوامر التحميل .. بدون مشاكـل ☑️**")
-        else:
-            await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`\n\n**• قم بـ ارسال هذا الخلل لـ مطور السورس لـ اصلاحه**\n**• تواصـل مطـور السـورس @RR0RT**")
+        await revent.edit(f"**• فشـل في البحث** \n**• الخطـأ :** `{str(e)}`")
+        return
+    
     await revent.edit("**╮ جـارِ التحميل ▬▭ . . .🎧♥️╰**")
+    
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
-            info_dict = ydl.extract_info(link, download=False)
+            info_dict = ydl.extract_info(link, download=True)
+            # تغيير طريقة الحصول على اسم الملف
             audio_file = ydl.prepare_filename(info_dict)
-            ydl.process_info(info_dict)
-        host = str(info_dict["uploader"])
-        secmul, dur, dur_arr = 1, 0, duration.split(":")
-        for i in range(len(dur_arr) - 1, -1, -1):
-            dur += int(float(dur_arr[i])) * secmul
-            secmul *= 60
+            # تغيير الامتداد إلى mp3 بسبب postprocessor
+            if audio_file.endswith('.webm'):
+                audio_file = audio_file[:-5] + '.mp3'
+            elif audio_file.endswith('.m4a'):
+                audio_file = audio_file[:-4] + '.mp3'
+            else:
+                audio_file = audio_file.rsplit('.', 1)[0] + '.mp3'
+            
         await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
+        
         await event.client.send_file(
             event.chat_id,
             audio_file,
             force_document=False,
             caption=f"**⎉ البحث ⥃** `{title}`",
             thumb=thumb_name,
+            attributes=[
+                DocumentAttributeAudio(
+                    duration=int(duration.split(':')[0])*60 + int(duration.split(':')[1]) if ':' in duration else int(duration),
+                    title=title,
+                    performer=info_dict.get('uploader', 'Unknown')
+                )
+            ]
         )
         await revent.delete()
-    except ChatSendMediaForbiddenError: # Code By T.me/RR0RT
+        
+    except ChatSendMediaForbiddenError:
         return await revent.edit("**- عـذراً .. الوسـائـط مغلقـه هنـا ؟!**")
     except Exception as e:
-        if "Requested format is not available." in str(e):
-            return await revent.edit("**• هنالك تحديث جديد لـ مكتبة يوتيوب 📡**\n**• ارسـل الامـر** ( `.تحديث البوت` )\n**• ثم انتظر 5 دقائق لـ إعادة تشغيـل البوت ⏳**\n**• بعدها تستطيع استخدام اوامر التحميل .. بدون مشاكـل ☑️**")
+        if "Requested format is not available" in str(e):
+            # محاولة بديلة باستخدام تنسيق مختلف
+            try:
+                ydl_ops_alt = {
+                    "format": "worstaudio/worst",
+                    "keepvideo": False,
+                    "prefer_ffmpeg": True,
+                    "geo_bypass": True,
+                    "outtmpl": "%(title)s.%(ext)s",
+                    "quiet": True,
+                    "no_warnings": True,
+                    "cookiefile": get_cookies_file(),
+                    "noplaylist": True,
+                }
+                
+                with yt_dlp.YoutubeDL(ydl_ops_alt) as ydl:
+                    info_dict = ydl.extract_info(link, download=True)
+                    audio_file = ydl.prepare_filename(info_dict)
+                
+                await event.client.send_file(
+                    event.chat_id,
+                    audio_file,
+                    force_document=False,
+                    caption=f"**⎉ البحث ⥃** `{title}`",
+                    thumb=thumb_name,
+                )
+                await revent.delete()
+                
+            except Exception as e2:
+                return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e2)}`")
         else:
-            return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`\n\n**• قم بـ ارسال هذا الخلل لـ مطور السورس لـ اصلاحه**\n**• تواصـل مطـور السـورس @RR0RT**")
-    try:
-        remove_if_exists(audio_file)
-        remove_if_exists(thumb_name)
-    except Exception as e:
-        print(e)
+            return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`")
+    
+    finally:
+        # تنظيف الملفات المؤقتة
+        try:
+            if os.path.exists(audio_file):
+                os.remove(audio_file)
+            if thumb_name and os.path.exists(thumb_name):
+                os.remove(thumb_name)
+        except Exception as e:
+            print(f"Error cleaning up: {e}")
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
