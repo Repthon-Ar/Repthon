@@ -93,7 +93,7 @@ async def get_song(event):
                     if audio.tags is None:
                         audio.add_tags()
                     
-                    with open(thumbnail_file, 'rb') as img:
+                    with open(thumbnail_file, 'rb') as img_file:
                         audio.tags.add(
                             APIC(
                                 encoding=3,
