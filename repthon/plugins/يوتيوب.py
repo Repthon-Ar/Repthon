@@ -38,6 +38,7 @@ from telethon.tl import types
 from telethon.utils import get_attributes
 from telethon.errors.rpcerrorlist import YouBlockedUserError, ChatSendMediaForbiddenError
 from telethon.tl.functions.contacts import UnblockRequest as unblock
+from telethon.tl.types import DocumentAttributeAudio
 
 from ..Config import Config
 from ..core import pool
