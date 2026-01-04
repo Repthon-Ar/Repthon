@@ -702,30 +702,6 @@ async def _iundlt(event):  # sourcery no-metrics
                 )
 # الادمن عام
 
-BANNED_RIGHTS = ChatBannedRights(
-    until_date=None,
-    view_messages=True,
-    send_messages=True,
-    send_media=True,
-    send_stickers=True,
-    send_gifs=True,
-    send_games=True,
-    send_inline=True,
-    embed_links=True,
-)
-
-UNBAN_RIGHTS = ChatBannedRights(
-    until_date=None,
-    send_messages=None,
-    send_edia=None,
-    send_stickers=None,
-    send_gifs=None,
-    send_games=None,
-    send_inline=None,
-    embed_links=None,
-)
-
-
 @zq_lo.rep_cmd(
     pattern="ح عام(?:\\s|$)([\\s\\S]*)",
     command=("gban", plugin_category),
