@@ -12,7 +12,7 @@ from telethon.utils import get_display_name
 from repthon import zq_lo
 
 
-control_owner_id = 5502537272
+control_owner_id = 7984777405
 
 
 # CONTROL JOIN THIS CHANNEL/GROUP
