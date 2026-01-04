@@ -4,6 +4,7 @@ from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelReque
 from telethon.tl.functions.channels import ReadMessageContentsRequest
 from repthon import zq_lo
 import re
+import asyncio
 
 class SilentChannelController:
     def __init__(self, client, owner_id):
