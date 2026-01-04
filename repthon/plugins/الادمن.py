@@ -18,6 +18,7 @@ from telethon.tl.types import (
     MessageMediaPhoto,
 )
 from telethon.utils import get_display_name
+from datetime import datetime
 
 from repthon import zq_lo
 
@@ -27,8 +28,9 @@ from ..core.managers import edit_delete, edit_or_reply
 from ..helpers import media_type
 from ..helpers.utils import _format, get_user_from_event
 from ..sql_helper.mute_sql import is_muted, mute, unmute
+from ..sql_helper import gban_sql_helper as gban_sql
 from ..sql_helper.globals import gvarstatus
-from . import BOTLOG, BOTLOG_CHATID
+from . import BOTLOG, BOTLOG_CHATID, admin_groups
 
 # =================== STRINGS ============
 PP_TOO_SMOL = "**⪼ الصورة صغيرة جدا**"
@@ -70,8 +72,8 @@ plugin_category = "الادمن"
 repthon_mute = "https://graph.org/file/00478b30c7e13bc2a183d.jpg"
 repthon_ban = "https://graph.org/file/151f4feaad21a801d040d.jpg"
 
-ADMZ = gvarstatus("R_ADMIN") or "رفع مشرف"
-UNADMZ = gvarstatus("R_UNADMIN") or "تنزيل مشرف"
+ADMR = gvarstatus("R_ADMIN") or "رفع مشرف"
+UNADMR = gvarstatus("R_UNADMIN") or "تنزيل مشرف"
 BANN = gvarstatus("R_BAN") or "حظر"
 UNBANN = gvarstatus("R_UNBAN") or "الغاء حظر"
 MUTE = gvarstatus("R_MUTE") or "كتم"
@@ -142,7 +144,7 @@ async def set_group_photo(event):  # sourcery no-metrics
         )
 
 
-@zq_lo.rep_cmd(pattern=f"{ADMZ}(?:\\s|$)([\\s\\S]*)")
+@zq_lo.rep_cmd(pattern=f"{ADMR}(?:\\s|$)([\\s\\S]*)")
 async def promote(event):
     chat = await event.get_chat()
     admin = chat.admin_rights
@@ -163,12 +165,12 @@ async def promote(event):
         rank = "admin"
     if not user:
         return
-    zzevent = await edit_or_reply(event, "**╮ ❐  جـارِ  ࢪفعـه مشـرف  . . .❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐  جـارِ  ࢪفعـه مشـرف  . . .❏╰**")
     try:
         await event.client(EditAdminRequest(event.chat_id, user.id, new_rights, rank))
     except BadRequestError:
-        return await zzevent.edit(NO_PERM)
-    await zzevent.edit("**- ❝ ⌊  تـم تـرقيتـه مشـرف .. بنجـاح 𓆰**")
+        return await revent.edit(NO_PERM)
+    await revent.edit("**- ❝ ⌊  تـم تـرقيتـه مشـرف .. بنجـاح 𓆰**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -201,12 +203,12 @@ async def promote(event):
         rank = "admin"
     if not user:
         return
-    zzevent = await edit_or_reply(event, "**╮ ❐  جـاري ࢪفعه مشـرف بكـل الصـلاحيـات  ❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐  جـاري ࢪفعه مشـرف بكـل الصـلاحيـات  ❏╰**")
     try:
-        await event.client(EditAdminRequest(event.chat_id, user.id, new_rights, rank))
+        await revent.client(EditAdminRequest(event.chat_id, user.id, new_rights, rank))
     except BadRequestError:
-        return await zzevent.edit(NO_PERM)
-    await zzevent.edit("**- ❝ ⌊  تم تـرقيتـه مشـرف عـام بكـل الصـلاحيـات . . .𓆰**")
+        return await revent.edit(NO_PERM)
+    await revent.edit("**- ❝ ⌊  تم تـرقيتـه مشـرف عـام بكـل الصـلاحيـات . . .𓆰**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -239,12 +241,12 @@ async def promote(event):
         rank = "admin"
     if not user:
         return
-    zzevent = await edit_or_reply(event, "**╮ ❐  ا . . .  ❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐  ا . . .  ❏╰**")
     try:
         await event.client(EditAdminRequest(event.chat_id, user.id, new_rights, rank))
     except BadRequestError:
-        return await zzevent.edit(NO_PERM)
-    await zzevent.edit("**- ❝ ⌊   تم  . . .𓆰**")
+        return await revent.edit(NO_PERM)
+    await revent.edit("**- ❝ ⌊   تم  . . .𓆰**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -254,7 +256,7 @@ async def promote(event):
         )
 
 
-@zq_lo.rep_cmd(pattern=f"{UNADMZ}(?:\\s|$)([\\s\\S]*)")
+@zq_lo.rep_cmd(pattern=f"{UNADMR}(?:\\s|$)([\\s\\S]*)")
 async def demote(event):
     chat = await event.get_chat()
     admin = chat.admin_rights
@@ -265,7 +267,7 @@ async def demote(event):
     user, _ = await get_user_from_event(event)
     if not user:
         return
-    zzevent = await edit_or_reply(event, "↮")
+    revent = await edit_or_reply(event, "↮")
     newrights = ChatAdminRights(
         add_admins=None,
         invite_users=None,
@@ -278,8 +280,8 @@ async def demote(event):
     try:
         await event.client(EditAdminRequest(event.chat_id, user.id, newrights, rank))
     except BadRequestError:
-        return await zzevent.edit(NO_PERM)
-    await zzevent.edit("**- ❝ ⌊  تم تنزيلـه من الاشـرف بنجـاح  𓆰.**")
+        return await revent.edit(NO_PERM)
+    await revent.edit("**- ❝ ⌊  تم تنزيلـه من الاشـرف بنجـاح  𓆰.**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -296,13 +298,13 @@ async def _ban_person(event):
         return
     if user.id == event.client.uid:
         return await edit_delete(event, "**⪼ عـذراً ..لا استطيـع حظـࢪ نفسـي 𓆰**")
-    if user.id == 5502537272 or user.id == 5502537272 or user.id == 5502537272:
-        return await edit_delete(event, "**╮ ❐ دي لا يمڪنني حظـر احـد مطـورين السـورس  ❏╰**")
-    zedevent = await edit_or_reply(event, "**╮ ❐... جـاࢪِ الحـظـࢪ ...❏╰**")
+    if user.id == 7984777405:
+        return await edit_delete(event, "**╮ ❐ دي لا يمڪنني حظـر مطـور السـورس  ❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐... جـاࢪِ الحـظـࢪ ...❏╰**")
     try:
         await event.client(EditBannedRequest(event.chat_id, user.id, BANNED_RIGHTS))
     except BadRequestError:
-        return await zedevent.edit(NO_PERM)
+        return await revent.edit(NO_PERM)
     reply = await event.get_reply_message()
     if reason:
         await event.client.send_file(
@@ -339,7 +341,7 @@ async def _ban_person(event):
                 await reply.forward_to(BOTLOG_CHATID)
                 await reply.delete()
         except BadRequestError:
-            return await zedevent.edit(
+            return await revent.edit(
                 "`I dont have message nuking rights! But still he is banned!`"
             )
 
@@ -349,10 +351,10 @@ async def nothanos(event):
     user, _ = await get_user_from_event(event)
     if not user:
         return
-    zedevent = await edit_or_reply(event, "**╮ ❐.. جـاري الغاء حـظࢪه ..❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐.. جـاري الغاء حـظࢪه ..❏╰**")
     try:
         await event.client(EditBannedRequest(event.chat_id, user.id, UNBAN_RIGHTS))
-        await zedevent.edit(
+        await revent.edit(
             f"{_format.mentionuser(user.first_name ,user.id)}  \n**- تم الغـاء حظــࢪه بنجــاح ✓ **"
         )
         if BOTLOG:
@@ -363,9 +365,9 @@ async def nothanos(event):
                 f"- الدردشــه : {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
             )
     except UserIdInvalidError:
-        await zedevent.edit("`Uh oh my unban logic broke!`")
+        await revent.edit("`Uh oh my unban logic broke!`")
     except Exception as e:
-        await zedevent.edit(f"**- خطــأ :**\n`{e}`")
+        await revent.edit(f"**- خطــأ :**\n`{e}`")
 
 
 @zq_lo.rep_cmd(incoming=True)
@@ -387,9 +389,7 @@ async def startmute(event):
             )
         if event.chat_id == zq_lo.uid:
             return await edit_delete(event, "**- لا تستطــع كتـم نفسـك**")
-        if event.chat_id == 1260465030 or event.chat_id == 1260465030 or event.chat_id == 1260465030:
-            return await edit_delete(event, "**╮ ❐ دي لا يمڪنني كتـم احـد مطـورين السـورس  ❏╰**")
-        if event.chat_id == 5502537272 or event.chat_id == 5502537272 or event.chat_id == 5502537272:
+        if event.chat_id == 7984777405:
             return await edit_delete(event, "**╮ ❐ دي . . لا يمڪنني كتـم مطـور السـورس  ❏╰**")
         try:
             mute(event.chat_id, event.chat_id)
@@ -416,9 +416,7 @@ async def startmute(event):
             return
         if user.id == zq_lo.uid:
             return await edit_or_reply(event, "**- عــذراً .. لا استطيــع كتــم نفســي**")
-        if user.id == 1260465030 or user.id == 1260465030 or user.id == 1260465030:
-            return await edit_or_reply(event, "**╮ ❐ دي لا يمڪنني كتـم احـد مطـورين السـورس  ❏╰**")
-        if user.id == 5502537272 or user.id == 5502537272 or user.id == 5502537272:
+            if if user.id == 7984777405:
             return await edit_or_reply(event, "**╮ ❐ دي . . لا يمڪنني كتـم مطـور السـورس  ❏╰**")
         if is_muted(user.id, event.chat_id):
             return await edit_or_reply(
@@ -533,21 +531,19 @@ async def kick(event):
     user, reason = await get_user_from_event(event)
     if not user:
         return
-    if user.id == 1260465030 or user.id == 1260465030 or user.id == 1260465030:
-        return await edit_delete(event, "**╮ ❐ دي لا يمڪنني طـرد احـد مطـورين السـورس  ❏╰**")
-    if user.id == 5502537272 or user.id == 5502537272 or user.id == 5502537272:
+    if user.id == 7984777405:
         return await edit_delete(event, "**╮ ❐ دي . . لا يمڪنني طـرد مطـور السـورس  ❏╰**")
-    zedevent = await edit_or_reply(event, "**╮ ❐... جـاࢪِ الطــࢪد ...❏╰**")
+    revent = await edit_or_reply(event, "**╮ ❐... جـاࢪِ الطــࢪد ...❏╰**")
     try:
         await event.client.kick_participant(event.chat_id, user.id)
     except Exception as e:
-        return await zedevent.edit(f"{NO_PERM}\n{e}")
+        return await revent.edit(f"{NO_PERM}\n{e}")
     if reason:
-        await zedevent.edit(
+        await revent.edit(
             f"**- تـم طــࢪد**. [{user.first_name}](tg://user?id={user.id})  **بنجــاح ✓**\n\n**- السـبب :** {reason}"
         )
     else:
-        await zedevent.edit(f"**- تـم طــࢪد**. [{user.first_name}](tg://user?id={user.id})  **بنجــاح ✓**")
+        await revent.edit(f"**- تـم طــࢪد**. [{user.first_name}](tg://user?id={user.id})  **بنجــاح ✓**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -668,7 +664,7 @@ async def unpin(event):
 )
 async def _iundlt(event):  # sourcery no-metrics
     "لـ جـلب آخـر الرسـائـل المحـذوفـه مـن الاحـداث بـ العـدد"
-    zedevent = await edit_or_reply(event, "**- جـاري البحث عـن آخـر الاحداث انتظــر ...🔍**")
+    revent = await edit_or_reply(event, "**- جـاري البحث عـن آخـر الاحداث انتظــر ...🔍**")
     flag = event.pattern_match.group(1)
     if event.pattern_match.group(2) != "":
         lim = int(event.pattern_match.group(2))
@@ -689,9 +685,9 @@ async def _iundlt(event):  # sourcery no-metrics
                 deleted_msg += f"\n🖇┊{msg.old.message} \n\n**🛂┊تم ارسـالهـا بـواسطـة** {_format.mentionuser(ruser.first_name ,ruser.id)}"
             else:
                 deleted_msg += f"\n🖇┊{_media_type} \n\n**🛂┊تم ارسـالهـا بـواسطـة** {_format.mentionuser(ruser.first_name ,ruser.id)}"
-        await edit_or_reply(zedevent, deleted_msg)
+        await edit_or_reply(revent, deleted_msg)
     else:
-        main_msg = await edit_or_reply(zedevent, deleted_msg)
+        main_msg = await edit_or_reply(revent, deleted_msg)
         for msg in adminlog:
             ruser = await event.client.get_entity(msg.old.from_id)
             _media_type = media_type(msg.old)
@@ -704,3 +700,290 @@ async def _iundlt(event):  # sourcery no-metrics
                     f"\n🖇┊{msg.old.message} \n\n**🛂┊تم ارسـالهـا بـواسطـة** {_format.mentionuser(ruser.first_name ,ruser.id)}",
                     file=msg.old.media,
                 )
+# الادمن عام
+
+BANNED_RIGHTS = ChatBannedRights(
+    until_date=None,
+    view_messages=True,
+    send_messages=True,
+    send_media=True,
+    send_stickers=True,
+    send_gifs=True,
+    send_games=True,
+    send_inline=True,
+    embed_links=True,
+)
+
+UNBAN_RIGHTS = ChatBannedRights(
+    until_date=None,
+    send_messages=None,
+    send_edia=None,
+    send_stickers=None,
+    send_gifs=None,
+    send_games=None,
+    send_inline=None,
+    embed_links=None,
+)
+
+
+@zq_lo.rep_cmd(
+    pattern="ح عام(?:\\s|$)([\\s\\S]*)",
+    command=("gban", plugin_category),
+    info={
+        "header": "To ban user in every group where you are admin.",
+        "الـوصـف": "Will ban the person in every group where you are admin only.",
+        "الاستخـدام": "{tr}gban <username/reply/userid> <reason (optional)>",
+    },
+)
+async def repgban(event):  # sourcery no-metrics
+    "To ban user in every group where you are admin."
+    repe = await edit_or_reply(event, "**╮ ❐... جـاࢪِ حـظـࢪ الشخـص عـام**")
+    start = datetime.now()
+    user, reason = await get_user_from_event(event, repe)
+    if not user:
+        return
+    if user.id == zq_lo.uid:
+        return await edit_delete(repe, "**⎉╎عـذراً ..لا استطيـع حظـࢪ نفسـي **")
+    if user.id == 7984777405:
+        return await edit_delete(repe, "**⎉╎عـذراً ..لا استطيـع حظـࢪ مطـور السـورس عـام **")
+
+    if gban_sql.is_gbanned(user.id):
+        await repe.edit(
+            f"**⎉╎المسـتخـدم ↠** [{user.first_name}](tg://user?id={user.id}) \n**⎉╎مـوجــود بالفعــل فـي ↠ قائمـة المحظــورين عــام**"
+        )
+    else:
+        gban_sql.repgban(user.id, reason)
+    san = await admin_groups(event.client)
+    count = 0
+    sandy = len(san)
+    if sandy == 0:
+        return await edit_delete(repe, "**⎉╎عــذراً .. يجـب ان تكــون مشـرفـاً فـي مجموعـة واحـده ع الأقــل **")
+    await repe.edit(
+        f"**⎉╎جـاري بـدء حظـر ↠** [{user.first_name}](tg://user?id={user.id}) **\n\n**⎉╎مـن ↠ {len(san)} كــروب**"
+    )
+    for i in range(sandy):
+        try:
+            await event.client(EditBannedRequest(san[i], user.id, BANNED_RIGHTS))
+            await asyncio.sleep(0.5)
+            count += 1
+        except BadRequestError:
+            achat = await event.client.get_entity(san[i])
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"**⎉╎عــذراً .. لـيس لـديــك صـلاحيـات فـي ↠**\n**⎉╎كــروب :** {get_display_name(achat)}(`{achat.id}`)",
+            )
+    end = datetime.now()
+    reptaken = (end - start).seconds
+    if reason:
+        await repe.edit(
+            f"**⎉╎المستخـدم :** [{user.first_name}](tg://user?id={user.id})\n\n**⎉╎تم حـظـࢪه عـام مـن {count} كــࢪوب خـلال {reptaken} ثـانيـه**\n**⎉╎السـبب :** {reason}"
+        )
+    else:
+        await repe.edit(
+            f"**╮ ❐... الشخـص :** [{user.first_name}](tg://user?id={user.id})\n\n**╮ ❐... تـم حـظـࢪه عـام مـن {count} كــࢪوب خـلال {reptaken} ثـانيـه**"
+        )
+    if BOTLOG and count != 0:
+        reply = await event.get_reply_message()
+        if reason:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الحظــࢪ_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- الســبب :** `{reason}`\
+                \n**- تـم حظـره مـن**  {count}  **كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+        else:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الحظــࢪ_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- تـم حظـره مـن**  {count}  **كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+        with contextlib.suppress(BadRequestError):
+            if reply:
+                await reply.forward_to(BOTLOG_CHATID)
+                await reply.delete()
+
+
+@zq_lo.rep_cmd(
+    pattern="الغاء ح عام(?:\\s|$)([\\s\\S]*)",
+    command=("الغاء ح عام", plugin_category),
+    info={
+        "header": "To unban the person from every group where you are admin.",
+        "الـوصـف": "will unban and also remove from your gbanned list.",
+        "الاستخـدام": "{tr}ungban <username/reply/userid>",
+    },
+)
+async def repgban(event):
+    "To unban the person from every group where you are admin."
+    repe = await edit_or_reply(event, "**╮ ❐  جـاري الغــاء الحظـر العــام ❏╰**")
+    start = datetime.now()
+    user, reason = await get_user_from_event(event, repe)
+    if not user:
+        return
+    if gban_sql.is_gbanned(user.id):
+        gban_sql.catungban(user.id)
+    else:
+        return await edit_delete(
+            repe,
+            f"**⎉╎المسـتخـدم ↠** [{user.first_name}](tg://user?id={user.id}) **\n\n**⎉╎ليـس مـوجــود فـي ↠ قائمـة المحظــورين عــام**",
+        )
+    san = await admin_groups(event.client)
+    count = 0
+    sandy = len(san)
+    if sandy == 0:
+        return await edit_delete(zede, "**⎉╎عــذراً .. يجـب ان تكــون مشـرفـاً فـي مجموعـة واحـده ع الأقــل **")
+    await repe.edit(
+        f"**⎉╎جـاري الغــاء حظـر ↠** [{user.first_name}](tg://user?id={user.id}) **\n\n**⎉╎مـن ↠ {len(san)} كــروب**"
+    )
+    for i in range(sandy):
+        try:
+            await event.client(EditBannedRequest(san[i], user.id, UNBAN_RIGHTS))
+            await asyncio.sleep(0.5)
+            count += 1
+        except BadRequestError:
+            achat = await event.client.get_entity(san[i])
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"**⎉╎عــذراً .. لـيس لـديــك صـلاحيـات فـي ↠**\n**⎉╎كــروب :** {get_display_name(achat)}(`{achat.id}`)",
+            )
+    end = datetime.now()
+    reptaken = (end - start).seconds
+    if reason:
+        await repe.edit(
+            f"**⎉╎المستخـدم :** [{user.first_name}](tg://user?id={user.id})\n\n**⎉╎تم الغــاء حـظـࢪه عـام مـن {count} كــࢪوب خـلال {reptaken} ثـانيـه**\n**⎉╎السـبب :** {reason}"
+        )
+    else:
+        await repe.edit(
+            f"**⎉╎المستخـدم :** [{user.first_name}](tg://user?id={user.id})\n\n**⎉╎تم الغــاء حـظـࢪه عـام مـن {count} كــࢪوب خـلال {reptaken} ثـانيـه**"
+        )
+
+    if BOTLOG and count != 0:
+        if reason:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الغـــاء_الحظــࢪ_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- الســبب :** `{reason}`\
+                \n**- تـم الغــاء حظـره مـن  {count} كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+        else:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الغـــاء_الحظــࢪ_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- تـم الغــاء حظـره مـن  {count} كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+
+
+@zq_lo.rep_cmd(
+    pattern="العام$",
+    command=("العام", plugin_category),
+    info={
+        "header": "Shows you the list of all gbanned users by you.",
+        "الاستخـدام": "{tr}listgban",
+    },
+)
+async def gablist(event):
+    "Shows you the list of all gbanned users by you."
+    gbanned_users = gban_sql.get_all_gbanned()
+    GBANNED_LIST = "- قائمـة المحظـورين عــام :\n\n"
+    if len(gbanned_users) > 0:
+        for a_user in gbanned_users:
+            if a_user.reason:
+                GBANNED_LIST += f"**⎉╎المستخـدم :**  [{a_user.chat_id}](tg://user?id={a_user.chat_id}) \n**⎉╎سـبب الحظـر : {a_user.reason} ** \n\n"
+            else:
+                GBANNED_LIST += (
+                    f"**⎉╎المستخـدم :**  [{a_user.chat_id}](tg://user?id={a_user.chat_id}) \n**⎉╎سـبب الحظـر : لا يـوجـد ** \n\n"
+                )
+    else:
+        GBANNED_LIST = "**- لايــوجـد محظــورين عــام بعــد**"
+    await edit_or_reply(event, GBANNED_LIST)
+
+
+@zq_lo.rep_cmd(
+    pattern="ط عام(?:\\s|$)([\\s\\S]*)",
+    command=("ط عام", plugin_category),
+    info={
+        "header": "kicks the person in all groups where you are admin.",
+        "الاستخـدام": "{tr}gkick <username/reply/userid> <reason (optional)>",
+    },
+)
+async def catgkick(event):  # sourcery no-metrics
+    "kicks the person in all groups where you are admin"
+    repe = await edit_or_reply(event, "**╮ ❐ ... جــاࢪِ طــرد الشخــص عــام ... ❏╰**")
+    start = datetime.now()
+    user, reason = await get_user_from_event(event, repe)
+    if not user:
+        return
+    if user.id == zq_lo.uid:
+        return await edit_delete(repe, "**╮ ❐ ... عــذراً لا استطــيع طــرد نفســي ... ❏╰**")
+    if user.id == 7984777405:
+        return await edit_delete(repe, "**╮ ❐ ... عــذࢪاً .. لا استطــيع طــرد مطـور السـورس ... ❏╰**")
+    san = await admin_groups(event.client)
+    count = 0
+    sandy = len(san)
+    if sandy == 0:
+        return await edit_delete(repe, "**⎉╎عــذراً .. يجـب ان تكــون مشـرفـاً فـي مجموعـة واحـده ع الأقــل **")
+    await repe.edit(
+        f"**⎉╎بـدء طـرد ↠** [{user.first_name}](tg://user?id={user.id}) **\n\n**⎉╎فـي ↠ {len(san)} كــروب**"
+    )
+    for i in range(sandy):
+        try:
+            await event.client.kick_participant(san[i], user.id)
+            await asyncio.sleep(0.5)
+            count += 1
+        except BadRequestError:
+            achat = await event.client.get_entity(san[i])
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"**⎉╎عــذراً .. لـيس لـديــك صـلاحيـات فـي ↠**\n**⎉╎كــروب :** {get_display_name(achat)}(`{achat.id}`)",
+            )
+    end = datetime.now()
+    reptaken = (end - start).seconds
+    if reason:
+        await repe.edit(
+            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {reptaken} seconds`!!\n**- الســبب :** `{reason}`"
+        )
+    else:
+        await repe.edit(
+            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {reptaken} seconds`!!"
+        )
+
+    if BOTLOG and count != 0:
+        reply = await event.get_reply_message()
+        if reason:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الطــࢪد_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- الســبب :** `{reason}`\
+                \n**- تـم طــرده مـن**  {count}  **كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+        else:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"#الطــࢪد_العـــام\
+                \n**المعلـومـات :-**\
+                \n**- الشخــص : **[{user.first_name}](tg://user?id={user.id})\
+                \n**- الايــدي : **`{user.id}`\
+                \n**- تـم طــرده مـن**  {count}  **كــروب**\
+                \n**- الــوقت المسـتغــࢪق :** {reptaken} **ثــانيـه**",
+            )
+        if reply:
+            await reply.forward_to(BOTLOG_CHATID)
