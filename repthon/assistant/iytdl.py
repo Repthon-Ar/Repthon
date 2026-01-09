@@ -89,7 +89,7 @@ async def iytdl_inline(event):
 
 @zq_lo.tgbot.on(
     CallbackQuery(
-        data=re.compile(b"^ytdl_download_(.*)_([\d]+|mkv|mp4|mp3)(?:_(a|v))?")
+        data=re.compile(b"^ytdl_download_(.*)_([\\d]+|mkv|mp4|mp3)(?:_(a|v))?")
     )
 )
 @check_owner
