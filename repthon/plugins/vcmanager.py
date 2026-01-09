@@ -1,5 +1,4 @@
 # Repthon Team
-
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError, UserAlreadyInvitedError
 from telethon.tl.types import Channel, Chat, User
@@ -176,7 +175,7 @@ async def title_vc(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="(|الغاء )اسكت ([\s\S]*)",
+    pattern="(|الغاء )اسكت ([\\s\\S]*)",
     command=("اسكت", plugin_category),
     info={
         "header": "لـ كتم شخص في المكالمـه",
