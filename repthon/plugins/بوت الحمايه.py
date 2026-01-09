@@ -57,7 +57,7 @@ ANTI_DDDD_ZEDTHON_MODE = ChatBannedRights(
 plugin_category = "الادمن"
 
 @zq_lo.rep_cmd(
-    pattern="قفل ([\s\S]*)",
+    pattern="قفل ([\\s\\S]*)",
     command=("قفل", plugin_category),
     info={
         "header": "To lock the given permission for entire group.",
@@ -153,7 +153,7 @@ async def _(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="فتح ([\s\S]*)",
+    pattern="فتح ([\\s\\S]*)",
     command=("فتح", plugin_category),
     info={
         "header": "To unlock the given permission for entire group.",
