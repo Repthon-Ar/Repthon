@@ -45,7 +45,7 @@ ALLOWED_USERS = set()
 
 
 @zq_lo.rep_cmd(
-    pattern="انضمام ?(\S+)? ?(?:ك)? ?(\S+)?",
+    pattern="انضمام ?(\\S+)? ?(?:ك)? ?(\\S+)?",
     command=("انضمام", plugin_category),
     info={
         "header": "لـ الانضمـام الى المحـادثه الصـوتيـه",
@@ -149,7 +149,7 @@ async def get_playlist(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="شغل فيديو ?(1)? ?([\S ]*)?",
+    pattern="شغل فيديو ?(1)? ?([\\S ]*)?",
     command=("شغل فيديو", plugin_category),
     info={
         "header": "تشغيـل مقـاطع الفيـديـو في المكـالمـات",
@@ -233,7 +233,7 @@ async def play_video(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="شغل ?(1)? ?([\S ]*)?",
+    pattern="شغل ?(1)? ?([\\S ]*)?",
     command=("شغل", plugin_category),
     info={
         "header": "تشغيـل المقـاطع الصـوتيـه في المكـالمـات",
