@@ -541,7 +541,7 @@ async def fetched_info(chat, event):  # sourcery no-metrics
 
 
 @zq_lo.rep_cmd(
-    pattern="انشاء(?:\s|$)([\s\S]*)",
+    pattern="انشاء(?:\\s|$)([\\s\\S]*)",
     command=("انشاء", plugin_category),
     info={
         "header": "To get Group information.",
