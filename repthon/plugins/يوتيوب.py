@@ -537,9 +537,7 @@ async def _(event): #Code by T.me/RR0RT
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
             info_dict = ydl.extract_info(link, download=True)
-            # تغيير طريقة الحصول على اسم الملف
             audio_file = ydl.prepare_filename(info_dict)
-            # تغيير الامتداد إلى mp3 بسبب postprocessor
             if audio_file.endswith('.webm'):
                 audio_file = audio_file[:-5] + '.mp3'
             elif audio_file.endswith('.m4a'):
@@ -548,7 +546,7 @@ async def _(event): #Code by T.me/RR0RT
                 audio_file = audio_file.rsplit('.', 1)[0] + '.mp3'
             
         await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
-        
+        #------------> Repthon <------------
         await event.client.send_file(
             event.chat_id,
             audio_file,
@@ -569,7 +567,6 @@ async def _(event): #Code by T.me/RR0RT
         return await revent.edit("**- عـذراً .. الوسـائـط مغلقـه هنـا ؟!**")
     except Exception as e:
         if "Requested format is not available" in str(e):
-            # محاولة بديلة باستخدام تنسيق مختلف
             try:
                 ydl_ops_alt = {
                     "format": "worstaudio/worst",
@@ -602,7 +599,6 @@ async def _(event): #Code by T.me/RR0RT
             return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`")
     
     finally:
-        # تنظيف الملفات المؤقتة
         try:
             if os.path.exists(audio_file):
                 os.remove(audio_file)
@@ -685,7 +681,7 @@ async def _(event):
 # ================================================================================================ #
 
 @zq_lo.rep_cmd(
-    pattern="ابحث(?:\ع|$)([\s\S]*)",
+    pattern="ابحث(?:\ع|$)([\\s\\S]*)",
     command=("ابحث", plugin_category),
     info={
         "header": "To reverse search song.",
@@ -764,7 +760,7 @@ async def shazamcmd(event):
 
 
 # Code R
-@zq_lo.rep_cmd(pattern=".ff(?:\s|$)([\s\S]*)")
+@zq_lo.rep_cmd(pattern=".ff(?:\\s|$)([\\s\\S]*)")
 async def song(event):
     song = event.pattern_match.group(1)
     chat = "@ROOTMusic_bot"
@@ -796,7 +792,7 @@ async def song(event):
 
 
 @zq_lo.rep_cmd(
-    pattern="يوتيوب(?: |$)(\d*)? ?([\s\S]*)",
+    pattern="يوتيوب(?: |$)(\\d*)? ?([\\s\\S]*)",
     command=("يوتيوب", plugin_category),
     info={
         "header": "لـ البحـث عـن روابــط بالكلمــه المحــدده علـى يـوتيــوب",
