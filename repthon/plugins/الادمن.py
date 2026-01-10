@@ -416,7 +416,7 @@ async def startmute(event):
             return
         if user.id == zq_lo.uid:
             return await edit_or_reply(event, "**- عــذراً .. لا استطيــع كتــم نفســي**")
-            if user.id == 7984777405:
+        if user.id == 7984777405:
             return await edit_or_reply(event, "**╮ ❐ دي . . لا يمڪنني كتـم مطـور السـورس  ❏╰**")
         if is_muted(user.id, event.chat_id):
             return await edit_or_reply(
