@@ -58,7 +58,25 @@ async def startup_process():
     await verifyLoggerGroup()
     await load_plugins("plugins")
     await load_plugins("assistant")
-    LOGS.info(f"⌔ تـم تنصيـب ريبـــثون . . بنجـاح ✓ \n⌔ لـ إظهـار الاوامـر ارسـل (.الاوامر)")
+    
+    BLUE = "\033[1;34m"   # أزرق
+    CYAN = "\033[1;36m"   # سماوي
+    GREEN = "\033[1;32m"  # أخضر
+    RESET = "\033[0m"     # إعادة تعيين
+    
+    logo = f"""
+{BLUE}╔───────────────────────────────────────╗
+│ {CYAN}____            _   _                 {BLUE}│
+│{CYAN}|  _ \ ___ _ __ | |_| |__   ___  _ __  {BLUE}│
+│{CYAN}| |_) / _ \ '_ \| __| '_ \ / _ \| '_ \ {BLUE}│
+│{CYAN}|  _ <  __/ |_) | |_| | | | (_) | | | |{BLUE}│
+│{CYAN}||_| \_\___| .__/ \__|_| |_|\___/|_| |_|{BLUE}│
+│{CYAN}          |_|                          {BLUE}│
+╚───────────────────────────────────────╝{RESET}
+{GREEN}⌔ تـم تنصيـب ريبـــثون . . بنجـاح ✓ 
+⌔ لـ إظهـار الاوامـر ارسـل ({cmdhr}الاوامر){RESET}
+"""
+    print(logo)
     await verifyLoggerGroup()
     await add_bot_to_logger_group(BOTLOG_CHATID)
     if PM_LOGGER_GROUP_ID != -100:
