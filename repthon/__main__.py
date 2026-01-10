@@ -81,11 +81,13 @@ async def startup_process():
 │{C1}|  _ <{C2}  __/ |_) {C3}| |_|{C4} | | |{C5} (_) {C6}| | | |{B_BLUE}│
 │{C1}|_| \_{C2}\___| .__/ {C3}\__|_{C4}| |_|{C5}\___/{C6}|_| |_|{B_BLUE}│
 │{C1}      {C2}    |_|   {C3}    {C4}     {C5}     {C6}     {B_BLUE}│
-╚───────────────────────────────────────╝{RESET}
-{G_GREEN}⌔ تـم تنصيـب ريبـــثون . . بنجـاح ✓ 
-⌔ لـ إظهـار الاوامـر ارسـل ({cmdhr}الاوامر){RESET}"""
-
+╚───────────────────────────────────────╝{RESET}"""
+done = f"""{B_BLUE}╔───────────────────────────────────────╗
+│ {G_GREEN}⌔ تـم تنصيـب ريبـــثون . . بنجـاح ✓       {B_BLUE}│
+│ {G_GREEN}⌔ لـ إظهـار الاوامـر ارسـل ({cmdhr}الاوامر)         {B_BLUE}│
+{B_BLUE}╚───────────────────────────────────────╝{RESET}"""
     print(logo)
+    print(done)
     await verifyLoggerGroup()
     await add_bot_to_logger_group(BOTLOG_CHATID)
     if PM_LOGGER_GROUP_ID != -100:
