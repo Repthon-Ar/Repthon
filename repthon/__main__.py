@@ -86,6 +86,7 @@ done = f"""{B_BLUE}╔───────────────────�
 │ {G_GREEN}⌔ تـم تنصيـب ريبـــثون . . بنجـاح ✓       {B_BLUE}│
 │ {G_GREEN}⌔ لـ إظهـار الاوامـر ارسـل ({cmdhr}الاوامر)         {B_BLUE}│
 {B_BLUE}╚───────────────────────────────────────╝{RESET}"""
+    
     print(logo)
     print(done)
     await verifyLoggerGroup()
