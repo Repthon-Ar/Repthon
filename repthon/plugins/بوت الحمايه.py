@@ -299,36 +299,39 @@ async def _(event):
 
 @zq_lo.rep_cmd(incoming=True, forword=None)
 async def check_incoming_messages(event):
+    if event.is_private:
+        return
+		
     if not event.is_private:
         chat = await event.get_chat()
         admin = chat.admin_rights
         creator = chat.creator
         if not admin and not creator:
             return
-    zed_dev = (2095357462, 5502537272, 925972505, 1346542270, 1885375980, 1721284724, 1951523146, 1243462298, 1037828349, 1985711199, 2028523456, 2045039090, 1764272868, 2067387667, 294317157, 2066568220, 1403932655, 1389046667, 444672531, 2055451976, 294317157, 2134101721, 1719023510, 1985225531, 2107283646, 2146086267)
-    zelzal = event.sender_id
-    zed = await zq_lo.get_permissions(event.chat_id, zelzal)
-    malath = zq_lo.uid
+    rep_dev = (7984777405)
+    baqir = event.sender_id
+    rep = await zq_lo.get_permissions(event.chat_id, baqir)
+    arwa = zq_lo.uid
     hhh = event.message.text
-    zed_id = event.chat_id
-    if is_locked(zed_id, "rtl") and ("خرا" in hhh or "كسها" in hhh or "كسمك" in hhh or "كسختك" in hhh or "عيري" in hhh or "كسخالتك" in hhh or "خرا بالله" in hhh or "عير بالله" in hhh or "كسخواتكم" in hhh or "اختك" in hhh or "بڪسسخخت" in hhh or "كحاب" in hhh or "مناويج" in hhh or "كحبه" in hhh or " كواد " in hhh or "كواده" in hhh or "تبياته" in hhh or "تبياتة" in hhh or "فرخ" in hhh or "كحبة" in hhh or "فروخ" in hhh or "طيز" in hhh or "آإيري" in hhh or "اختج" in hhh or "سالب" in hhh or "موجب" in hhh or "فحل" in hhh or "كسي" in hhh or "كسك" in hhh or "كسج" in hhh or "مكوم" in hhh or "نيج" in hhh or "نتنايج" in hhh or "مقاطع" in hhh or "ديوث" in hhh or "دياث" in hhh or "اديث" in hhh or "محارم" in hhh or "سكس" in hhh or "مصي" in hhh or "اعرب" in hhh or "أعرب" in hhh or "قحب" in hhh or "قحاب" in hhh or "عراب" in hhh or "مكود" in hhh or "عربك" in hhh or "مخنث" in hhh or "مخنوث" in hhh or "فتال" in hhh or "زاني" in hhh or "زنا" in hhh or "لقيط" in hhh or "بنات شوارع" in hhh or "بنت شوارع" in hhh or "نيك" in hhh or "منيوك" in hhh or "منيوج" in hhh or "نايك" in hhh or "قواد" in hhh or "زب" in hhh or "اير" in hhh or "ممحو" in hhh or "بنت شارع" in hhh or " است " in hhh or "اسات" in hhh or "زوب" in hhh or "عيير" in hhh or "املس" in hhh or "مربرب" in hhh or " خول " in hhh or "عرص" in hhh or "قواد" in hhh or "اهلاتك" in hhh or "جلخ" in hhh or "ورع" in hhh or "شرمو" in hhh or "فرك" in hhh or "رهط" in hhh):
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+    rep_id = event.chat_id
+    if is_locked(rep_id, "rtl") and ("خرا" in hhh or "كسها" in hhh or "كسمك" in hhh or "كسختك" in hhh or "عيري" in hhh or "كسخالتك" in hhh or "خرا بالله" in hhh or "عير بالله" in hhh or "كسخواتكم" in hhh or "اختك" in hhh or "بڪسسخخت" in hhh or "كحاب" in hhh or "مناويج" in hhh or "كحبه" in hhh or " كواد " in hhh or "كواده" in hhh or "تبياته" in hhh or "تبياتة" in hhh or "فرخ" in hhh or "كحبة" in hhh or "فروخ" in hhh or "طيز" in hhh or "آإيري" in hhh or "اختج" in hhh or "سالب" in hhh or "موجب" in hhh or "فحل" in hhh or "كسي" in hhh or "كسك" in hhh or "كسج" in hhh or "مكوم" in hhh or "نيج" in hhh or "نتنايج" in hhh or "مقاطع" in hhh or "ديوث" in hhh or "دياث" in hhh or "اديث" in hhh or "محارم" in hhh or "سكس" in hhh or "مصي" in hhh or "اعرب" in hhh or "أعرب" in hhh or "قحب" in hhh or "قحاب" in hhh or "عراب" in hhh or "مكود" in hhh or "عربك" in hhh or "مخنث" in hhh or "مخنوث" in hhh or "فتال" in hhh or "زاني" in hhh or "زنا" in hhh or "لقيط" in hhh or "بنات شوارع" in hhh or "بنت شوارع" in hhh or "نيك" in hhh or "منيوك" in hhh or "منيوج" in hhh or "نايك" in hhh or "قواد" in hhh or "زب" in hhh or "اير" in hhh or "ممحو" in hhh or "بنت شارع" in hhh or " است " in hhh or "اسات" in hhh or "زوب" in hhh or "عيير" in hhh or "املس" in hhh or "مربرب" in hhh or " خول " in hhh or "عرص" in hhh or "قواد" in hhh or "اهلاتك" in hhh or "جلخ" in hhh or "ورع" in hhh or "شرمو" in hhh or "فرك" in hhh or "رهط" in hhh):
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع الالفـاظ البذيئـه والفشـار فـي هـذه الدردشـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "rtl", False)
-    if is_locked(zed_id, "game") and event.message.media:
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "rtl", False)
+    if is_locked(rep_id, "game") and event.message.media:
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
@@ -347,87 +350,87 @@ async def check_incoming_messages(event):
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "game", False)
-    if is_locked(zed_id, "forward") and event.fwd_from:
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "game", False)
+    if is_locked(rep_id, "forward") and event.fwd_from:
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع التوجيـه لهذه المجموعـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "forward", False)
-    if is_locked(zed_id, "button") and "@" in hhh:
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "forward", False)
+    if is_locked(rep_id, "button") and "@" in hhh:
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع تاك المعـرفات لـ هـذه الدردشـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "button", False)
-    if is_locked(zed_id, "egame") and ("فارسى" in hhh or "خوببی" in hhh or "میخوام" in hhh or "کی" in hhh or "پی" in hhh or "گ" in hhh or "خسته" in hhh or "صكص" in hhh or "راحتی" in hhh or "بیام" in hhh or "بپوشم" in hhh or "گرمه" in hhh or "چ" in hhh or "چه" in hhh or "ڬ" in hhh or "ٺ" in hhh or "چ" in hhh or "ڿ" in hhh or "ڇ" in hhh or "ڀ" in hhh or "ڎ" in hhh or "ݫ" in hhh or "ژ" in hhh or "ڟ" in hhh or "۴" in hhh or "زدن" in hhh or "دخترا" in hhh or "كسى" in hhh or "مک" in hhh or "خالى" in hhh or "ݜ" in hhh or "ڸ" in hhh or "پ" in hhh or "بند" in hhh or "عزيزم" in hhh or "برادر" in hhh or "باشى" in hhh or "ميخوام" in hhh or "خوبى" in hhh or "ميدم" in hhh or "كى اومدى" in hhh or "خوابيدين" in hhh):
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "button", False)
+    if is_locked(rep_id, "egame") and ("فارسى" in hhh or "خوببی" in hhh or "میخوام" in hhh or "کی" in hhh or "پی" in hhh or "گ" in hhh or "خسته" in hhh or "صكص" in hhh or "راحتی" in hhh or "بیام" in hhh or "بپوشم" in hhh or "گرمه" in hhh or "چ" in hhh or "چه" in hhh or "ڬ" in hhh or "ٺ" in hhh or "چ" in hhh or "ڿ" in hhh or "ڇ" in hhh or "ڀ" in hhh or "ڎ" in hhh or "ݫ" in hhh or "ژ" in hhh or "ڟ" in hhh or "۴" in hhh or "زدن" in hhh or "دخترا" in hhh or "كسى" in hhh or "مک" in hhh or "خالى" in hhh or "ݜ" in hhh or "ڸ" in hhh or "پ" in hhh or "بند" in hhh or "عزيزم" in hhh or "برادر" in hhh or "باشى" in hhh or "ميخوام" in hhh or "خوبى" in hhh or "ميدم" in hhh or "كى اومدى" in hhh or "خوابيدين" in hhh):
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع الكـلام الفـارسـي فـي هـذه الدردشـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "egame", False)
-    if is_locked(zed_id, "url") and "http" in hhh:
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "egame", False)
+    if is_locked(rep_id, "url") and "http" in hhh:
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع ارسـال الروابـط لهذه المجموعـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "url", False)
-    if is_locked(zed_id, "inline") and event.message.via_bot:
-        if zelzal == malath or zed.is_admin or zelzal in zed_dev:
+	            update_lock(rep_id, "url", False)
+    if is_locked(rep_id, "inline") and event.message.via_bot:
+        if baqir == arwa or rep.is_admin or baqir in rep_dev:
             return
         else:
 	        try:
 	            await event.delete()
 	            await event.reply(
 	                "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع استخـدام الانلايـن في هذه المجموعـة 𓆰•**".format(
-	                zelzal
+	                baqir
 	                )
 	            )
 	        except Exception as e:
 	            await event.reply(
 	                "❈╎عذراً لا املك صلاحيات المشـرف هنا 𓆰• \n`{}`".format(str(e))
 	            )
-	            update_lock(zed_id, "inline", False)
+	            update_lock(rep_id, "inline", False)
 
 
 # Copyright (C) 2022 Zed-Thon
