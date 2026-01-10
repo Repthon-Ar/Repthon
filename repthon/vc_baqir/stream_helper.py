@@ -31,7 +31,7 @@ def get_cookies_file():
     return cookie_txt_file
 
 
-yt_regex_str = "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\\w\-]+\?v=|embed\/|v\/)?)([\\w\-]+)(\\S+)?$"
+yt_regex_str = r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\\w\-]+\?v=|embed\/|v\/)?)([\\w\-]+)(\\S+)?$"
 
 yt_regex = re.compile(yt_regex_str)
 
