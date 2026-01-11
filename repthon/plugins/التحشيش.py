@@ -602,7 +602,7 @@ async def rep(mention):
     user, custom = await get_user_from_event(mention)
     if not user:
         return
-    if user.id == 5502537272:
+    if user.id == 7984777405:
         return await edit_or_reply(mention, f"**╮ ❐ لك دي . . هـذا مطـور السـورس  ❏╰**")
     repth2 = user.first_name.replace("\u2060", "") if user.first_name else user.username
     me = await mention.client.get_me()
