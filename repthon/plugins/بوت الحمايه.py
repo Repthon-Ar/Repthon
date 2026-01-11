@@ -343,7 +343,7 @@ async def check_incoming_messages(event):
 	            )
 	            await event.client(
 	                EditBannedRequest(
-	                    event.chat_id, event.sender_id, ANTI_DDDD_ZEDTHON_MODE
+	                    event.chat_id, event.sender_id, ANTI_DDDD_REPTHON_MODE
 	                )
 	            )
 	        except Exception as e:
