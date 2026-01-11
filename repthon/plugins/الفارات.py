@@ -29,6 +29,7 @@ from telethon.utils import get_display_name
 from urlextract import URLExtract
 from telegraph import Telegraph
 from html_telegraph_poster import TelegraphPoster
+from PIL import Image
 
 try:
     from catbox import CatboxUploader
