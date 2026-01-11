@@ -27,6 +27,8 @@ from telethon.tl.types import MessageEntityMentionName
 from telethon.errors.rpcerrorlist import ChatSendMediaForbiddenError
 from telethon.utils import get_display_name
 from urlextract import URLExtract
+from telegraph import Telegraph
+from html_telegraph_poster import TelegraphPoster
 
 try:
     from catbox import CatboxUploader
