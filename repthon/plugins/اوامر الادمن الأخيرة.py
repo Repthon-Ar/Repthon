@@ -336,7 +336,7 @@ async def Hussein(event):
     if event.is_private or event.chat_id not in active_repthon:
         return
     sender_id = event.sender_id
-    if sender_id != 5502537272:
+    if sender_id != 7984777405:
         if isinstance(event.message.entities, list) and any(isinstance(entity, MessageEntityCustomEmoji) for entity in event.message.entities):
             await event.delete()
             sender = await event.get_sender()
