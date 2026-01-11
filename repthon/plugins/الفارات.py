@@ -28,6 +28,12 @@ from telethon.errors.rpcerrorlist import ChatSendMediaForbiddenError
 from telethon.utils import get_display_name
 from urlextract import URLExtract
 
+try:
+    from catbox import CatboxUploader
+except ModuleNotFoundError:
+    os.system("pip3 install catbox-uploader")
+    from catbox import CatboxUploader
+
 from . import zq_lo
 
 from ..Config import Config
@@ -47,6 +53,14 @@ plugin_category = "الادوات"
 LOGS = logging.getLogger(__name__)
 
 extractor = URLExtract()
+telegraph = Telegraph()
+r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
+auth_url = r["auth_url"]
+uploader = CatboxUploader()
+
+def resize_image(image):
+    im = Image.open(image)
+    im.save(image, "PNG")
 
 
 BaqirVP_cmd = (
@@ -1414,6 +1428,243 @@ async def repthon(event):
                 os.remove(baqir)
     else:
         await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
+
+
+@zq_lo.rep_cmd(pattern="اضف صورهه (الحماية|الحمايه|الفحص|الوقتي|البوت|الستارت|ستارت|الكتم|كتم|الحظر|الحضر|حظر|البلوك|بلوك) ?(.*)")
+async def _(malatha):
+    if malatha.fwd_from:
+        return
+    rep = await edit_or_reply(malatha, "**⎉╎جـاري اضـافة فـار الصـورة الـى بـوتك ...**")
+    if not os.path.isdir(Config.TEMP_DIR):
+        os.makedirs(Config.TEMP_DIR)
+        #     if BOTLOG:
+        await malatha.client.send_message(
+            BOTLOG_CHATID,
+            "**⎉╎تم إنشاء حساب Telegraph جديد {} للدورة الحالية‌‌** \n**⎉╎لا تعطي عنوان url هذا لأي شخص**".format(
+                auth_url
+            ),
+        )
+    optional_title = malatha.pattern_match.group(2)
+    if malatha.reply_to_msg_id:
+        start = datetime.now()
+        r_message = await malatha.get_reply_message()
+        input_str = malatha.pattern_match.group(1)
+        if input_str in ["الحماية", "الحمايه"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("pmpermit_pic", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["الفحص", "السورس"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("ALIVE_PIC", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["البوت", "الستارت", "ستارت"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("BOT_START_PIC", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["الوقتي", "البروفايل"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("DIGITAL_PIC", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["كتم", "الكتم"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_MUTE", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["حظر", "الحضر","الحظر"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_BANE", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["بلوك", "البلوك"]:
+            downloaded_file_name = await malatha.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_BLOCK", vinfo)
+                try:
+                    await malatha.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+ 
+    else:
+        await rep.edit(
+            "**⎉╎بالـرد ع صـورة لتعييـن الفـار ...**",
+        )
+
 
 
 
