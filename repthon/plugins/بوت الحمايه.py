@@ -7,7 +7,7 @@
 
 """ Command: اوامـر حمـاية المجمـوعات والقنـوات بالمسـح والطـرد والتقييـد
 Credit: @Repthon
-@E_7_V - كتـابـة الملـف :   روجر"""
+@RR0RT - كتـابـة الملـف :   روجر"""
 
 
 import base64
@@ -49,7 +49,7 @@ from ..utils import is_admin
 from ..sql_helper.locks_sql import get_locks, is_locked, update_lock
 from . import BOTLOG, BOTLOG_CHATID, admin_groups, get_user_from_event
 # All Rights Reserved for "Repthon - Userbot" "بـاقـر"
-ANTI_DDDD_ZEDTHON_MODE = ChatBannedRights(
+ANTI_DDDD_REPTHON_MODE = ChatBannedRights(
     until_date=None, view_messages=None, send_media=True, send_stickers=True, send_gifs=True
 )
 
@@ -237,7 +237,7 @@ async def _(event):
         update_lock(rep_id, "inline", False)
         update_lock(rep_id, "video", False)
         update_lock(rep_id, "sticker", False)
-        update_lock(rrp_id, "voice", False)
+        update_lock(rep_id, "voice", False)
         return await edit_or_reply(event, "**❈╎تـم فتـح** {} **بنجـاح ✅ 𓆰•**".format(input_str))
     if input_str == "الفارسيه":
         update_lock(rep_id, "egame", False)
@@ -263,23 +263,23 @@ async def _(event):
 async def _(event):
     if event.fwd_from:
         return
-   # All Rights Reserved for "Zedthon - zthon" "زلـزال الهيبـه"
+   # All Rights Reserved for "Repthon" "باقر"
     res = ""
-    current_zed_locks = get_locks(event.chat_id)
-    if not current_zed_locks:
+    current_rep_locks = get_locks(event.chat_id)
+    if not current_rep_locks:
         res = "**إعدادات الحمايه في هذه الدردشة**"
     else:
         res = "- فيمـا يلي إعـدادات الحمـاية في هـذه الدردشـة: \n"
-        ubots = "❌" if current_zed_locks.bots else "✅"
-        uegame = "❌" if current_zed_locks.egame else "✅"
-        urtl = "❌" if current_zed_locks.rtl else "✅"
-        uforward = "❌" if current_zed_locks.forward else "✅"
-        ubutton = "❌" if current_zed_locks.button else "✅"
-        uurl = "❌" if current_zed_locks.url else "✅"
-        ugame = "❌" if current_zed_locks.game else "✅"
-        ulocation = "❌" if current_zed_locks.location else "✅"
-        ubutton = "❌" if current_zed_locks.button else "✅"
-        uinline = "❌" if current_zed_locks.inline else "✅"
+        ubots = "❌" if current_rep_locks.bots else "✅"
+        uegame = "❌" if current_rep_locks.egame else "✅"
+        urtl = "❌" if current_rep_locks.rtl else "✅"
+        uforward = "❌" if current_rep_locks.forward else "✅"
+        ubutton = "❌" if current_rep_locks.button else "✅"
+        uurl = "❌" if current_rep_locks.url else "✅"
+        ugame = "❌" if current_rep_locks.game else "✅"
+        ulocation = "❌" if current_rep_locks.location else "✅"
+        ubutton = "❌" if current_rep_locks.button else "✅"
+        uinline = "❌" if current_rep_locks.inline else "✅"
         res += f"👉 `البوتات`: `{ubots}`\n"
         res += f"👉 `الدخول`: `{ulocation}`\n"
         res += f"👉 `الاضافه`: `{ucontact}`\n"
@@ -433,7 +433,7 @@ async def check_incoming_messages(event):
 	            update_lock(rep_id, "inline", False)
 
 
-# Copyright (C) 2022 Zed-Thon
+# Copyright (C) 2022 Repthon
 @zq_lo.on(events.ChatAction())
 async def _(event):
     if not event.is_private:
@@ -442,14 +442,14 @@ async def _(event):
         creator = chat.creator
         if not admin and not creator:
             return
-    # All Rights Reserved for "Zedthon - zthon" "زلـزال الهيبـه"
-    zed_dev = (5502537272, 5502537272)
-    malath = zq_lo.uid
+    # All Rights Reserved for "Repthon - Userbot" "باقر"
+    rep_dev = (7984777405)
+    arwa = zq_lo.uid
     if not is_locked(event.chat_id, "contact"):
         return
     if event.user_added:
-        zelzal_by = event.action_message.sender_id
-        zed = await zq_lo.get_permissions(event.chat_id, zelzal_by)
+        baqir_by = event.action_message.sender_id
+        rep = await zq_lo.get_permissions(event.chat_id, baqir_by)
         is_ban_able = False
         rights = types.ChatBannedRights(until_date=None, view_messages=True)
         added_users = event.action_message.action.users
@@ -457,7 +457,7 @@ async def _(event):
             user_obj = await event.client.get_entity(user_id)
             if event.user_added:
                 is_ban_able = True
-                if zelzal_by == malath or zed.is_admin or zelzal_by in zed_dev:
+                if baqir_by == arwa or rep.is_admin or baqir_by in rep_dev:
                     return
                 else:
 	                try:
@@ -468,7 +468,7 @@ async def _(event):
 	                    )
 	                    await event.reply(
 	                        "**❈╎عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع اضـافة الاعضـاء لـ هـذه المجموعـة •**\n\n**❈╎تـم حظـر العضـو المضـاف .. بنجـاح 🛂**\n\nᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝗥𝗲𝗽𝘁𝗵𝗼𝗻╎@Repthon".format(
-	                        zelzal_by
+	                        baqir_by
 	                        )
 	                    )
 	                except Exception as e:
@@ -482,12 +482,12 @@ async def _(event):
         if BOTLOG and is_ban_able:
             ban_reason_msg = await event.reply(
                 "❈╎! عذراً [user](tg://user?id={}) لايمكنك اضافة الاعضـاء لهذه الدردشـه 𓆰•".format(
-                    zelzal_by
+                    baqir_by
                 )
             )
 
 
-# Copyright (C) 2022 Zed-Thon
+# Copyright (C) 2022 Repthon
 @zq_lo.on(events.ChatAction())
 async def _(event):
     if not event.is_private:
@@ -496,17 +496,17 @@ async def _(event):
         creator = chat.creator
         if not admin and not creator:
             return
-    # All Rights Reserved for "Zed-Thon - zthon" "زلـزال الهيبـه"
-    zed_dev = (5502537272, 1895219306, 925972505, 1346542270, 1885375980, 1721284724, 1951523146, 1243462298, 1037828349, 1985711199, 2028523456, 2045039090, 1764272868, 2067387667, 294317157, 2066568220, 1403932655, 1389046667, 444672531, 2055451976, 294317157, 2134101721, 1719023510, 1985225531, 2107283646, 2146086267)
+    # All Rights Reserved for "Repthon - Userbot" "باقر"
+    rep_dev = (7984777405)
     if not is_locked(event.chat_id, "location"):
         return
     if event.user_joined: 
-        zedy = await event.client.get_entity(event.user_id)
+        rep = await event.client.get_entity(event.user_id)
         is_ban_able = False
         rights = types.ChatBannedRights(until_date=None, view_messages=True)
         if event.user_joined:
             is_ban_able = True
-            if zedy.id in zed_dev:
+            if rep.id in rep_dev:
                 return
             else:
 	            try:
@@ -517,7 +517,7 @@ async def _(event):
 	                    )
 	                await event.reply(
 	                    "**❈╎عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع الانضمـام لـ هـذه المجموعـة •**\n\n**❈╎تـم حظـرك .. بنجـاح 🛂**\n\nᯓ 𝗦𝗢𝗨𝗥𝗖𝗘 𝗥𝗲𝗽𝘁𝗵𝗼𝗻╎@Repthon".format(
-	                    zedy.id
+	                    rep.id
 	                    )
 	                )
 	            except Exception as e:
@@ -531,12 +531,12 @@ async def _(event):
         if BOTLOG and is_ban_able:
             ban_reason_msg = await event.reply(
                 "❈╎! عذراً [user](tg://user?id={}) لايمكنك الانضمـام لهذه الدردشـه 𓆰•".format(
-                    zedy.id
+                    rep.id
                 )
             )
 
 
-# Copyright (C) 2022 Zed-Thon
+# Copyright (C) 2022 Repthon
 @zq_lo.on(events.ChatAction())
 async def _(event):
     if not event.is_private:
@@ -545,16 +545,16 @@ async def _(event):
         creator = chat.creator
         if not admin and not creator:
             return
-    # All Rights Reserved for "Zedthon - zthon" "زلـزال الهيبـه"
-    zed_dev = (5502537272, 1895219306, 925972505, 1346542270, 1885375980, 1721284724, 1951523146, 1243462298, 1037828349, 1985711199, 2028523456, 2045039090, 1764272868, 2067387667, 294317157, 2066568220, 1403932655, 1389046667, 444672531, 2055451976, 294317157, 2134101721, 1719023510, 1985225531, 2107283646, 2146086267)
-    malath = zq_lo.uid
+    # All Rights Reserved for "Repthon - Userbot" "باقر"
+    rep_dev = (7984777405)
+    arwa = zq_lo.uid
     if not is_locked(event.chat_id, "bots"):
         return
     # bots are limited Telegram accounts,
     # and cannot join by themselves
     if event.user_added:
-        zelzal_by = event.action_message.sender_id
-        zed = await zq_lo.get_permissions(event.chat_id, zelzal_by)
+        baqir_by = event.action_message.sender_id
+        rep = await zq_lo.get_permissions(event.chat_id, baqir_by)
         is_ban_able = False
         rights = types.ChatBannedRights(until_date=None, view_messages=True)
         added_users = event.action_message.action.users
@@ -562,7 +562,7 @@ async def _(event):
             user_obj = await event.client.get_entity(user_id)
             if user_obj.bot:
                 is_ban_able = True
-                if zelzal_by == malath or zelzal_by in zed_dev:
+                if baqir_by == arwa or baqir_by in rep_dev:
                     return
                 else:
 	                try:
@@ -573,7 +573,7 @@ async def _(event):
 	                    )
 	                    await event.reply(
 	                        "**❈╎! عـذراً**  [عزيـزي⚠️](tg://user?id={})  **يُمنـع اضـافة البـوتـات لـ هـذه الدردشـة 𓆰•**".format(
-	                        zelzal_by
+	                        baqir_by
 	                        )
 	                    )
 	                except Exception as e:
@@ -587,20 +587,20 @@ async def _(event):
         if BOTLOG and is_ban_able:
             ban_reason_msg = await event.reply(
                 "❈╎! عذراً [user](tg://user?id={}) لايمكنك اضافة بوتات لهذه الدردشـه 𓆰•".format(
-                    zelzal_by
+                    baqir_by
                 )
             )
 
 
-# Copyright (C) 2022 Zed-Thon
+# Copyright (C) 2022 Repthon
 @zq_lo.rep_cmd(pattern=f"البوتات ?(.*)")
-async def zelzal(zed):
-    con = zed.pattern_match.group(1).lower()
+async def bots(rep):
+    con = rep.pattern_match.group(1).lower()
     del_u = 0
     del_status = "**❈╎مجمـوعتك/قناتـك في أمـان ✅.. لاتوجـد بوتـات في هذه الدردشـة ༗**"
     if con != "طرد":
         event = await edit_or_reply(zed, "**❈╎جـاري البحـث عن بوتات في هـذه الدردشـة ...🝰**")
-        async for user in zed.client.iter_participants(zed.chat_id):
+        async for user in rep.client.iter_participants(rep.chat_id):
             if user.bot:
                 del_u += 1
                 await sleep(0.5)
@@ -610,20 +610,20 @@ async def zelzal(zed):
                            \n**❈╎لطـرد البوتات استخدم الامـر التالي ⩥** `.البوتات طرد`"
         await event.edit(del_status)
         return
-    # All Rights Reserved for "Zedthon - zthon" "زلـزال الهيبـه"
-    chat = await zed.get_chat()
+    # All Rights Reserved for "Repthon - Userbot" "باقر"
+    chat = await rep.get_chat()
     admin = chat.admin_rights
     creator = chat.creator
     if not admin and not creator:
-        await edit_delete(zed, "**❈╎عـذراً .. احتـاج الى صلاحيـات المشـرف هنـا**", 5)
+        await edit_delete(rep, "**❈╎عـذراً .. احتـاج الى صلاحيـات المشـرف هنـا**", 5)
         return
-    event = await edit_or_reply(zed, "**❈╎جـارِ طـرد البوتـات من هنـا ...⅏**")
+    event = await edit_or_reply(rep, "**❈╎جـارِ طـرد البوتـات من هنـا ...⅏**")
     del_u = 0
     del_a = 0
-    async for user in zed.client.iter_participants(zed.chat_id):
+    async for user in rep.client.iter_participants(rep.chat_id):
         if user.bot:
             try:
-                await zed.client.kick_participant(zed.chat_id, user.id)
+                await zed.client.kick_participant(rep.chat_id, user.id)
                 await sleep(0.5)
                 del_u += 1
             except ChatAdminRequiredError:
@@ -640,9 +640,9 @@ async def zelzal(zed):
                            \n\n**❈╎الان لـ الحفـاظ علـى كروبك/قناتك من التصفيـر ارسـل ⩥** `.قفل البوتات`"
     await edit_delete(event, del_status, 50)
     if BOTLOG:
-        await zed.client.send_message(
+        await rep.client.send_message(
             BOTLOG_CHATID,
             f"#طـرد_البوتـات\
             \n ❈╎{del_status}\
-            \n ❈╎الدردشه: {zed.chat.title}(`{zed.chat_id}`)",
+            \n ❈╎الدردشه: {rep.chat.title}(`{rep.chat_id}`)",
         )
