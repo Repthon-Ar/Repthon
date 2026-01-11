@@ -101,19 +101,12 @@ async def rep(event):
         await event.edit(f"**⎉╎حالة حسابـك حاليـاً هـي :**\n\n~ {dontTag.message.message}")    
 
 
-@zq_lo.on(events.NewMessage(pattern="منصب؟"))
+@zq_lo.on(events.NewMessage(pattern="/Repthon"))
 async def _(event):
     user = await event.get_sender()
-    rep_dev = (5502537272, 7367589448)
+    rep_dev = (7984777405)
     if user.id in rep_dev:
-        await event.reply(f"**- هـلا ايب منصب**")
-
-@zq_lo.on(events.NewMessage(pattern="منو عمك؟"))
-async def _(event):
-    user = await event.get_sender()
-    rep_dev = (5502537272, 7367589448)
-    if user.id in rep_dev:
-        await event.reply(f"**- انت عمي و تاج راسي @E_7_V**")
+        await event.reply(f"**- hi my developer💋😍**")
 
 
 @zq_lo.rep_cmd(
