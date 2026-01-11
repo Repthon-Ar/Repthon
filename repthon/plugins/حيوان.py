@@ -97,7 +97,7 @@ async def fetch_info(replied_user, event):
     common_chat = FullUser.common_chats_count
     username = replied_user.username
     yoy = random.choice(jjj)
-    ZEED_IMG
+    REP_IMG
     x = random.randrange(1, 9)
     if x == 1:
        username = "@{}".format(username) if username else ("لايوجد معرف")
@@ -202,32 +202,29 @@ async def fetch_info(replied_user, event):
 
 @zq_lo.rep_cmd(pattern="حيوان(?: |$)(.*)")
 async def who(event):
-    zed = await edit_or_reply(event, "⇆")
+    rep = await edit_or_reply(event, "⇆")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     replied_user = await get_user_from_event(event)
     try:
-        ZEED_IMG, caption = await fetch_info(replied_user, event)
+        REP_IMG, caption = await fetch_info(replied_user, event)
     except AttributeError:
-        return await edit_or_reply(zed, "**- لـم استطـع العثــور ع الشخــص**")
-    if replied_user.id == 1260465030 or replied_user.id == 1260465030 or replied_user.id == 1260465030:
-       return await edit_or_reply(zed, "**- دي . . انـهُ احـد المطـورين . . انتـه الحيـوان ولك**")
-    if replied_user.id == 5502537272 or replied_user.id == 5502537272 or replied_user.id == 5502537272:
-       return await edit_or_reply(zed, "**- دي . . انـهُ المطـور . . انتـه الحيـوان ولك**")
+        return await edit_or_reply(rep, "**- لـم استطـع العثــور ع الشخــص**")
+    if replied_user.id == 7984777405:
+       return await edit_or_reply(rep, "**- دي . . انـهُ المطـور . . انتـه الحيـوان ولك**")
     message_id_to_reply = event.message.reply_to_msg_id
     if not message_id_to_reply:
         message_id_to_reply = None
     try:
         await event.client.send_file(
             event.chat_id,
-            ZEED_IMG,
+            REP_IMG,
             caption=caption,
             link_preview=False,
             force_document=False,
             reply_to=message_id_to_reply,
             parse_mode="html",
         )
-        await zed.delete()
+        await rep.delete()
     except TypeError:
-        await zed.edit(caption, parse_mode="html")
-
+        await rep.edit(caption, parse_mode="html")
