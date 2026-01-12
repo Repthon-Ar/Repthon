@@ -1272,8 +1272,244 @@ async def variable(event):
             await rep.edit("**⎉╎تم اضـافـة المنطقـه الزمنيـه .. بنجـاح ☑️**\n**⎉╎المضـاف اليـه : ↶**\n دولـة `{}`  \n**⎉╎يتم الان اعـادة تشغيـل بـوت ريبـــثون يستغـرق الامر 2-1 دقيقـه ▬▭ ...**".format(input_str))
         addgvar("TZ", "Europe/Berlin")
 
+# Copyright (C) 2022 RepthonArabic . All Rights Reserved
+@zq_lo.rep_cmd(pattern="اضف صورة (الحماية|الحمايه|الفحص|الوقتي|البوت|الستارت|ستارت|الكتم|كتم|الحظر|الحضر|حظر|البلوك|بلوك) ?(.*)")
+async def _(arwa):
+    if arwa.fwd_from:
+        return
+    rep = await edit_or_reply(arwa, "**⎉╎جـاري اضـافة فـار الصـورة الـى بـوتك ...**")
+    if not os.path.isdir(Config.TEMP_DIR):
+        os.makedirs(Config.TEMP_DIR)
+        #     if BOTLOG:
+        await arwa.client.send_message(
+            BOTLOG_CHATID,
+            "**⎉╎تم إنشاء حساب Telegraph جديد {} للدورة الحالية‌‌** \n**⎉╎لا تعطي عنوان url هذا لأي شخص**".format(
+                auth_url
+            ),
+        )
+    optional_title = arwa.pattern_match.group(2)
+    if arwa.reply_to_msg_id:
+        start = datetime.now()
+        r_message = await arwa.get_reply_message()
+        input_str = arwa.pattern_match.group(1)
+        if input_str in ["الحماية", "الحمايه"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("pmpermit_pic", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["الفحص", "السورس"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("ALIVE_PIC", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["البوت", "الستارت", "ستارت"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("BOT_START_PIC", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["الوقتي", "البروفايل"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("DIGITAL_PIC", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["كتم", "الكتم"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_MUTE", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        malatha.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["حظر", "الحضر","الحظر"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_BANE", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+        elif input_str in ["بلوك", "البلوك"]:
+            downloaded_file_name = await arwa.client.download_media(
+                r_message, Config.TEMP_DIR
+            )
+            await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
+            vinfo = None
+            if downloaded_file_name.endswith((".webp")):
+                resize_image(downloaded_file_name)
+            try:
+                start = datetime.now()
+                vinfo = uploader.upload_file(downloaded_file_name)
+            except Exception as exc:
+                await rep.edit("**⎉╎خطا : **" + str(exc))
+                os.remove(downloaded_file_name)
+            else:
+                end = datetime.now()
+                ms_two = (end - start).seconds
+                os.remove(downloaded_file_name)
+                addgvar("PC_BLOCK", vinfo)
+                try:
+                    await arwa.client.send_file(
+                        arwa.chat_id,
+                        vinfo,
+                        caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
+                    )
+                    await rep.delete()
+                except ChatSendMediaForbiddenError:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+                except BaseException:
+                    await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
+ 
+    else:
+        await rep.edit(
+            "**⎉╎بالـرد ع صـورة لتعييـن الفـار ...**",
+        )
 
-# Copyright (C) 2022 Repthon
+
+# Copyright (C) 2022 RepthonArabic . All Rights Reserved
 @zq_lo.rep_cmd(pattern="اضف صوره (الحماية|الحمايه|الفحص|الوقتي|البوت|الستارت|ستارت|الكتم|كتم|الحظر|الحضر|حظر|البلوك|بلوك) ?(.*)")
 async def _(arwa):
     if arwa.fwd_from:
