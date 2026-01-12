@@ -1273,187 +1273,28 @@ async def variable(event):
         addgvar("TZ", "Europe/Berlin")
 
 
-@zq_lo.rep_cmd(pattern="اضف صورة (الفحص|فحص) ?(.*)")
-async def alive_repthon(event):
-    reply = await event.get_reply_message()
-    if reply and reply.media:
-        input_str = event.pattern_match.group(1)
-        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الفحص**")
-        try:
-            baqir = await event.client.download_media(reply)
-            if baqir.endswith((".webp")):
-                resize_image(baqir)
-            with open(baqir, "rb") as file:
-                response = requests.post(
-                    "https://uguu.se/upload.php",
-                    files={"files[]": file},
-                )
-            
-            if response.status_code == 200 and response.json().get("success"):
-                url = response.json()["files"][0]["url"]
-                addgvar("ALIVE_PIC", url)
-                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى الفحص ✓ **")
-            else:
-                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
-
-            os.remove(baqir)
-        except Exception as exc:
-            await event.edit(f"**خـطأ : **\n`{exc}`")
-            if os.path.exists(baqir):
-                os.remove(baqir)
-    else:
-        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
-
-
-@zq_lo.rep_cmd(pattern="اضف صورة (الحمايه|الحماية) ?(.*)")
-async def repthon(event):
-    reply = await event.get_reply_message()
-    if reply and reply.media:
-        input_str = event.pattern_match.group(1)
-        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الحماية**")
-        try:
-            baqir = await event.client.download_media(reply)
-            if baqir.endswith((".webp")):
-                resize_image(baqir)
-            with open(baqir, "rb") as file:
-                response = requests.post(
-                    "https://uguu.se/upload.php",
-                    files={"files[]": file},
-                )
-            
-            if response.status_code == 200 and response.json().get("success"):
-                url = response.json()["files"][0]["url"]
-                addgvar("pmpermit_pic", url)
-                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى الحماية ✓ **")
-            else:
-                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
-
-            os.remove(baqir)
-        except Exception as exc:
-            await event.edit(f"**خـطأ : **\n`{exc}`")
-            if os.path.exists(baqir):
-                os.remove(baqir)
-    else:
-        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
-
-
-@zq_lo.rep_cmd(pattern="اضف صورة (الاوامر|اللوحة) ?(.*)")
-async def repthon(event):
-    reply = await event.get_reply_message()
-    if reply and reply.media:
-        input_str = event.pattern_match.group(1)
-        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر لوحة الاوامر**")
-        try:
-            baqir = await event.client.download_media(reply)
-            if baqir.endswith((".webp")):
-                resize_image(baqir)
-            with open(baqir, "rb") as file:
-                response = requests.post(
-                    "https://uguu.se/upload.php",
-                    files={"files[]": file},
-                )
-            
-            if response.status_code == 200 and response.json().get("success"):
-                url = response.json()["files"][0]["url"]
-                addgvar("CMD_PIC", url)
-                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى لوحة الاوامر ✓ **")
-            else:
-                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
-
-            os.remove(baqir)
-        except Exception as exc:
-            await event.edit(f"**خـطأ : **\n`{exc}`")
-            if os.path.exists(baqir):
-                os.remove(baqir)
-    else:
-        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
-
-
-@zq_lo.rep_cmd(pattern="اضف صورة (البوت|بوت) ?(.*)")
-async def repthon(event):
-    reply = await event.get_reply_message()
-    if reply and reply.media:
-        input_str = event.pattern_match.group(1)
-        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر البوت**")
-        try:
-            baqir = await event.client.download_media(reply)
-            if baqir.endswith((".webp")):
-                resize_image(baqir)
-            with open(baqir, "rb") as file:
-                response = requests.post(
-                    "https://uguu.se/upload.php",
-                    files={"files[]": file},
-                )
-            
-            if response.status_code == 200 and response.json().get("success"):
-                url = response.json()["files"][0]["url"]
-                addgvar("BOT_START_PIC", url)
-                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى البوت ✓ **")
-            else:
-                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
-
-            os.remove(baqir)
-        except Exception as exc:
-            await event.edit(f"**خـطأ : **\n`{exc}`")
-            if os.path.exists(baqir):
-                os.remove(baqir)
-    else:
-        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
-
-
-@zq_lo.rep_cmd(pattern="اضف صورة (الوقتي|التلقائي|وقتي|البروفايل) ?(.*)")
-async def repthon(event):
-    reply = await event.get_reply_message()
-    if reply and reply.media:
-        input_str = event.pattern_match.group(1)
-        repevent = await event.edit("**⎉╎ جـار رفع الـصورة الى أمر الصورة الوقتية**")
-        try:
-            baqir = await event.client.download_media(reply)
-            if baqir.endswith((".webp")):
-                resize_image(baqir)
-            with open(baqir, "rb") as file:
-                response = requests.post(
-                    "https://uguu.se/upload.php",
-                    files={"files[]": file},
-                )
-            
-            if response.status_code == 200 and response.json().get("success"):
-                url = response.json()["files"][0]["url"]
-                addgvar("DIGITAL_PIC", url)
-                await repevent.edit(f"**⎉╎ تم اضافة الصورة الى امر الصورة الوقتية ✓ **")
-            else:
-                await repevent.edit(f"**⎉╎ حدث خطأ في رفع الصورة: **\n`{response.json()}`")
-
-            os.remove(baqir)
-        except Exception as exc:
-            await event.edit(f"**خـطأ : **\n`{exc}`")
-            if os.path.exists(baqir):
-                os.remove(baqir)
-    else:
-        await event.edit("**⎉╎ يُرجى الرد على الصورة لطفًا**")
-
-
-@zq_lo.rep_cmd(pattern="اضف صورهه (الحماية|الحمايه|الفحص|الوقتي|البوت|الستارت|ستارت|الكتم|كتم|الحظر|الحضر|حظر|البلوك|بلوك) ?(.*)")
-async def _(malatha):
-    if malatha.fwd_from:
+# Copyright (C) 2022 Repthon
+@zq_lo.rep_cmd(pattern="اضف صوره (الحماية|الحمايه|الفحص|الوقتي|البوت|الستارت|ستارت|الكتم|كتم|الحظر|الحضر|حظر|البلوك|بلوك) ?(.*)")
+async def _(arwa):
+    if arwa.fwd_from:
         return
-    rep = await edit_or_reply(malatha, "**⎉╎جـاري اضـافة فـار الصـورة الـى بـوتك ...**")
+    rep = await edit_or_reply(arwa, "**⎉╎جـاري اضـافة فـار الصـورة الـى بـوتك ...**")
     if not os.path.isdir(Config.TEMP_DIR):
         os.makedirs(Config.TEMP_DIR)
         #     if BOTLOG:
-        await malatha.client.send_message(
+        await arwa.client.send_message(
             BOTLOG_CHATID,
             "**⎉╎تم إنشاء حساب Telegraph جديد {} للدورة الحالية‌‌** \n**⎉╎لا تعطي عنوان url هذا لأي شخص**".format(
                 auth_url
             ),
         )
-    optional_title = malatha.pattern_match.group(2)
-    if malatha.reply_to_msg_id:
+    optional_title = arwa.pattern_match.group(2)
+    if arwa.reply_to_msg_id:
         start = datetime.now()
-        r_message = await malatha.get_reply_message()
-        input_str = malatha.pattern_match.group(1)
+        r_message = await arwa.get_reply_message()
+        input_str = arwa.pattern_match.group(1)
         if input_str in ["الحماية", "الحمايه"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1472,8 +1313,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("pmpermit_pic", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1483,7 +1324,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["الفحص", "السورس"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1502,8 +1343,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("ALIVE_PIC", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1513,7 +1354,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["البوت", "الستارت", "ستارت"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1532,8 +1373,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("BOT_START_PIC", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1543,7 +1384,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["الوقتي", "البروفايل"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1562,8 +1403,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("DIGITAL_PIC", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1573,7 +1414,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["كتم", "الكتم"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1592,7 +1433,7 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("PC_MUTE", vinfo)
                 try:
-                    await malatha.client.send_file(
+                    await arwa.client.send_file(
                         malatha.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
@@ -1603,7 +1444,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["حظر", "الحضر","الحظر"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1622,8 +1463,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("PC_BANE", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1633,7 +1474,7 @@ async def _(malatha):
                 except BaseException:
                     await rep.edit("**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎المتغيـر : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, vinfo))
         elif input_str in ["بلوك", "البلوك"]:
-            downloaded_file_name = await malatha.client.download_media(
+            downloaded_file_name = await arwa.client.download_media(
                 r_message, Config.TEMP_DIR
             )
             await rep.edit(f"** ⪼ تم تحميل** {downloaded_file_name} **.. بنجـاح ✓**")
@@ -1652,8 +1493,8 @@ async def _(malatha):
                 os.remove(downloaded_file_name)
                 addgvar("PC_BLOCK", vinfo)
                 try:
-                    await malatha.client.send_file(
-                        malatha.chat_id,
+                    await arwa.client.send_file(
+                        arwa.chat_id,
                         vinfo,
                         caption="**⎉╎تم تغييـر صـورة {} .. بنجـاح ☑️**\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str),
                     )
@@ -1667,9 +1508,6 @@ async def _(malatha):
         await rep.edit(
             "**⎉╎بالـرد ع صـورة لتعييـن الفـار ...**",
         )
-
-
-
 
 
 # Copyright (C) 2022 Repthon . All Rights Reserved
