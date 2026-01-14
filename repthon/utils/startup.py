@@ -208,7 +208,7 @@ async def startupmessage():
             baq_ir = f"[{Rname}](tg://user?id={Rid})"
             Config.ZQ_LOBLOGO = await zq_lo.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://graph.org/file/f367d5a4a6bf1fbfc99b9.mp4",
+                "https://graph.org/file/e7b3ea8dc56ac781d756c.mp4",
                 caption=f"**⌔ مرحبـاً عـزيـزي** {Rname} 🫂\n**⌔ تـم تشغـيل سـورس ريبـــثون 🧸♥️**\n**⌔ التنصيب الخاص بـك .. بنجـاح ✅**\n**⌔ لـ تصفح قائمـة الاوامـر 🕹**\n**⌔ ارسـل الامـر** `{cmdhr}مساعده`",
                 buttons=[[Button.url("𝗥𝗲𝗽𝘁𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/Repthon")], [Button.url("𝗥𝗲𝗽𝘁𝗵𝗼𝗻 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/Repthon_support")],[Button.url("تواصـل مطـور السـورس", "https://t.me/RR0RT")]]
             )
