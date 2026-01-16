@@ -52,12 +52,16 @@ async def baqir_tiktok(event):
             await conv.send_message(ROGER) #Code by T.me/E_7_V
             repthon = await conv.get_response()
             await rep.delete()
-            await borg.send_file(
-                event.chat_id,
-                repthon,
-                caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
-                parse_mode="html",
-            )
+            # Repthon
+            if repthon.media:
+                # Repthon
+                video = await repthon.download_media()
+                await borg.send_file(
+                    event.chat_id,
+                    video,
+                    caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
+                    parse_mode="html",
+                )
         except YouBlockedUserError: #Code by T.me/E_7_V
             await zq_lo(unblock("QJ9bot"))
             await conv.send_message("/start")
@@ -65,12 +69,15 @@ async def baqir_tiktok(event):
             await conv.send_message(ROGER)
             repthon = await conv.get_response()
             await rep.delete()
-            await borg.send_file(
-                event.chat_id,
-                repthon,
-                caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
-                parse_mode="html",
-            )
+            # Repthon
+            if repthon.media:
+                video = await repthon.download_media()
+                await borg.send_file(
+                    event.chat_id,
+                    video,
+                    caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
+                    parse_mode="html",
+                )
 # Write Code By telegram.dog/E_7_V ✌🏻
 @zq_lo.on(admin_cmd(pattern="ستوري(?: |$)(.*)"))
 async def _(event):
