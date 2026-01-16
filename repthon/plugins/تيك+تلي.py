@@ -43,7 +43,7 @@ async def baqir_tiktok(event):
         ROGER = await event.get_reply_message()
     else:
         return await edit_or_reply(event, "**⎉╎بالـࢪد ؏ــلى رابـط تيـك تـوك**")
-    chat = "@downloader_tiktok_bot" #Code by T.me/E_7_V
+    chat = "@QJ9bot" #Code by T.me/E_7_V
     rep = await edit_or_reply(event, "**⎉╎جـارِ التحميـل من تيـك تـوك ...**")
     async with borg.conversation(chat) as conv: #Code by T.me/E_7_V
         try:
@@ -59,7 +59,7 @@ async def baqir_tiktok(event):
                 parse_mode="html",
             )
         except YouBlockedUserError: #Code by T.me/E_7_V
-            await zq_lo(unblock("downloader_tiktok_bot"))
+            await zq_lo(unblock("QJ9bot"))
             await conv.send_message("/start")
             await conv.get_response()
             await conv.send_message(ROGER)
