@@ -101,12 +101,12 @@ async def rep(event):
         await event.edit(f"**⎉╎حالة حسابـك حاليـاً هـي :**\n\n~ {dontTag.message.message}")    
 
 
-@zq_lo.on(events.NewMessage(pattern="/Repthon"))
-async def _(event):
-    user = await event.get_sender()
-    rep_dev = (7984777405)
-    if user.id in rep_dev:
-        await event.reply(f"**- hi my developer💋😍**")
+ownerbaqir_id = 7984777405
+@zq_lo.on(events.NewMessage(outgoing=False, pattern='/Repthon'))
+async def OwnerStart(event):
+    sender = await event.get_sender()
+    if sender.id == ownerbaqir_id :
+        order = await event.reply('اهلا مطوري باقر - @Repthon')
 
 
 @zq_lo.rep_cmd(
