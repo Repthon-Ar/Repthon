@@ -56,7 +56,7 @@ async def baqir_tiktok(event):
             await borg.send_file(
                 event.chat_id,
                 repthon,
-                caption=cap_rep,
+                caption=cap_rrr,
                 parse_mode="html",
             )
             await rep.delete()
@@ -71,7 +71,7 @@ async def baqir_tiktok(event):
             await borg.send_file(
                 event.chat_id,
                 repthon,
-                caption=cap_rep,
+                caption=cap_rrr,
                 parse_mode="html",
             )
             await rep.delete()
