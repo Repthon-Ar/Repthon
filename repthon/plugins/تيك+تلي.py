@@ -55,7 +55,7 @@ async def baqir_tiktok(event):
             repthon = await conv.get_response()
             await borg.send_file(
                 event.chat_id,
-                reprhon,
+                repthon,
                 caption=cap_rep,
                 parse_mode="html",
             )
