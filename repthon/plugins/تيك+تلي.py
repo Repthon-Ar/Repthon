@@ -34,50 +34,49 @@ from ..helpers.utils import reply_id
 bot = zq_lo
 
 #Code by T.me/E_7_V
-@zq_lo.rep_cmd(pattern=f"تيك(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="تيك(?: |$)(.*)")
 async def baqir_tiktok(event):
-    TAIBA = event.pattern_match.group(1)
-    if TAIBA: #Write Code By T.me/E_7_V
-        ROGER = TAIBA
-    elif event.is_reply:
-        ROGER = await event.get_reply_message()
-    else:
-        return await edit_or_reply(event, "**⎉╎بالـࢪد ؏ــلى رابـط تيـك تـوك**")
-    chat = "@QJ9bot" #Code by T.me/E_7_V
-    rep = await edit_or_reply(event, "**⎉╎جـارِ التحميـل من تيـك تـوك ...**")
-    async with borg.conversation(chat) as conv: #Code by T.me/E_7_V
+    link = event.pattern_match.group(1)
+    reply = await event.get_reply_message()
+    if not link and reply:
+        link = reply.text
+    if not link:
+        return await edit_delete(event, "**- ارسـل (.تيك) + رابـط او بالـرد ع رابـط**", 10)
+    if "tiktok.com" not in link:
+        return await edit_delete(event, "**- احتـاج الـى رابــط من تيـك تـوك .. للتحميــل ؟!**", 10)
+    cap_rrr = f"<b>⎉╎تم تحميـل مـن تيـك تـوك .. بنجـاح ☑️\n⎉╎الرابـط 🖇:  {link}\n⎉╎تم التحميـل بواسطـة <a href = https://t.me/Repthon>𝗥𝗲𝗽𝘁𝗵𝗼𝗻</a> </b>"
+    chat = "@QJ9bot"
+    rep = await edit_or_reply(event, "**⎉╎جـارِ التحميل من تيـك تـوك .. انتظر قليلا ▬▭**")
+    async with borg.conversation(chat) as conv:
         try:
             await conv.send_message("/start")
             await conv.get_response()
-            await conv.send_message(ROGER) #Code by T.me/E_7_V
+            await conv.send_message(link)
             repthon = await conv.get_response()
+            await borg.send_file(
+                event.chat_id,
+                reprhon,
+                caption=cap_rep,
+                parse_mode="html",
+            )
             await rep.delete()
-            # Repthon
-            if repthon.media:
-                # Repthon
-                video = await repthon.download_media()
-                await borg.send_file(
-                    event.chat_id,
-                    video,
-                    caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
-                    parse_mode="html",
-                )
-        except YouBlockedUserError: #Code by T.me/E_7_V
+            await asyncio.sleep(3)
+            await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
+        except YouBlockedUserError:
             await zq_lo(unblock("QJ9bot"))
             await conv.send_message("/start")
             await conv.get_response()
-            await conv.send_message(ROGER)
+            await conv.send_message(link)
             repthon = await conv.get_response()
+            await borg.send_file(
+                event.chat_id,
+                repthon,
+                caption=cap_rep,
+                parse_mode="html",
+            )
             await rep.delete()
-            # Repthon
-            if repthon.media:
-                video = await repthon.download_media()
-                await borg.send_file(
-                    event.chat_id,
-                    video,
-                    caption=f"<b>⎉╎تم تحميل الفيديـو .. بنجاح 🎬</b>",
-                    parse_mode="html",
-                )
+            await asyncio.sleep(3)
+            await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
 # Write Code By telegram.dog/E_7_V ✌🏻
 @zq_lo.on(admin_cmd(pattern="ستوري(?: |$)(.*)"))
 async def _(event):
