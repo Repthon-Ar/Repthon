@@ -38,45 +38,84 @@ bot = zq_lo
 async def baqir_tiktok(event):
     link = event.pattern_match.group(1)
     reply = await event.get_reply_message()
+    
     if not link and reply:
         link = reply.text
+    
     if not link:
         return await edit_delete(event, "**- ارسـل (.تيك) + رابـط او بالـرد ع رابـط**", 10)
+    
     if "tiktok.com" not in link:
         return await edit_delete(event, "**- احتـاج الـى رابــط من تيـك تـوك .. للتحميــل ؟!**", 10)
+    
     cap_rrr = f"<b>⎉╎تم تحميـل مـن تيـك تـوك .. بنجـاح ☑️\n⎉╎الرابـط 🖇:  {link}\n⎉╎تم التحميـل بواسطـة <a href = https://t.me/Repthon>𝗥𝗲𝗽𝘁𝗵𝗼𝗻</a> </b>"
     chat = "@QJ9bot"
     rep = await edit_or_reply(event, "**⎉╎جـارِ التحميل من تيـك تـوك .. انتظر قليلا ▬▭**")
+    
     async with borg.conversation(chat) as conv:
         try:
             await conv.send_message("/start")
             await conv.get_response()
             await conv.send_message(link)
-            repthon = await conv.get_response()
-            await borg.send_file(
-                event.chat_id,
-                repthon,
-                caption=cap_rrr,
-                parse_mode="html",
-            )
+            repthon_msg = await conv.get_response()
+            
+            if repthon_msg.media:
+                downloaded_file = await event.client.download_media(
+                    repthon_msg,
+                    file=f"tiktok_{event.id}.mp4"
+                )
+                
+                # إرسال الملف الذي تم تحميله
+                await borg.send_file(
+                    event.chat_id,
+                    downloaded_file,
+                    caption=cap_rrr,
+                    parse_mode="html",
+                )
+                
+                # حذف الملف المؤقت
+                import os
+                if os.path.exists(downloaded_file):
+                    os.remove(downloaded_file)
+            else:
+                await event.reply(f"**خطأ: لم يتم إرسال ملف من البوت**\n{repthon_msg.text}")
+                
             await rep.delete()
             await asyncio.sleep(3)
-            await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
+            await event.client(DeleteHistoryRequest(7429789851, max_id=0, just_clear=True))
+            
         except YouBlockedUserError:
             await zq_lo(unblock("QJ9bot"))
             await conv.send_message("/start")
             await conv.get_response()
             await conv.send_message(link)
-            repthon = await conv.get_response()
-            await borg.send_file(
-                event.chat_id,
-                repthon,
-                caption=cap_rrr,
-                parse_mode="html",
-            )
+            repthon_msg = await conv.get_response()
+            
+            if repthon_msg.media:
+                downloaded_file = await event.client.download_media(
+                    repthon_msg,
+                    file=f"tiktok_{event.id}.mp4"
+                )
+                
+                await borg.send_file(
+                    event.chat_id,
+                    downloaded_file,
+                    caption=cap_rrr,
+                    parse_mode="html",
+                )
+                
+                import os
+                if os.path.exists(downloaded_file):
+                    os.remove(downloaded_file)
+            else:
+                await event.reply(f"**خطأ: لم يتم إرسال ملف من البوت**\n{repthon_msg.text}")
+                
             await rep.delete()
             await asyncio.sleep(3)
-            await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
+            await event.client(DeleteHistoryRequest(7429789851, max_id=0, just_clear=True))
+        
+        except Exception as e:
+            await rep.edit(f"**خطأ: {str(e)}**")
 # Write Code By telegram.dog/E_7_V ✌🏻
 @zq_lo.on(admin_cmd(pattern="ستوري(?: |$)(.*)"))
 async def _(event):
