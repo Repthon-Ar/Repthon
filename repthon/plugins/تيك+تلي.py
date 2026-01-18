@@ -45,77 +45,110 @@ async def baqir_tiktok(event):
     if not link:
         return await edit_delete(event, "**- ارسـل (.تيك) + رابـط او بالـرد ع رابـط**", 10)
     
-    if "tiktok.com" not in link:
+    if "tiktok.com" not in link and "vt.tiktok.com" not in link:
         return await edit_delete(event, "**- احتـاج الـى رابــط من تيـك تـوك .. للتحميــل ؟!**", 10)
     
     cap_rrr = f"<b>⎉╎تم تحميـل مـن تيـك تـوك .. بنجـاح ☑️\n⎉╎الرابـط 🖇:  {link}\n⎉╎تم التحميـل بواسطـة <a href = https://t.me/Repthon>𝗥𝗲𝗽𝘁𝗵𝗼𝗻</a> </b>"
     chat = "@QJ9bot"
     rep = await edit_or_reply(event, "**⎉╎جـارِ التحميل من تيـك تـوك .. انتظر قليلا ▬▭**")
     
-    async with borg.conversation(chat) as conv:
-        try:
-            await conv.send_message("/start")
-            await conv.get_response()
+    try:
+        # إرسال الرابط إلى البوت
+        async with borg.conversation(chat) as conv:
+            try:
+                await conv.send_message("/start")
+                await conv.get_response()
+            except:
+                pass
+            
             await conv.send_message(link)
-            repthon_msg = await conv.get_response()
             
-            if repthon_msg.media:
-                downloaded_file = await event.client.download_media(
-                    repthon_msg,
-                    file=f"tiktok_{event.id}.mp4"
-                )
+            # انتظر رسالة البوت مع الأزرار
+            button_msg = await conv.get_response()
+            
+            # تحقق إذا كانت الرسالة تحتوي على أزرار
+            if button_msg.buttons:
+                await rep.edit("**⎉╎جاري اختيار جودة HD...**")
                 
-                # إرسال الملف الذي تم تحميله
-                await borg.send_file(
-                    event.chat_id,
-                    downloaded_file,
-                    caption=cap_rrr,
-                    parse_mode="html",
-                )
-                
-                # حذف الملف المؤقت
-                import os
-                if os.path.exists(downloaded_file):
-                    os.remove(downloaded_file)
+                # النقر على الزر الثاني (جودة HD)
+                # الزر الأول: "تحميل كملف صوتي"
+                # الزر الثاني: "تحميل باعلن دقة HD"
+                try:
+                    # النقر على الزر الثاني (index 1)
+                    await button_msg.click(1)
+                    
+                    # انتظر الملف
+                    await asyncio.sleep(5)
+                    
+                    # حاول الحصول على الملف
+                    file_msg = await conv.get_response(timeout=20)
+                    
+                    if file_msg.media:
+                        # تحميل الملف
+                        downloaded_file = await event.client.download_media(
+                            file_msg,
+                            file=f"tiktok_{event.id}.mp4"
+                        )
+                        
+                        # إرسال الملف
+                        await borg.send_file(
+                            event.chat_id,
+                            downloaded_file,
+                            caption=cap_rrr,
+                            parse_mode="html",
+                        )
+                        
+                        # تنظيف
+                        import os
+                        if os.path.exists(downloaded_file):
+                            os.remove(downloaded_file)
+                        
+                        await rep.delete()
+                        
+                        # تنظيف المحادثة
+                        await asyncio.sleep(2)
+                        await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
+                    else:
+                        await rep.edit(f"**❌ لم يتم إرسال ملف. الرد:**\n{file_msg.text[:200]}")
+                        
+                except Exception as click_error:
+                    await rep.edit(f"**❌ خطأ في النقر على الزر:**\n`{str(click_error)[:100]}`")
             else:
-                await event.reply(f"**خطأ: لم يتم إرسال ملف من البوت**\n{repthon_msg.text}")
+                # إذا لم تكن هناك أزرار، حاول الطريقة القديمة
+                await rep.edit("**⎉╎البوت لم يرسل أزراراً، جرب طريقة بديلة...**")
+                await conv.send_message("تحميل باعلن دقة HD")
                 
-            await rep.delete()
-            await asyncio.sleep(3)
-            await event.client(DeleteHistoryRequest(7429789851, max_id=0, just_clear=True))
-            
-        except YouBlockedUserError:
-            await zq_lo(unblock("QJ9bot"))
-            await conv.send_message("/start")
-            await conv.get_response()
-            await conv.send_message(link)
-            repthon_msg = await conv.get_response()
-            
-            if repthon_msg.media:
-                downloaded_file = await event.client.download_media(
-                    repthon_msg,
-                    file=f"tiktok_{event.id}.mp4"
-                )
+                await asyncio.sleep(5)
+                file_msg = await conv.get_response(timeout=20)
                 
-                await borg.send_file(
-                    event.chat_id,
-                    downloaded_file,
-                    caption=cap_rrr,
-                    parse_mode="html",
-                )
-                
-                import os
-                if os.path.exists(downloaded_file):
-                    os.remove(downloaded_file)
-            else:
-                await event.reply(f"**خطأ: لم يتم إرسال ملف من البوت**\n{repthon_msg.text}")
-                
-            await rep.delete()
-            await asyncio.sleep(3)
-            await event.client(DeleteHistoryRequest(7429789851, max_id=0, just_clear=True))
-        
-        except Exception as e:
-            await rep.edit(f"**خطأ: {str(e)}**")
+                if file_msg.media:
+                    downloaded_file = await event.client.download_media(
+                        file_msg,
+                        file=f"tiktok_{event.id}.mp4"
+                    )
+                    
+                    await borg.send_file(
+                        event.chat_id,
+                        downloaded_file,
+                        caption=cap_rrr,
+                        parse_mode="html",
+                    )
+                    
+                    import os
+                    if os.path.exists(downloaded_file):
+                        os.remove(downloaded_file)
+                    
+                    await rep.delete()
+                    await asyncio.sleep(2)
+                    await event.client(DeleteHistoryRequest(1332941342, max_id=0, just_clear=True))
+                else:
+                    await rep.edit(f"**❌ فشل:**\n{file_msg.text[:200]}")
+    
+    except YouBlockedUserError:
+        await zq_lo(unblock("QJ9bot"))
+        await rep.edit("**✅ تم فك حظر البوت، أعد المحاولة**")
+    except Exception as e:
+        await rep.edit(f"**❌ حدث خطأ:**\n`{str(e)[:150]}`")
 # Write Code By telegram.dog/E_7_V ✌🏻
 @zq_lo.on(admin_cmd(pattern="ستوري(?: |$)(.*)"))
 async def _(event):
