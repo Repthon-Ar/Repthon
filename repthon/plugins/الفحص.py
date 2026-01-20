@@ -48,7 +48,7 @@ async def rep_alive(event):
         reppa = f"{bt.year}/{bt.month}/{bt.day}"
     R_EMOJI = gvarstatus("ALIVE_EMOJI") or "✥┊"
     ALIVE_TEXT = gvarstatus("ALIVE_TEXT") or "** بـوت ريبـــثون 𝗥𝗲𝗽𝘁𝗵𝗼𝗻 يعمـل .. بنجـاح ☑️ 𓆩 **"
-    REP_IMG = gvarstatus("ALIVE_PIC")
+    REP_IMG = gvarstatus("ALIVE_PIC") or "https://graph.org/file/e765806fb50294079a58c.mp4"
     USERID = zq_lo.uid if Config.OWNER_ID == 0 else Config.OWNER_ID
     ALIVE_NAME = gvarstatus("ALIVE_NAME") if gvarstatus("ALIVE_NAME") else "-"
     mention = f"[{ALIVE_NAME}](tg://user?id={USERID})"
