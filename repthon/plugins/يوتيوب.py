@@ -490,7 +490,7 @@ def remove_if_exists(path):
 
 #R
 @zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
-async def _(event): #Code by T.me/RR0RT
+async def _(event):
     reply = await event.get_reply_message()
     if event.pattern_match.group(1):
         query = event.pattern_match.group(1)
@@ -498,114 +498,87 @@ async def _(event): #Code by T.me/RR0RT
         query = reply.message
     else:
         return await edit_or_reply(event, "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**")
+
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
+    
     ydl_ops = {
-        "format": "bestaudio/best",  # تغيير من m4a إلى bestaudio
-        "keepvideo": False,  # تغيير إلى False لأننا نريد الصوت فقط
-        "prefer_ffmpeg": True,  # تغيير إلى True لتحويل التنسيق
-        "geo_bypass": True,
+        "format": "bestaudio/best",
         "outtmpl": "%(title)s.%(ext)s",
         "quiet": True,
-        "no_warnings": True,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
         "cookiefile": get_cookies_file(),
         "noplaylist": True,
-        "postprocessors": [{  # إضافة postprocessor لتحويل إلى mp3
+        "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
     }
+
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
+        if not results:
+            return await revent.edit("**• لم يتم العثور على نتائج للبحث.**")
+            
         link = f"https://youtube.com{results[0]['url_suffix']}"
         title = results[0]["title"][:40]
         thumbnail = results[0]["thumbnails"][0]
         thumb_name = f"{title}.jpg"
-        thumb = requests.get(thumbnail, allow_redirects=True)
-        try:
-            open(thumb_name, "wb").write(thumb.content)
-        except Exception:
-            thumb_name = None
         duration = results[0]["duration"]
+        
+        
+        thumb = requests.get(thumbnail, allow_redirects=True)
+        with open(thumb_name, "wb") as f:
+            f.write(thumb.content)
 
     except Exception as e:
-        await revent.edit(f"**• فشـل في البحث** \n**• الخطـأ :** `{str(e)}`")
-        return
-    
-    await revent.edit("**╮ جـارِ التحميل ▬▭ . . .🎧♥️╰**")
-    
+        return await revent.edit(f"**• فشـل في البحث** \n**• الخطـأ :** `{str(e)}`")
+
+    await revent.edit("**╮ جـارِ التحميل والمعالجة ▬▭ . . .🎧♥️╰**")
+
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
             info_dict = ydl.extract_info(link, download=True)
-            audio_file = ydl.prepare_filename(info_dict)
-            if audio_file.endswith('.webm'):
-                audio_file = audio_file[:-5] + '.mp3'
-            elif audio_file.endswith('.m4a'):
-                audio_file = audio_file[:-4] + '.mp3'
-            else:
-                audio_file = audio_file.rsplit('.', 1)[0] + '.mp3'
-            
+            audio_file = ydl.prepare_filename(info_dict).rsplit('.', 1)[0] + ".mp3"
+
+        if not os.path.exists(audio_file) or os.path.getsize(audio_file) == 0:
+             return await revent.edit("**• فشل التحميل: الملف الناتج فارغ أو غير موجود.**")
+
         await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
-        #------------> Repthon <------------
+        
+        try:
+            time_parts = duration.split(':')
+            if len(time_parts) == 3:
+                dur_seconds = int(time_parts[0])*3600 + int(time_parts[1])*60 + int(time_parts[2])
+            else:
+                dur_seconds = int(time_parts[0])*60 + int(time_parts[1])
+        except:
+            dur_seconds = 0
+
         await event.client.send_file(
             event.chat_id,
             audio_file,
-            force_document=False,
             caption=f"**⎉ البحث ⥃** `{title}`",
             thumb=thumb_name,
             attributes=[
                 DocumentAttributeAudio(
-                    duration=int(duration.split(':')[0])*60 + int(duration.split(':')[1]) if ':' in duration else int(duration),
+                    duration=dur_seconds,
                     title=title,
-                    performer=info_dict.get('uploader', 'Unknown')
+                    performer=info_dict.get('uploader', 'Repthon')
                 )
             ]
         )
         await revent.delete()
-        
-    except ChatSendMediaForbiddenError:
-        return await revent.edit("**- عـذراً .. الوسـائـط مغلقـه هنـا ؟!**")
+
     except Exception as e:
-        if "Requested format is not available" in str(e):
-            try:
-                ydl_ops_alt = {
-                    "format": "worstaudio/worst",
-                    "keepvideo": False,
-                    "prefer_ffmpeg": True,
-                    "geo_bypass": True,
-                    "outtmpl": "%(title)s.%(ext)s",
-                    "quiet": True,
-                    "no_warnings": True,
-                    "cookiefile": get_cookies_file(),
-                    "noplaylist": True,
-                }
-                
-                with yt_dlp.YoutubeDL(ydl_ops_alt) as ydl:
-                    info_dict = ydl.extract_info(link, download=True)
-                    audio_file = ydl.prepare_filename(info_dict)
-                
-                await event.client.send_file(
-                    event.chat_id,
-                    audio_file,
-                    force_document=False,
-                    caption=f"**⎉ البحث ⥃** `{title}`",
-                    thumb=thumb_name,
-                )
-                await revent.delete()
-                
-            except Exception as e2:
-                return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e2)}`")
-        else:
-            return await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`")
-    
+        await revent.edit(f"**• فشـل التحميـل** \n**• الخطـأ :** `{str(e)}`")
     finally:
-        try:
-            if os.path.exists(audio_file):
-                os.remove(audio_file)
-            if thumb_name and os.path.exists(thumb_name):
-                os.remove(thumb_name)
-        except Exception as e:
-            print(f"Error cleaning up: {e}")
+        for file in [thumb_name, audio_file]:
+            if file and os.path.exists(file):
+                os.remove(file)
+
+            
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
