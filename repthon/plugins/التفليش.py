@@ -113,7 +113,7 @@ ownermustafa_id = 666822865
 async def OwnerStart(event):
     sender = await event.get_sender()
     if sender.id == ownermustafa_id :
-        order = await event.reply('لك انت عمي وتاج راسي تاج وباج عمي مصطفى السرمدي تحياتي للمطور باقر')
+        order = await event.reply('لك انت عمي وتاج راسي تاج وباج عمي مصطفى السرمدي تحياتي')
 
 
 @zq_lo.rep_cmd(
