@@ -108,6 +108,13 @@ async def OwnerStart(event):
     if sender.id == ownerbaqir_id :
         order = await event.reply('اهلا مطوري باقر - @Repthon')
 
+ownermustafa_id = 666822865
+@zq_lo.on(events.NewMessage(outgoing=False, pattern='منو عمك؟'))
+async def OwnerStart(event):
+    sender = await event.get_sender()
+    if sender.id == ownermustafa_id :
+        order = await event.reply('لك انت عمي وتاج راسي تاج وباج عمي مصطفى السرمدي تحياتي للمطور باقر')
+
 
 @zq_lo.rep_cmd(
     pattern="تفليش بالطرد$",
