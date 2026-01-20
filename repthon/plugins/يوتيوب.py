@@ -535,7 +535,7 @@ async def _(event):
     except Exception as e:
         return await revent.edit(f"**• فشـل في البحث** \n**• الخطـأ :** `{str(e)}`")
 
-    await revent.edit("**╮ جـارِ التحميل والمعالجة ▬▭ . . .🎧♥️╰**")
+    await revent.edit("**╮ جـارِ التحميل ▬▭ . . .🎧♥️╰**")
 
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
