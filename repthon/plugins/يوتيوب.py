@@ -489,7 +489,7 @@ def remove_if_exists(path):
         os.remove(path)
 
 #R
-@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
+"""@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
 async def _(event):
     #R
     audio_file = None
@@ -598,8 +598,75 @@ async def _(event):
         if thumb_name and os.path.exists(thumb_name):
             os.remove(thumb_name)
         if audio_file and os.path.exists(audio_file):
-            os.remove(audio_file)
+            os.remove(audio_file)"""
             
+
+@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
+async def _(event):
+    query = event.pattern_match.group(1)
+    reply = await event.get_reply_message()
+    if not query and reply:
+        query = reply.text
+    if not query:
+        return await edit_or_reply(event, "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**")
+
+    revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
+
+    try:
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        if not results:
+            return await revent.edit("**• لم يتم العثور على نتائج للبحث.**")
+        
+        link = f"https://youtube.com{results[0]['url_suffix']}"
+        title = results[0]["title"]
+    except Exception as e:
+        return await revent.edit(f"**• فشـل في محرك البحث:** `{str(e)}`")
+
+    await revent.edit(f"**╮ جـارِ تحميـل بحثك... 📥╰**\n**⎉ العنوان:** `{title[:30]}...`")
+    
+    assistant_bot = "@QJ9bot" 
+    async with event.client.conversation(assistant_bot) as conv:
+        try:
+            sent_msg = await conv.send_message(link)
+            response = await conv.get_response()
+            found_button = False
+            if response.buttons:
+                for row in response.buttons:
+                    for button in row:
+                        if "صوتي" in button.text:
+                            await button.click()
+                            found_button = True
+                            break
+                    if found_button: break
+            
+            if not found_button:
+                return await revent.edit("**- لم أجد زر التحميل الصوتي في المساعد.**")
+
+            await revent.edit("**╮ جـارِ استلام الملف ... ⏳╰**")
+            
+            audio_msg = await conv.get_response()
+            attempts = 0
+            while not audio_msg.media and attempts < 10:
+                audio_msg = await conv.get_response()
+                attempts += 1
+
+            if audio_msg.media:
+                await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
+                await event.client.send_file(
+                    event.chat_id,
+                    audio_msg.media,
+                    caption=f"**⎉ البحث ⥃** `{title}`\n**",
+                    reply_to=reply.id if reply else None
+                )
+                await revent.delete()
+            else:
+                await revent.edit("**- المساعد لم يرسل الملف، ربما هناك ضغط حالياً.**")
+
+            await event.client.delete_messages(assistant_bot, [sent_msg.id, response.id, audio_msg.id])
+
+        except Exception as e:
+            await revent.edit(f"**• خطأ في التفاعل:**\n`{str(e)}`")
+
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
