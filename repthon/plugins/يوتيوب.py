@@ -508,8 +508,9 @@ async def _(event):
     ]
     
     ydl_ops = {
+     ydl_ops = {
         "format": "bestaudio/best",
-        "outtmpl": f"%(title)s.%(ext)s",
+        "outtmpl": f"repthon_{int(time.time())}.%(ext)s",
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
@@ -523,13 +524,13 @@ async def _(event):
             "youtubetab": {
                 "skip": ["authcheck"]
             }
-        }
-    }
+        },
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
+    }
 
 
     try:
