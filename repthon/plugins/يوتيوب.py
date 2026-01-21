@@ -633,7 +633,7 @@ async def _(event):
             if response.buttons:
                 for row in response.buttons:
                     for button in row:
-                        if "صوتي" in button.text:
+                        if "Audio" in button.text:
                             await button.click()
                             found_button = True
                             break
