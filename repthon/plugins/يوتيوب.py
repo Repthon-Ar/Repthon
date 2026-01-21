@@ -501,13 +501,22 @@ async def _(event):
 
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     
+    suffix = int(time.time())
+    
+    proxies = [
+        "http://201.182.251.142:999", 
+        "http://144.217.101.245:3128",
+        "http://51.79.50.22:9300"
+    ]
+    
     ydl_ops = {
         "format": "bestaudio/best",
-        "outtmpl": f"repthon_{int(time.time())}.%(ext)s",
+        "outtmpl": f"repthon_{suffix}.%(ext)s",
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
         "cookiefile": get_cookies_file(),
+        "proxy": random.choice(proxies),
         "extractor_args": {
             "youtube": {
                 "player_client": ["android", "ios"],
