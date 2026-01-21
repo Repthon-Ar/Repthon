@@ -543,7 +543,7 @@ async def _(event):
         link = f"https://youtube.com{results[0]['url_suffix']}"
         title = results[0]["title"][:40]
         thumbnail = results[0]["thumbnails"][0]
-        thumb_name = f"thumb_{int(time.time())}.jpg"
+        thumb_name = f"thumb_{int(time())}.jpg"
         duration = results[0].get("duration", "00:00")
         
         thumb_res = requests.get(thumbnail, allow_redirects=True)
@@ -566,12 +566,14 @@ async def _(event):
         await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
         
         try:
-            time_parts = duration.split(':')
-            if len(time_parts) == 3:
-                dur_seconds = int(time_parts[0])*3600 + int(time_parts[1])*60 + int(time_parts[2])
+            duration_parts = duration.split(':')
+            if len(duration_parts) == 3:
+                dur_seconds = int(duration_parts[0])*3600 + int(duration_parts[1])*60 + int(duration_parts[2])
+            elif len(duration_parts) == 2:
+                dur_seconds = int(duration_parts[0])*60 + int(duration_parts[1])
             else:
-                dur_seconds = int(time_parts[0])*60 + int(time_parts[1])
-        except:
+                dur_seconds = int(duration_parts[0])
+        except Exception:
             dur_seconds = 0
 
         await event.client.send_file(
