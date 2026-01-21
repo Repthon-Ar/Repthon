@@ -501,7 +501,7 @@ async def _(event):
 
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     
-        ydl_ops = {
+    ydl_ops = {
         "format": "bestaudio/best",
         "outtmpl": f"repthon_{int(time.time())}.%(ext)s",
         "quiet": True,
