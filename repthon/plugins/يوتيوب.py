@@ -624,49 +624,64 @@ async def _(event):
 
     await revent.edit(f"**╮ جـارِ تحميـل بحثك... 📥╰**\n**⎉ العنوان:** `{title[:30]}...`")
     
-    assistant_bot = "@QJ9bot" 
-    async with event.client.conversation(assistant_bot) as conv:
+    assistant_bot = "@QJ9bot"
     async with event.client.conversation(assistant_bot, timeout=600) as conv:
         try:
-            sent_msg = await conv.send_message(link)
+            # إرسال الرابط
+            await conv.send_message(link)
             
+            # الانتظار للرد الأول
+            response = await conv.get_response()
+            
+            # البحث عن زر التحميل
             found_button = None
-            response = None
+            if response.buttons:
+                for row in response.buttons:
+                    for button in row:
+                        btn_text = button.text.lower()
+                        if any(x in btn_text for x in ["ملف صوتي", "audio", "🎶", "تحميل", "download"]):
+                            found_button = button
+                            break
+                    if found_button:
+                        break
             
-            for attempt in range(10):
-                await asyncio.sleep(1.5)
-                history = await event.client.get_messages(assistant_bot, limit=1)
-                if history and history[0].buttons:
-                    response = history[0]
-                    for row in response.buttons:
+            if not found_button:
+                # محاولة ثانية بالحصول على آخر رسالة
+                await asyncio.sleep(2)
+                messages = await event.client.get_messages(assistant_bot, limit=2)
+                if messages and messages[0].buttons:
+                    for row in messages[0].buttons:
                         for button in row:
                             btn_text = button.text.lower()
-                            if any(x in btn_text for x in ["ملف صوتي", "Audio", "🎶"]):
+                            if any(x in btn_text for x in ["ملف صوتي", "Audio", "🎶", "تحميل", "download"]):
                                 found_button = button
                                 break
-                        if found_button: break
-                
-                if found_button: break
-                await revent.edit(f"**╮ جـارِ انتظار لوحة التحميل... ({attempt+1}/10) ⏳╰**")
-
+                        if found_button:
+                            break
+            
             if not found_button:
-                return await revent.edit("**- فشل العثور على أزرار التحميل.. المساعد لا يستجيب.**")
-
-            await revent.edit(f"**╮ تم صيد الزر! جاري النقر للتحميل... 🎧╰**")
-            for click_attempt in range(3):
+                return await revent.edit("**• لم أجد زر تحميل الصوت في رد البوت.**")
+            
+            # النقر على الزر
+            await revent.edit("**╮ تم العثور على الزر! جاري التحميل... 🎧╰**")
+            await found_button.click()
+            
+            # الانتظار للملف
+            await asyncio.sleep(3)
+            
+            # محاولة الحصول على الملف
+            audio_msg = None
+            for _ in range(10):
                 try:
-                    await found_button.click()
-                    await asyncio.sleep(0.5)
-                except: continue
-
-            audio_msg = await conv.get_response()
-            wait_attempts = 0
-            while not audio_msg.media and wait_attempts < 20:
-                await asyncio.sleep(2)
-                audio_msg = await conv.get_response()
-                wait_attempts += 1
-
-            if audio_msg.media:
+                    msg = await conv.get_response(timeout=5)
+                    if msg.media:
+                        audio_msg = msg
+                        break
+                except:
+                    await asyncio.sleep(2)
+                    continue
+            
+            if audio_msg and audio_msg.media:
                 await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
                 await event.client.send_file(
                     event.chat_id,
@@ -676,10 +691,27 @@ async def _(event):
                 )
                 await revent.delete()
             else:
-                await revent.edit("**- المساعد أرسل اللوحة لكنه لم يرسل الملف!**")
+                # محاولة الحصول من آخر الرسائل
+                messages = await event.client.get_messages(assistant_bot, limit=5)
+                for msg in messages:
+                    if msg.media and msg.file.mime_type.startswith('audio'):
+                        await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
+                        await event.client.send_file(
+                            event.chat_id,
+                            msg.media,
+                            caption=f"**⎉ البحث ⥃** `{title}`",
+                            reply_to=reply.id if reply else None
+                        )
+                        await revent.delete()
+                        return
+                
+                await revent.edit("**• لم يتم إرسال الملف الصوتي من البوت.**")
 
+        except asyncio.TimeoutError:
+            await revent.edit("**• انتهت مهلة الانتظار للبوت.**")
         except Exception as e:
-            await revent.edit(f"**• خطأ في التفاعل:** `{str(e)}`")
+            await revent.edit(f"**• خطأ في المحادثة:** `{str(e)}`")
+
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
