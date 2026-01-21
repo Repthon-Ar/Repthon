@@ -628,25 +628,28 @@ async def _(event):
     async with event.client.conversation(assistant_bot) as conv:
         try:
             sent_msg = await conv.send_message(link)
+            await asyncio.sleep(2)
             response = await conv.get_response()
             found_button = False
             if response.buttons:
                 for row in response.buttons:
                     for button in row:
-                        if "Audio" in button.text:
+                        btn_text = button.text.lower()
+                        if "صوتي" in btn_text or "Audio" in btn_text or "ملف صوتي" in btn_text:
+                            await asyncio.sleep(1)
                             await button.click()
                             found_button = True
                             break
                     if found_button: break
             
             if not found_button:
-                return await revent.edit("**- لم أجد زر التحميل الصوتي في المساعد.**")
-
-            await revent.edit("**╮ جـارِ استلام الملف ... ⏳╰**")
-            
+                response = await event.client.get_messages(assistant_bot, ids=response.id)
+                return await revent.edit("**- لم أجد زر التحميل .**")
+                
             audio_msg = await conv.get_response()
             attempts = 0
-            while not audio_msg.media and attempts < 10:
+            while not audio_msg.media and attempts < 15:
+                await asyncio.sleep(1.5)
                 audio_msg = await conv.get_response()
                 attempts += 1
 
@@ -655,18 +658,17 @@ async def _(event):
                 await event.client.send_file(
                     event.chat_id,
                     audio_msg.media,
-                    caption=f"**⎉ البحث ⥃** `{title}`\n**",
+                    caption=f"**⎉ البحث ⥃** `{title}`",
                     reply_to=reply.id if reply else None
                 )
                 await revent.delete()
             else:
-                await revent.edit("**- المساعد لم يرسل الملف، ربما هناك ضغط حالياً.**")
+                await revent.edit("**- المساعد بطيء جداً، حاول لاحقاً.**")
 
-            await event.client.delete_messages(assistant_bot, [sent_msg.id, response.id, audio_msg.id])
+            await event.client.delete_messages(assistant_bot, [sent_msg.id, response.id])
 
         except Exception as e:
-            await revent.edit(f"**• خطأ في التفاعل:**\n`{str(e)}`")
-
+            await revent.edit(f"**• خطأ:** `{str(e)}`")
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
