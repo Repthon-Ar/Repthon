@@ -501,20 +501,26 @@ async def _(event):
 
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     
-    ydl_ops = {
+        ydl_ops = {
         "format": "bestaudio/best",
-        "outtmpl": "%(title)s.%(ext)s",
+        "outtmpl": f"repthon_{int(time.time())}.%(ext)s",
         "quiet": True,
-        "geo_bypass": True,
+        "no_warnings": True,
         "nocheckcertificate": True,
         "cookiefile": get_cookies_file(),
-        "noplaylist": True,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios"],
+                "skip": ["dash", "hls"]
+            }
+        },
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
     }
+
 
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
