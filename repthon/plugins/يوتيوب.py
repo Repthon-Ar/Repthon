@@ -523,13 +523,13 @@ async def _(event):
             "youtubetab": {
                 "skip": ["authcheck"]
             }
+        }
+    }
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
-    }
-    }
 
 
     try:
