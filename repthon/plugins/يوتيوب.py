@@ -653,7 +653,7 @@ async def _(event):
                     for row in messages[0].buttons:
                         for button in row:
                             btn_text = button.text.lower()
-                            if any(x in btn_text for x in ["ملف صوتي", "Audio", "🎶", "تحميل", "download"]):
+                            if any(x in btn_text for x in ["ملف صوتي", "audio", "🎶", "تحميل", "download"]):
                                 found_button = button
                                 break
                         if found_button:
@@ -666,22 +666,42 @@ async def _(event):
             await revent.edit("**╮ تم العثور على الزر! جاري التحميل... 🎧╰**")
             await found_button.click()
             
-            # الانتظار للملف
+            # الانتظار للحصول على الملف الصوتي (بتجاهل الصور)
             await asyncio.sleep(3)
             
-            # محاولة الحصول على الملف
+            # البحث عن الملف الصوتي في رسائل البوت
             audio_msg = None
-            for _ in range(10):
-                try:
-                    msg = await conv.get_response(timeout=5)
+            max_attempts = 20
+            
+            for attempt in range(max_attempts):
+                # الحصول على آخر 5 رسائل من البوت
+                messages = await event.client.get_messages(assistant_bot, limit=5)
+                
+                for msg in messages:
                     if msg.media:
-                        audio_msg = msg
-                        break
-                except:
-                    await asyncio.sleep(2)
-                    continue
+                        # التحقق من أن الميديا ليست صورة
+                        if hasattr(msg.media, 'document'):
+                            # إذا كان مستند، تحقق من نوعه
+                            mime_type = msg.media.document.mime_type
+                            if mime_type.startswith('audio/'):
+                                audio_msg = msg
+                                break
+                        elif hasattr(msg.media, 'audio'):
+                            # إذا كان ملف صوتي مباشر
+                            audio_msg = msg
+                            break
+                        elif hasattr(msg.media, 'photo'):
+                            # تجاهل الصور
+                            continue
+                
+                if audio_msg:
+                    break
+                
+                await revent.edit(f"**╮ جاري البحث عن الملف الصوتي... ({attempt+1}/{max_attempts}) ⏳╰**")
+                await asyncio.sleep(2)
             
             if audio_msg and audio_msg.media:
+                # تحميل الملف الصوتي
                 await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
                 await event.client.send_file(
                     event.chat_id,
@@ -691,27 +711,13 @@ async def _(event):
                 )
                 await revent.delete()
             else:
-                # محاولة الحصول من آخر الرسائل
-                messages = await event.client.get_messages(assistant_bot, limit=5)
-                for msg in messages:
-                    if msg.media and msg.file.mime_type.startswith('audio'):
-                        await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
-                        await event.client.send_file(
-                            event.chat_id,
-                            msg.media,
-                            caption=f"**⎉ البحث ⥃** `{title}`",
-                            reply_to=reply.id if reply else None
-                        )
-                        await revent.delete()
-                        return
-                
-                await revent.edit("**• لم يتم إرسال الملف الصوتي من البوت.**")
+                await revent.edit("**• لم يتم العثور على ملف صوتي في ردود البوت.**")
 
         except asyncio.TimeoutError:
             await revent.edit("**• انتهت مهلة الانتظار للبوت.**")
         except Exception as e:
             await revent.edit(f"**• خطأ في المحادثة:** `{str(e)}`")
-
+            
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
