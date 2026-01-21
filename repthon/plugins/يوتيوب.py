@@ -513,14 +513,16 @@ async def _(event):
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
+        "noplaylist": True,
         "cookiefile": get_cookies_file(),
         "proxy": random.choice(proxies),
         "extractor_args": {
             "youtube": {
-                "player_client": ["android", "ios"],
-                "skip": ["dash", "hls"]
+                "player_client": ["android", "web"],
+            },
+            "youtubetab": {
+                "skip": ["authcheck"]
             }
-        },
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
