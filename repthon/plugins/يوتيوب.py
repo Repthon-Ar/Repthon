@@ -529,6 +529,7 @@ async def _(event):
             "preferredquality": "192",
         }],
     }
+    }
 
 
     try:
