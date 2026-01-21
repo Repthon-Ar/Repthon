@@ -501,8 +501,6 @@ async def _(event):
 
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
     
-    suffix = int(time.time())
-    
     proxies = [
         "http://201.182.251.142:999", 
         "http://144.217.101.245:3128",
@@ -511,7 +509,7 @@ async def _(event):
     
     ydl_ops = {
         "format": "bestaudio/best",
-        "outtmpl": f"repthon_{suffix}.%(ext)s",
+        "outtmpl": f"%(title)s.%(ext)s",
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
