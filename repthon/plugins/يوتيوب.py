@@ -626,40 +626,45 @@ async def _(event):
     
     assistant_bot = "@QJ9bot" 
     async with event.client.conversation(assistant_bot) as conv:
+    async with event.client.conversation(assistant_bot, timeout=600) as conv:
         try:
             sent_msg = await conv.send_message(link)
+            
             found_button = None
             response = None
-            for attempt in range(5):
+            
+            for attempt in range(10):
                 await asyncio.sleep(1.5)
-                response = await conv.get_response()
-                
-                if response.buttons:
+                history = await event.client.get_messages(assistant_bot, limit=1)
+                if history and history[0].buttons:
+                    response = history[0]
                     for row in response.buttons:
                         for button in row:
                             btn_text = button.text.lower()
-                            if any(x in btn_text for x in ["صوتي", "Audio", "ملف صوتي"]):
+                            if any(x in btn_text for x in ["ملف صوتي", "Audio", "🎶"]):
                                 found_button = button
                                 break
                         if found_button: break
                 
-                if found_button:
-                    break
-                else:
-                    await response.mark_read()
+                if found_button: break
+                await revent.edit(f"**╮ جـارِ انتظار لوحة التحميل... ({attempt+1}/10) ⏳╰**")
 
             if not found_button:
-                return await revent.edit("**- Error**")
+                return await revent.edit("**- فشل العثور على أزرار التحميل.. المساعد لا يستجيب.**")
 
-            await revent.edit(f"**╮ جاري التحميل الى خوادم التليكرام╰**")
-            await found_button.click()
+            await revent.edit(f"**╮ تم صيد الزر! جاري النقر للتحميل... 🎧╰**")
+            for click_attempt in range(3):
+                try:
+                    await found_button.click()
+                    await asyncio.sleep(0.5)
+                except: continue
 
             audio_msg = await conv.get_response()
-            attempts = 0
-            while not audio_msg.media and attempts < 15:
+            wait_attempts = 0
+            while not audio_msg.media and wait_attempts < 20:
                 await asyncio.sleep(2)
                 audio_msg = await conv.get_response()
-                attempts += 1
+                wait_attempts += 1
 
             if audio_msg.media:
                 await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
@@ -671,10 +676,10 @@ async def _(event):
                 )
                 await revent.delete()
             else:
-                await revent.edit("**- خطـأ لم استطع الضغط**")
+                await revent.edit("**- المساعد أرسل اللوحة لكنه لم يرسل الملف!**")
 
         except Exception as e:
-            await revent.edit(f"**• خطأ في المحادثة:** `{str(e)}`")
+            await revent.edit(f"**• خطأ في التفاعل:** `{str(e)}`")
 #R
 @zq_lo.rep_cmd(pattern="فيديو(?: |$)(.*)")
 async def _(event):
