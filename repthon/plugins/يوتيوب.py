@@ -696,8 +696,13 @@ async def _(event):
                     if audio_msg:
                         break
                     
-                    if attempt % 3 == 0:
-                    await asyncio.sleep(1.5)
+                    if attempt % 3 == 0: 
+                        await revent.edit(f"**╮ جاري البحث عن الملف... ({attempt+1}/{max_attempts}) ⏳╰**")
+                    await asyncio.sleep(1.5) 
+                    
+                except Exception as e:
+                    print(f"خطأ في المحاولة {attempt}: {e}")
+                    continue
                     
                 except Exception as e:
                     print(f"خطأ في المحاولة {attempt}: {e}")
