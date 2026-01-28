@@ -1,6 +1,7 @@
 import os
 import re
 import asyncio
+import aiohttp
 
 try:
     from akinator import Akinator
@@ -24,11 +25,14 @@ from ..Config import Config
 from ..core.decorators import check_owner
 
 games = {}
+session = aiohttp.ClientSession(headers={
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+})
 aki_photo = "https://graph.org/file/b0ff07069e8637783fdae.jpg"
 
 @zq_lo.rep_cmd(pattern="اكينوتر(?:\\s|$)([\\s\\S]*)")
 async def start_aki_cmd(e):
-    aki = Akinator()
+    aki = Akinator(session=session)
     games.update({e.chat_id: {e.id: aki}})
     
     try:
