@@ -30,6 +30,7 @@ from urlextract import URLExtract
 from telegraph import Telegraph
 from html_telegraph_poster import TelegraphPoster
 from PIL import Image
+from catbox import CatboxUploader
 
 from . import zq_lo
 
