@@ -31,12 +31,6 @@ from telegraph import Telegraph
 from html_telegraph_poster import TelegraphPoster
 from PIL import Image
 
-try:
-    from catbox import CatboxUploader
-except ModuleNotFoundError:
-    os.system("pip3 install catbox-uploader")
-    from catbox import CatboxUploader
-
 from . import zq_lo
 
 from ..Config import Config
