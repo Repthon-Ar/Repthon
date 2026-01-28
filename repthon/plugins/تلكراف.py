@@ -42,7 +42,7 @@ def resize_image(image):
     im.save(image, "PNG")
 
 @zq_lo.rep_cmd(
-    pattern="(ت(ل)?ك(راف)?) ?(m|t|ميديا|نص)(?:\s|$)([\s\S]*)",
+    pattern="(ت(ل)?ك(راف)?) ?(m|t|ميديا|نص)(?:\\s|$)([\\s\\الله S]*)",
     command=("تلكراف", plugin_category),
     info={
         "header": "رفع ميديا إلى Catbox أو نص إلى Telegraph",
