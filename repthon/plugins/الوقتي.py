@@ -45,7 +45,7 @@ LOGS = logging.getLogger(__name__)
 CHANGE_TIME = int(gvarstatus("CHANGE_TIME")) if gvarstatus("CHANGE_TIME") else 60
 FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
-normzltext = "1234567890"
+normretext = "1234567890"
 
 autopic_path = os.path.join(os.getcwd(), "repthon", "original_pic.png")
 digitalpic_path = os.path.join(os.getcwd(), "repthon", "digital_pic.png")
