@@ -25,7 +25,6 @@ from PIL import Image, ImageDraw, ImageFont
 from telegraph import Telegraph, exceptions, upload_file
 from urlextract import URLExtract
 from pySmartDL import SmartDL
-from telegraph import Telegraph, exceptions, upload_file
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from telethon.errors import FloodWaitError
@@ -33,6 +32,7 @@ from telethon.tl import functions
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
 from telethon.errors.rpcerrorlist import AboutTooLongError
+from catbox import CatboxUploader
 
 from ..Config import Config
 from ..helpers.utils import _format
@@ -59,6 +59,7 @@ BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الو
 
 extractor = URLExtract()
 telegraph = Telegraph()
+uploader = CatboxUploader()
 r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
 auth_url = r["auth_url"]
 
@@ -190,33 +191,43 @@ async def autobio_loop():
 
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
-    rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-    downloaded_file_name = await event.client.download_profile_photo(
-        zq_lo.uid,
-        Config.TMP_DOWNLOAD_DIRECTORY + str(zq_lo.uid) + ".jpg",
-        download_big=True,
-    )
-    try:
-        media_urls = upload_file(downloaded_file_name)
-    except exceptions.TelegraphException as exc:
-        await rep.edit("**⎉╎خطا : **" + str(exc))
-        os.remove(downloaded_file_name)
-    else:
-        os.remove(downloaded_file_name)
-        vinfo = ("https://graph.org{}".format(media_urls[0]))
-        addgvar("DIGITAL_PIC", vinfo)
-
     digitalpfp = gvarstatus("DIGITAL_PIC")
-    downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-    downloader.start(blocking=False)
-    while not downloader.isFinished():
-        pass
-    if gvarstatus("DIGITAL_PIC") is None:
-        return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
-    if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
+    if digitalpfp:
+        await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
+    else:
+        rep = await edit_or_reply(event, "**• لـم يتم العثور على صورة، جـارِ الرفع ⅏. . .**")
+        downloaded_file_name = await event.client.download_profile_photo(
+            zq_lo.uid,
+            Config.TMP_DOWNLOAD_DIRECTORY + str(zq_lo.uid) + ".jpg",
+            download_big=True,
+        )
+        
+        if not downloaded_file_name:
+            return await edit_delete(event, "**- عذراً، قم بالرد على صورة لكي استطيع الرفع !**")
+
+        try:
+            file_url = uploader.upload_file(downloaded_file_name)
+            addgvar("DIGITAL_PIC", file_url)
+            digitalpfp = file_url
+            os.remove(downloaded_file_name)
+        except Exception as e:
+            if os.path.exists(downloaded_file_name):
+                os.remove(downloaded_file_name)
+            return await edit_delete(event, f"**⎉╎فشل الرفع:**\n`{str(e)}`")
+
+    if gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
-    addgvar("digitalpic", True)
-    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
+
+    try:
+        downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+        downloader.start(blocking=False)
+        while not downloader.isFinished():
+            pass
+    except Exception as e:
+        return await edit_delete(event, f"**- حدث خطأ أثناء تحميل الصورة:**\n`{str(e)}`")
+        
+    addgvar("digitalpic", "true")
+    await edit_or_reply(event, "<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html")
     await digitalpicloop()
 
 
@@ -234,10 +245,10 @@ async def _(event):
         await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     elif ("𝟬" not in DEFAULTUSER) or ("𝟎" not in DEFAULTUSER) or ("٠" not in DEFAULTUSER) or ("₀" not in DEFAULTUSER) or ("⁰" not in DEFAULTUSER) or ("✪" not in DEFAULTUSER) or ("⓿" not in DEFAULTUSER) or ("⊙" not in DEFAULTUSER) or ("⓪" not in DEFAULTUSER) or ("𝟢" not in DEFAULTUSER) or ("𝟶" not in DEFAULTUSER) or ("𝟘" not in DEFAULTUSER) or ("０" not in DEFAULTUSER):
         baqir = user.first_name if user.first_name else "-"
-        await event.client(functions.account.UpdateProfileRequest(last_name=zelzalll))
+        await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     else:
         baqir = DEFAULTUSER
-        await event.client(functions.account.UpdateProfileRequest(last_name=zelzalll))
+        await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     addgvar("autoname", True)
     await rrr.edit("<b>⎉╎تـم بـدء الاسـم الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف الاسـم الوقتـي ↶ <a href = https://t.me/Repthon_vars/24>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await autoname_loop()
