@@ -194,38 +194,49 @@ async def autobio_loop():
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
     if not gvarstatus("DIGITAL_PIC"):
-        
         return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
-        
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
     
     digitalpfp = gvarstatus("DIGITAL_PIC")
     
-    if "catbox.moe" not in digitalpfp:
+    if "catbox.moe" not in digitalpfp and "graph.org" not in digitalpfp:
         try:
+            await rep.edit("**⎉╎جاري تحديث الرابط ...**")
             downloaded_file_name = await event.client.download_media(
                 digitalpfp,
                 Config.TMP_DOWNLOAD_DIRECTORY + "digital_pic.jpg"
             )
             
-            media_url = await catbox_upload(downloaded_file_name)
-            addgvar("DIGITAL_PIC", media_url)
-            digitalpfp = media_url
-            os.remove(downloaded_file_name)
+            try:
+                media_url = await catbox_upload(downloaded_file_name)
+                if media_url:
+                    addgvar("DIGITAL_PIC", media_url)
+                    digitalpfp = media_url
+            except:
+                pass
             
+            if os.path.exists(downloaded_file_name):
+                os.remove(downloaded_file_name)
+                
         except Exception as e:
-            await rep.edit(f"**⎉╎خطأ في رفع الصورة: **{str(e)}")
-            return
+            await rep.edit(f"**⎉╎خطأ: {str(e)[:100]}**")
     
-    downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-    downloader.start(blocking=False)
-    while not downloader.isFinished():
-        pass
+    try:
+        if not os.path.exists(digitalpic_path):
+            os.makedirs(os.path.dirname(digitalpic_path), exist_ok=True)
+        downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+        downloader.start(blocking=False)
+        while not downloader.isFinished():
+            await asyncio.sleep(0.5)
+    except Exception as e:
+        await rep.edit(f"**⎉╎خطأ في تحميل الصورة: {str(e)[:100]}**")
+        return
     
     addgvar("digitalpic", True)
     await rep.edit(
         "<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n"
+        f"<b>⎉╎الرابط: {digitalpfp[:50]}...</b>\n"
         "<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇ اضـغـط هنــا ⦈</a> </b>", 
         parse_mode="html", 
         link_preview=False
