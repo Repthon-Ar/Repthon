@@ -71,39 +71,64 @@ async def digitalpicloop():
     DIGITALPICSTART = gvarstatus("digitalpic") == "true"
     i = 0
     while DIGITALPICSTART:
-        if not os.path.exists(digitalpic_path):
-            digitalpfp = gvarstatus("DIGITAL_PIC") #Code by T.me/RR0RT
-            downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-            downloader.start(blocking=False)
-            while not downloader.isFinished():
-                pass
-        repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/Papernotes.ttf" #Code by T.me/RR0RT
-        shutil.copy(digitalpic_path, autophoto_path)
-        Image.open(autophoto_path)
-        TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
-        RTZone = dt.now(timezone(TIME_ZONE))
-        RTime = RTZone.strftime('%H:%M')
-        RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
-        #current_time = dt.now().strftime("%I:%M")
-        img = Image.open(autophoto_path)
-        drawn_text = ImageDraw.Draw(img)
-        fnt = ImageFont.truetype(f"{repfont}", 35) #Code by T.me/RR0RT
-        drawn_text.text((140, 70), RT, font=fnt, fill=(280, 280, 280)) #Code by T.me/RR0RT
-        img.save(autophoto_path)
-        file = await zq_lo.upload_file(autophoto_path)
         try:
-            if i > 0:
-                await zq_lo(
-                    functions.photos.DeletePhotosRequest(
-                        await zq_lo.get_profile_photos("me", limit=1)
-                    )
-                )
-            i += 1
-            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            os.remove(autophoto_path)
-            await asyncio.sleep(CHANGE_TIME)
-        except BaseException:
-            return
+            if not os.path.exists(digitalpic_path):
+                digitalpfp = gvarstatus("DIGITAL_PIC")
+                if digitalpfp:
+                    os.makedirs(os.path.dirname(digitalpic_path), exist_ok=True)
+                    
+                    downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+                    downloader.start(blocking=False)
+                    while not downloader.isFinished():
+                        await asyncio.sleep(0.5)
+                else:
+                    print("لا يوجد رابط DIGITAL_PIC")
+                    break
+            
+            repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/Papernotes.ttf"
+            
+            if os.path.exists(digitalpic_path):
+                shutil.copy(digitalpic_path, autophoto_path)
+                TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+                try:
+                    RTZone = dt.now(timezone(TIME_ZONE))
+                except:
+                    RTZone = dt.now()
+                RTime = RTZone.strftime('%H:%M')
+                RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
+                img = Image.open(autophoto_path)
+                drawn_text = ImageDraw.Draw(img)
+                
+                try:
+                    fnt = ImageFont.truetype(f"{repfont}", 35)
+                except:
+                    fnt = ImageFont.load_default()
+                drawn_text.text((140, 70), RT, font=fnt, fill=(280, 280, 280))
+                img.save(autophoto_path)
+                file = await zq_lo.upload_file(autophoto_path)
+                
+                if i > 0:
+                    try:
+                        await zq_lo(
+                            functions.photos.DeletePhotosRequest(
+                                await zq_lo.get_profile_photos("me", limit=1)
+                            )
+                        )
+                    except:
+                        pass
+                
+                i += 1
+                await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
+                if os.path.exists(autophoto_path):
+                    os.remove(autophoto_path)
+                await asyncio.sleep(CHANGE_TIME)
+            else:
+                print("ملف الصورة غير موجود")
+                break
+                
+        except Exception as e:
+            print(f"خطأ في digitalpicloop: {e}")
+            await asyncio.sleep(5)
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
