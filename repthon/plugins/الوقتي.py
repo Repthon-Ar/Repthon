@@ -37,6 +37,7 @@ from catbox import CatboxUploader
 from ..Config import Config
 from ..helpers.utils import _format
 from ..helpers.functions.catbox import catbox_upload
+from ..helpers.functions.help_catbox import download_catbox_file
 from ..core.managers import edit_or_reply
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from . import edit_delete, zq_lo, logging, BOTLOG, BOTLOG_CHATID, mention
@@ -73,10 +74,15 @@ async def digitalpicloop():
     while DIGITALPICSTART:
         if not os.path.exists(digitalpic_path):
             digitalpfp = gvarstatus("DIGITAL_PIC") #Code by T.me/RR0RT
-            downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-            downloader.start(blocking=False)
-            while not downloader.isFinished():
-                pass
+            if digitalpfp:
+                    success = await download_catbox_file(digitalpfp, digitalpic_path)
+                    if not success:
+                        print("فشل في تحميل الصورة")
+                        await asyncio.sleep(10)
+                        continue
+                else:
+                    print("لا يوجد رابط DIGITAL_PIC")
+                    break
         repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/Papernotes.ttf" #Code by T.me/RR0RT
         shutil.copy(digitalpic_path, autophoto_path)
         Image.open(autophoto_path)
@@ -100,10 +106,13 @@ async def digitalpicloop():
                 )
             i += 1
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            os.remove(autophoto_path)
+            if os.path.exists(autophoto_path):
+                os.remove(autophoto_path)
             await asyncio.sleep(CHANGE_TIME)
-        except BaseException:
-            return
+        except Exception as e:
+            print(f"خطأ في digitalpicloop: {e}")
+            await asyncio.sleep(5)
+        
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
@@ -200,16 +209,12 @@ async def _(event):
     )
     try:
         media_url = await catbox_upload(downloaded_file_name)
-        
         if not media_url:
             await rep.edit("**⎉╎خطـا في رفع الصـورة: **")
             if os.path.exists(downloaded_file_name):
                 os.remove(downloaded_file_name)
             return
-            
         addgvar("DIGITAL_PIC", media_url)
-        vinfo = media_url
-        
     except Exception as exc:
         await rep.edit(f"**⎉╎خطـا : ** {str(exc)}")
         if os.path.exists(downloaded_file_name):
@@ -218,23 +223,16 @@ async def _(event):
     finally:
         if os.path.exists(downloaded_file_name):
             os.remove(downloaded_file_name)
-    
     digitalpfp = gvarstatus("DIGITAL_PIC")
     if not digitalpfp:
         return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
-    
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
-    
-    os.makedirs(os.path.dirname(digitalpic_path), exist_ok=True)
-    
-    downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-    downloader.start(blocking=False)
-    while not downloader.isFinished():
-        pass
-    
+    success = await download_catbox_file(digitalpfp, digitalpic_path)
+    if not success:
+        return await edit_delete(event, "**⎉╎خطـا في تحميـل الصـورة**")
     addgvar("digitalpic", True)
-    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇ اضـغـط هنــا ⦈</a> </b>", parse_mode="html", link_preview=False)
+    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await digitalpicloop()
 
 
