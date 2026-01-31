@@ -72,9 +72,10 @@ async def digitalpicloop():
     DIGITALPICSTART = gvarstatus("digitalpic") == "true"
     i = 0
     while DIGITALPICSTART:
-        if not os.path.exists(digitalpic_path):
-            digitalpfp = gvarstatus("DIGITAL_PIC") #Code by T.me/RR0RT
-            if digitalpfp:
+        try:
+            if not os.path.exists(digitalpic_path):
+                digitalpfp = gvarstatus("DIGITAL_PIC")  # Code by T.me/RR0RT
+                if digitalpfp:
                     success = await download_catbox_file(digitalpfp, digitalpic_path)
                     if not success:
                         print("فشل في تحميل الصورة")
