@@ -199,26 +199,42 @@ async def _(event):
         download_big=True,
     )
     try:
-        media_urls = catbox_upload(downloaded_file_name)
-    except BaseException as exc:
-        await rep.edit("**⎉╎خطا : **" + str(exc))
-        os.remove(downloaded_file_name)
-    else:
-        os.remove(downloaded_file_name)
-        vinfo = ("https://catbox.moe{}".format(media_urls[0]))
-        addgvar("DIGITAL_PIC", vinfo)
-
+        media_url = await catbox_upload(downloaded_file_name)
+        
+        if not media_url:
+            await rep.edit("**⎉╎خطـا في رفع الصـورة: **")
+            if os.path.exists(downloaded_file_name):
+                os.remove(downloaded_file_name)
+            return
+            
+        addgvar("DIGITAL_PIC", media_url)
+        vinfo = media_url
+        
+    except Exception as exc:
+        await rep.edit(f"**⎉╎خطـا : ** {str(exc)}")
+        if os.path.exists(downloaded_file_name):
+            os.remove(downloaded_file_name)
+        return
+    finally:
+        if os.path.exists(downloaded_file_name):
+            os.remove(downloaded_file_name)
+    
     digitalpfp = gvarstatus("DIGITAL_PIC")
+    if not digitalpfp:
+        return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
+    
+    if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
+        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
+    
+    os.makedirs(os.path.dirname(digitalpic_path), exist_ok=True)
+    
     downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
     downloader.start(blocking=False)
     while not downloader.isFinished():
         pass
-    if gvarstatus("DIGITAL_PIC") is None:
-        return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
-    if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
+    
     addgvar("digitalpic", True)
-    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
+    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇ اضـغـط هنــا ⦈</a> </b>", parse_mode="html", link_preview=False)
     await digitalpicloop()
 
 
