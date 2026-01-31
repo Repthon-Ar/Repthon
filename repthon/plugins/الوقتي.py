@@ -87,7 +87,7 @@ async def digitalpicloop():
                     break
             
             repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/Papernotes.ttf"
-        
+            
             shutil.copy(digitalpic_path, autophoto_path)
             
             TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
@@ -97,7 +97,10 @@ async def digitalpicloop():
                 RTZone = dt.now()
             
             RTime = RTZone.strftime('%H:%M')
-            RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
+            try:
+                RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
+            except:
+                RT = RTime
             
             img = Image.open(autophoto_path)
             drawn_text = ImageDraw.Draw(img)
@@ -133,9 +136,9 @@ async def digitalpicloop():
         except Exception as e:
             print(f"خطأ في digitalpicloop: {e}")
             await asyncio.sleep(5)
-            
+        
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
-
+                
 
 async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
