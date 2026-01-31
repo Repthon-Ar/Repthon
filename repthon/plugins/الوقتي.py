@@ -36,7 +36,7 @@ from catbox import CatboxUploader
 
 from ..Config import Config
 from ..helpers.utils import _format
-from ..helpers.functions import catbox
+from ..helpers.functions.catbox import catbox_upload
 from ..core.managers import edit_or_reply
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from . import edit_delete, zq_lo, logging, BOTLOG, BOTLOG_CHATID, mention
