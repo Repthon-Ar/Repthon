@@ -75,11 +75,11 @@ async def digitalpicloop():
     while DIGITALPICSTART:
         try:
             if not os.path.exists(digitalpic_path):
-                digitalpfp = gvarstatus("DIGITAL_PIC")  # Code by T.me/RR0RT
+                digitalpfp = gvarstatus("DIGITAL_PIC")
                 if digitalpfp:
                     success = await download_catbox_file(digitalpfp, digitalpic_path)
                     if not success:
-                        print("فشل في تحميل الصورة")
+                        print("فشل في تحميل الصورة من Catbox")
                         await asyncio.sleep(10)
                         continue
                 else:
@@ -226,19 +226,27 @@ async def autobio_loop():
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
+    
     downloaded_file_name = await event.client.download_profile_photo(
         zq_lo.uid,
         Config.TMP_DOWNLOAD_DIRECTORY + str(zq_lo.uid) + ".jpg",
         download_big=True,
     )
+    
     try:
         media_url = await catbox_upload(downloaded_file_name)
+        
         if not media_url:
-            await rep.edit("**⎉╎خطـا في رفع الصـورة: **")
+            await rep.edit("**⎉╎خطـا في رفع الصـورة**")
             if os.path.exists(downloaded_file_name):
                 os.remove(downloaded_file_name)
             return
+        
         addgvar("DIGITAL_PIC", media_url)
+        
+        os.makedirs(os.path.dirname(digitalpic_path), exist_ok=True)
+        shutil.copy(downloaded_file_name, digitalpic_path)
+        
     except Exception as exc:
         await rep.edit(f"**⎉╎خطـا : ** {str(exc)}")
         if os.path.exists(downloaded_file_name):
@@ -247,14 +255,13 @@ async def _(event):
     finally:
         if os.path.exists(downloaded_file_name):
             os.remove(downloaded_file_name)
-    digitalpfp = gvarstatus("DIGITAL_PIC")
-    if not digitalpfp:
+    
+    if not gvarstatus("DIGITAL_PIC"):
         return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
+    
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
-    success = await download_catbox_file(digitalpfp, digitalpic_path)
-    if not success:
-        return await edit_delete(event, "**⎉╎خطـا في تحميـل الصـورة**")
+    
     addgvar("digitalpic", True)
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await digitalpicloop()
