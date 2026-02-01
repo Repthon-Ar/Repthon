@@ -16,9 +16,11 @@ async def download_catbox_file(url: str, save_path: str) -> bool:
                             f.write(chunk)
                     return True
                 else:
-                    print(f"خطأ في التحميل: {response.status}")
+                    print(f"خطأ في التحميل: كود الحالة {response.status}")
                     return False
-                    
+    except aiohttp.ClientError as e:
+        print(f"خطأ في الاتصال: {e}")
+        return False
     except Exception as e:
-        print(f"خطأ في download_catbox_file: {e}")
+        print(f"خطأ غير متوقع: {e}")
         return False
