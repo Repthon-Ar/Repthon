@@ -79,7 +79,7 @@ async def digitalpicloop():
                 if digitalpfp:
                     success = await download_catbox_file(digitalpfp, digitalpic_path)
                     if not success:
-                        print("فشل في تحميل الصورة من Catbox")
+                        print("فشل في تحميل الصورة")
                         await asyncio.sleep(10)
                         continue
                 else:
@@ -114,19 +114,9 @@ async def digitalpicloop():
             img.save(autophoto_path)
             
             file = await zq_lo.upload_file(autophoto_path)
-            
-            if i > 0:
-                try:
-                    await zq_lo(
-                        functions.photos.DeletePhotosRequest(
-                            await zq_lo.get_profile_photos("me", limit=1)
-                        )
-                    )
-                except:
-                    pass
+            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
             
             i += 1
-            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
             
             if os.path.exists(autophoto_path):
                 os.remove(autophoto_path)
