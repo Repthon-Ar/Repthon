@@ -78,11 +78,9 @@ async def digitalpicloop():
                     break
 
             shutil.copy(digitalpic_path, autophoto_path)
-            
             tz_name = gvarstatus("T_Z") or Config.TZ
             now = dt.now(timezone(tz_name))
             time_str = now.strftime("%I:%M")
-            
             img = Image.open(autophoto_path)
             draw = ImageDraw.Draw(img)
             font_file = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
@@ -99,22 +97,22 @@ async def digitalpicloop():
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
             
             try:
-                photos = await zq_lo.get_profile_photos("me", limit=1)
-                if len(photos) > 0:
-                    await zq_lo(functions.photos.DeletePhotosRequest(photos))
-            except:
-                pass
+                all_photos = await zq_lo.get_profile_photos("me", limit=2)
+                if len(all_photos) > 1:
+                    await zq_lo(functions.photos.DeletePhotosRequest(id=[all_photos[1]]))
+            except Exception as e:
+                print(f"خطأ بسيط في حذف الصورة القديمة: {e}")
 
             if os.path.exists(autophoto_path):
                 os.remove(autophoto_path)
 
-            await asyncio.sleep(60)
+            await asyncio.sleep(CHANGE_TIME)
 
         except Exception as e:
             print(f"Error in Loop: {e}")
             await asyncio.sleep(20)
-                
 
+                
 async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
         #DM = time.strftime("%d-%m-%y")
@@ -204,9 +202,13 @@ async def _(event):
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي مفعـل بالفعل ✓**")
 
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-    
-    path = os.path.join(Config.TMP_DOWNLOAD_DIRECTORY + str(zq_lo.uid) + ".jpg")
-    downloaded = await event.client.download_profile_photo(zq_lo.uid, path, download_big=True)
+
+    path = os.path.join(Config.TMP_DOWNLOAD_DIRECTORY, f"base_{zq_lo.uid}.jpg")
+
+    try:
+        downloaded = await event.client.download_profile_photo(zq_lo.uid, path, download_big=True)
+    except Exception as e:
+        return await rep.edit(f"**⎉╎خطأ أثناء التحميل: {e}**")
 
     if not downloaded:
         return await rep.edit("**⎉╎عذراً، يجب أن تضع صورة لبروفايلك أولاً.**")
@@ -216,12 +218,15 @@ async def _(event):
     if link:
         addgvar("DIGITAL_PIC", link)
         addgvar("digitalpic", "true")
+        
         if os.path.exists(downloaded):
             os.remove(downloaded)
         
         await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>", parse_mode="html")
+        
         await digitalpicloop()
     else:
+        if os.path.exists(path): os.remove(path)
         await rep.edit("**⎉╎فشل الرفع إلى Catbox، جرب مرة أخرى.**")
 
 
