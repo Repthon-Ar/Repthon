@@ -52,6 +52,7 @@ normretext = "1234567890"
 autopic_path = os.path.join(os.getcwd(), "repthon", "original_pic.png")
 digitalpic_path = os.path.join(os.getcwd(), "repthon", "digital_pic.png")
 autophoto_path = os.path.join(os.getcwd(), "repthon", "photo_pfp.png")
+digitalpfp = gvarstatus("AUTO_PIC") or "https://files.catbox.moe/03jye2.jpg"
 
 
 NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقتي|اسم وقتي|اسم تلقائي)"
@@ -69,48 +70,38 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 async def digitalpicloop():
-    while gvarstatus("digitalpic") == "true":
+    DIGITALPICSTART = gvarstatus("digitalpic") == "true"
+    i = 0
+    while DIGITALPICSTART:
+        if not os.path.exists(digitalpic_path):
+            downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+            downloader.start(blocking=False)
+            while not downloader.isFinished():
+                pass
+        shutil.copy(digitalpic_path, autophoto_path)
+        Image.open(autophoto_path)
+        TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+        RTZone = dt.now(timezone(TIME_ZONE))
+        RTime = RTZone.strftime('%H:%M')
+        RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
+        #current_time = dt.now().strftime("%I:%M")
+        img = Image.open(autophoto_path)
+        drawn_text = ImageDraw.Draw(img)
+        rep = str(base64.b64decode("dXNlcmJvdC9zcWxfaGVscGVyL0lRVEhPTklNT0dFLnR0Zg=="))[2:36]
+        fnt = ImageFont.truetype(rep, 65)
+        drawn_text.text((300, 400), RT, font=fnt, fill=(255, 255, 255))
+        img.save(autophoto_path)
+        file = await zq_lo.upload_file(autophoto_path)
         try:
-            if not os.path.exists(digitalpic_path):
-                img_url = gvarstatus("DIGITAL_PIC")
-                if not img_url or not await download_catbox_file(img_url, digitalpic_path):
-                    print("فشل تحميل الصورة الأصلية")
-                    break
-
-            shutil.copy(digitalpic_path, autophoto_path)
-            tz_name = gvarstatus("T_Z") or Config.TZ
-            now = dt.now(timezone(tz_name))
-            time_str = now.strftime("%I:%M")
-            img = Image.open(autophoto_path)
-            draw = ImageDraw.Draw(img)
-            font_file = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
-            
-            try:
-                font = ImageFont.truetype(font_file, 40)
-            except:
-                font = ImageFont.load_default()
-            
-            draw.text((150, 80), time_str, font=font, fill=(255, 255, 255))
-            img.save(autophoto_path)
-            
-            file = await zq_lo.upload_file(autophoto_path)
+            if i > 0:
+                await zq_lo(functions.photos.DeletePhotosRequest(await zq_lo.get_profile_photos("me", limit=1)))
+            i += 1
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            
-            try:
-                all_photos = await zq_lo.get_profile_photos("me", limit=2)
-                if len(all_photos) > 1:
-                    await zq_lo(functions.photos.DeletePhotosRequest(id=[all_photos[1]]))
-            except Exception as e:
-                print(f"خطأ بسيط في حذف الصورة القديمة: {e}")
-
-            if os.path.exists(autophoto_path):
-                os.remove(autophoto_path)
-
-            await asyncio.sleep(CHANGE_TIME)
-
-        except Exception as e:
-            print(f"Error in Loop: {e}")
-            await asyncio.sleep(20)
+            os.remove(autophoto_path)
+            await asyncio.sleep(60)
+        except BaseException:
+            return
+        DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
                 
 async def autoname_loop():
@@ -196,38 +187,17 @@ async def autobio_loop():
         AUTOBIOSTART = gvarstatus("autobio") == "true"
 
 
-@zq_lo.rep_cmd(pattern=f"{PAUTO}$")
+@zq_lo.rep_cmd(pattern=f"{PAUTO}(?: |$)(.*)"))
 async def _(event):
-    if gvarstatus("digitalpic") == "true":
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي مفعـل بالفعل ✓**")
-
-    rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-
-    path = os.path.join(Config.TMP_DOWNLOAD_DIRECTORY, f"base_{zq_lo.uid}.jpg")
-
-    try:
-        downloaded = await event.client.download_profile_photo(zq_lo.uid, path, download_big=True)
-    except Exception as e:
-        return await rep.edit(f"**⎉╎خطأ أثناء التحميل: {e}**")
-
-    if not downloaded:
-        return await rep.edit("**⎉╎عذراً، يجب أن تضع صورة لبروفايلك أولاً.**")
-
-    link = await catbox_upload(downloaded)
-    
-    if link:
-        addgvar("DIGITAL_PIC", link)
-        addgvar("digitalpic", "true")
-        
-        if os.path.exists(downloaded):
-            os.remove(downloaded)
-        
-        await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>", parse_mode="html")
-        
-        await digitalpicloop()
-    else:
-        if os.path.exists(path): os.remove(path)
-        await rep.edit("**⎉╎فشل الرفع إلى Catbox، جرب مرة أخرى.**")
+    downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+    downloader.start(blocking=False)
+    while not downloader.isFinished():
+        pass
+    if gvarstatus(f"{PAUTO}") is not None and gvarstatus(f"{PAUTO}") == "true":
+        return await edit_delete(event, f"**⎉╎البروفـايل الوقتـي مفعـل بالفعل ✓**")
+    addgvar(f"{PAUTO}", True)
+    await edit_delete(event, f"<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>", parse_mode="html")
+    await digitalpicloop()
 
 
 @zq_lo.rep_cmd(pattern=f"{NAUTO}$")
