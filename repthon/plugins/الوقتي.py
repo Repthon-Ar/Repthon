@@ -300,135 +300,62 @@ async def _(event):  # sourcery no-metrics
         return await edit_delete(event, "**⎉╎النبـذه الوقتيـه .. غيـر مفعـله اصـلاً ؟!**")
 
 
-@zq_lo.rep_cmd(
-    pattern="ايقاف(?: |$)(.*)",
-    command=("ايقاف", plugin_category),
-    info={
-        "header": "To stop the functions of autoprofile",
-        "description": "If you want to stop autoprofile functions then use this cmd.",
-        "options": {
-            "digitalpfp": "To stop difitalpfp",
-            "autoname": "To stop autoname",
-            "autobio": "To stop autobio",
-        },
-        "usage": "{tr}end <option>",
-        "examples": ["{tr}end autopic"],
-    },
-)
+@zq_lo.rep_cmd(pattern="انهاء ([\\s\|S]*)")
 async def _(event):  # sourcery no-metrics
-    "To stop the functions of autoprofile plugin"
     input_str = event.pattern_match.group(1)
-    if input_str == "البروفايل تلقائي" or input_str == "البروفايل" or input_str == "البروفايل التلقائي" or input_str == "الصوره الوقتيه" or input_str == "الصورة الوقتية":
-        if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
-            delgvar("digitalpic")
+    if input_str == f"{PAUTO}":
+        if gvarstatus(f"{PAUTO}") is not None and gvarstatus(f"{PAUTO}") == "true":
+            delgvar(f"{PAUTO}")
             await event.client(
-                functions.photos.DeletePhotosRequest(
-                    await event.client.get_profile_photos("me", limit=1)
-                )
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف البروفـايل الوقتـي .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. غيـر مفعـل اصـلاً ؟!**")
-    if input_str == "الاسم تلقائي" or input_str == "الاسم" or input_str == "الاسم التلقائي" or input_str == "الاسم الوقتي" or input_str == "اسم الوقتي" or input_str == "اسم وقتي" or input_str == "اسم تلقائي":
-        if gvarstatus("autoname") is not None and gvarstatus("autoname") == "true":
-            delgvar("autoname")
-            DEFAULTUSER = gvarstatus("ALIVE_NAME") if gvarstatus("ALIVE_NAME") else Config.ALIVE_NAME
-            await event.client(
-                functions.account.UpdateProfileRequest(first_name=DEFAULTUSER, last_name='.')
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف الاسـم الوقتـي .. بنجـاح ✓**")
-        if gvarstatus("auto2name") is not None and gvarstatus("auto2name") == "true": #Code by T.me/zzzzl1l
-            delgvar("auto2name")
-            await event.client(
-                functions.account.UpdateProfileRequest(last_name='.')
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف الاسـم الوقتـي² .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎الاسـم الوقتـي .. غيـر مفعـل اصـلاً ؟!**")
-    if input_str == "البايو تلقائي" or input_str == "البايو" or input_str == "البايو التلقائي" or input_str == "البايو الوقتي" or input_str == "النبذه الوقتيه" or input_str == "النبذة الوقتية" or input_str == "بايو الوقتي" or input_str == "نبذه الوقتي":
-        if gvarstatus("autobio") is not None and gvarstatus("autobio") == "true":
-            delgvar("autobio")
-            DEFAULTUSERBIO = gvarstatus("DEFAULT_BIO") or "الحمدلله دائماً وابداً"
-            await event.client(
-                functions.account.UpdateProfileRequest(about=DEFAULTUSERBIO)
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف النبـذه الوقتيـه .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎النبـذه الوقتيـه .. غيـر مفعـله اصـلاً ؟!**")
+                functions.photos.DeletePhotosRequest(                    await event.client.get_profile_photos("me", limit=1)                )            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف  صوره وقتيه الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل صوره وقتيه ✕**")
+    if input_str == f"{NAUTO}":
+        if gvarstatus(f"{NAUTO}") is not None and gvarstatus(f"{NAUTO}") == "true":
+            delgvar(f"{NAUTO}")
+            await event.client(                functions.account.UpdateProfileRequest(first_name=DEFAULTUSER)            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف الإسـم الوقتـي الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل الإسـم الوقتـي ✕**")
+    if input_str == f"{BAUTO}":
+        if gvarstatus(f"{BAUTO}") is not None and gvarstatus(f"{BAUTO}") == "true":
+            delgvar(f"{BAUTO}")
+            await event.client(                functions.account.UpdateProfileRequest(about=DEFAULTUSERBIO)            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف البايـو التلقائـي الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل البايـو التلقائـي ✕**")
+    END_CMDS = [f"{PAUTO}", f"{NAUTO}", f"{BAUTO}",]
+    if input_str not in END_CMDS:
+        await edit_delete(
+            event,
+            f"{input_str} is invalid end command.Mention clearly what should i end.",
+            parse_mode=_format.parse_pre,
+        )
+ 
 
 
 
-@zq_lo.rep_cmd(
-    pattern="انهاء(?: |$)(.*)",
-    command=("انهاء", plugin_category),
-    info={
-        "header": "To stop the functions of autoprofile",
-        "description": "If you want to stop autoprofile functions then use this cmd.",
-        "options": {
-            "digitalpfp": "To stop difitalpfp",
-            "autoname": "To stop autoname",
-            "autobio": "To stop autobio",
-        },
-        "usage": "{tr}end <option>",
-        "examples": ["{tr}end autopic"],
-    },
-)
+@zq_lo.rep_cmd(pattern="ايقاف ([\\s\|S]*)")
 async def _(event):  # sourcery no-metrics
-    "To stop the functions of autoprofile plugin"
     input_str = event.pattern_match.group(1)
-    if input_str == "البروفايل تلقائي" or input_str == "البروفايل" or input_str == "البروفايل التلقائي" or input_str == "الصوره الوقتيه" or input_str == "الصورة الوقتية":
-        if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
-            delgvar("digitalpic")
+    if input_str == f"{PAUTO}":
+        if gvarstatus(f"{PAUTO}") is not None and gvarstatus(f"{PAUTO}") == "true":
+            delgvar(f"{PAUTO}")
             await event.client(
-                functions.photos.DeletePhotosRequest(
-                    await event.client.get_profile_photos("me", limit=1)
-                )
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف البروفـايل الوقتـي .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. غيـر مفعـل اصـلاً ؟!**")
-    if input_str == "الاسم تلقائي" or input_str == "الاسم" or input_str == "الاسم التلقائي" or input_str == "الاسم الوقتي" or input_str == "اسم الوقتي" or input_str == "اسم وقتي" or input_str == "اسم تلقائي":
-        if gvarstatus("autoname") is not None and gvarstatus("autoname") == "true":
-            delgvar("autoname")
-            DEFAULTUSER = gvarstatus("ALIVE_NAME") if gvarstatus("ALIVE_NAME") else Config.ALIVE_NAME
-            await event.client(
-                functions.account.UpdateProfileRequest(first_name=DEFAULTUSER, last_name='.')
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف الاسـم الوقتـي .. بنجـاح ✓**")
-        if gvarstatus("auto2name") is not None and gvarstatus("auto2name") == "true": #Code by T.me/zzzzl1l
-            delgvar("auto2name")
-            await event.client(
-                functions.account.UpdateProfileRequest(last_name='.')
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف الاسـم الوقتـي² .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎الاسـم الوقتـي .. غيـر مفعـل اصـلاً ؟!**")
-    if input_str == "الاسم تلقائي2" or input_str == "الاسم التلقائي2" or input_str == "الاسم الوقتي2" or input_str == "اسم الوقتي2" or input_str == "اسم وقتي2" or input_str == "اسم تلقائي2":
-        if gvarstatus("auto2name") is not None and gvarstatus("auto2name") == "true": #Code by T.me/zzzzl1l
-            delgvar("auto2name")
-            await event.client(
-                functions.account.UpdateProfileRequest(last_name='.')
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف الاسـم الوقتـي² .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎الاسـم الوقتـي .. غيـر مفعـل اصـلاً ؟!**")
-    if input_str == "البايو تلقائي" or input_str == "البايو" or input_str == "البايو التلقائي" or input_str == "البايو الوقتي" or input_str == "النبذه الوقتيه" or input_str == "النبذة الوقتية" or input_str == "بايو الوقتي" or input_str == "نبذه الوقتي":
-        if gvarstatus("autobio") is not None and gvarstatus("autobio") == "true":
-            delgvar("autobio")
-            DEFAULTUSERBIO = gvarstatus("DEFAULT_BIO") or "الحمدلله دائماً وابداً"
-            await event.client(
-                functions.account.UpdateProfileRequest(about=DEFAULTUSERBIO)
-            )
-            return await edit_delete(event, "**⎉╎تم إيقـاف النبـذه الوقتيـه .. بنجـاح ✓**")
-        return await edit_delete(event, "**⎉╎النبـذه الوقتيـه .. غيـر مفعـله اصـلاً ؟!**")
-    END_CMDS = [
-        "البروفايل تلقائي",
-        "الصوره الوقتيه",
-        "الاسم تلقائي",
-        "الاسم الوقتي",
-        "اسم تلقائي",
-        "اسم وقتي",
-        "البايو تلقائي",
-        "البايو الوقتي",
-        "النبذه الوقتيه",
-        "البروفايل",
-        "الاسم",
-        "البايو",
-    ]
+                functions.photos.DeletePhotosRequest(                    await event.client.get_profile_photos("me", limit=1)                )            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف  صوره وقتيه الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل صوره وقتيه ✕**")
+    if input_str == f"{NAUTO}":
+        if gvarstatus(f"{NAUTO}") is not None and gvarstatus(f"{NAUTO}") == "true":
+            delgvar(f"{NAUTO}")
+            await event.client(                functions.account.UpdateProfileRequest(first_name=DEFAULTUSER)            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف الإسـم الوقتـي الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل الإسـم الوقتـي ✕**")
+    if input_str == f"{BAUTO}":
+        if gvarstatus(f"{BAUTO}") is not None and gvarstatus(f"{BAUTO}") == "true":
+            delgvar(f"{BAUTO}")
+            await event.client(                functions.account.UpdateProfileRequest(about=DEFAULTUSERBIO)            )
+            return await edit_delete(event, "**⎉╎  تم إيقـاف البايـو التلقائـي الآن ✓**")
+        return await edit_delete(event, "**⎉╎  لم يتـم تفعيـل البايـو التلقائـي ✕**")
+    END_CMDS = [f"{PAUTO}", f"{NAUTO}", f"{BAUTO}",]
     if input_str not in END_CMDS:
         await edit_delete(
             event,
