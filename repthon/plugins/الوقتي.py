@@ -52,7 +52,7 @@ normretext = "1234567890"
 autopic_path = os.path.join(os.getcwd(), "repthon", "original_pic.png")
 digitalpic_path = os.path.join(os.getcwd(), "repthon", "digital_pic.png")
 autophoto_path = os.path.join(os.getcwd(), "repthon", "photo_pfp.png")
-digitalpfp = gvarstatus("AUTO_PIC") or "https://files.catbox.moe/03jye2.jpg"
+digitalpfp = gvarstatus("AUTO_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg"
 
 
 NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقتي|اسم وقتي|اسم تلقائي)"
