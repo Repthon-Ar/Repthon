@@ -187,7 +187,7 @@ async def autobio_loop():
         AUTOBIOSTART = gvarstatus("autobio") == "true"
 
 
-@zq_lo.rep_cmd(pattern=f"{PAUTO}(?: |$)(.*)"))
+@zq_lo.rep_cmd(pattern=f"{PAUTO}(?: |$)(.*)")
 async def _(event):
     downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
     downloader.start(blocking=False)
