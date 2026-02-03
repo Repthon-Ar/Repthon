@@ -58,6 +58,7 @@ NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقت
 NAAUTO = gvarstatus("R_NAAUTO") or "(الاسم تلقائي2|الاسم الوقتي2|اسم وقتي2|اسم تلقائي2)"
 PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره الوقتيه|الصورة الوقتية|صوره وقتيه|البروفايل)"
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
+digitalpfp = gvarstatus("DIGITAL_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg"
 
 extractor = URLExtract()
 telegraph = Telegraph()
@@ -73,7 +74,6 @@ async def digitalpicloop():
     i = 0
     while DIGITALPICSTART:
         if not os.path.exists(digitalpic_path):
-            digitalpfp = gvarstatus("DIGITAL_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg" #Code by T.me/RR0RT
             downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
             downloader.start(blocking=False)
             while not downloader.isFinished():
@@ -194,8 +194,6 @@ async def autobio_loop():
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-    
-    digitalpfp = gvarstatus("DIGITAL_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg"
     downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
     downloader.start(blocking=False)
     while not downloader.isFinished():
