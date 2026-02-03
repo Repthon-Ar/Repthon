@@ -25,6 +25,7 @@ def safe_upload_file(file_path):
             response = requests.post(
                 'https://graph.org/upload',
                 files={'file': ('file', f, 'image/jpeg')}
+            )
         
         if response.status_code != 200:
             return f"Error: Server returned {response.status_code}"
