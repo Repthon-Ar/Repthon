@@ -4,6 +4,13 @@ import random
 import string
 import requests
 
+try:
+    import mimetypes
+except ModuleNotFoundError:
+    os.system("pip3 install mimetypes")
+    import mimetypes
+
+import user_agent
 from datetime import datetime
 
 from PIL import Image
@@ -17,23 +24,33 @@ from ..core.managers import edit_delete, edit_or_reply
 from ..helpers.functions import delete_conv
 from . import BOTLOG, BOTLOG_CHATID, zq_lo, reply_id
 
-
-
+# دالة الرفع المحسنة: ترجع المسار فقط وتتجنب الأخطاء
 def safe_upload_file(file_path):
     try:
-        with open(file_path, 'rb') as f:
-            response = requests.post(
-                'https://graph.org/upload',
-                files={'file': ('file', f, 'image/jpeg')}
-            )
-        
-        if response.status_code != 200:
-            return f"Error: Server returned {response.status_code}"
-            
-        return response.json()
-    except Exception as e:
-        return str(e)
+        # تحديد نوع الملف تلقائياً
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if not mime_type:
+            mime_type = 'application/octet-stream'
 
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+
+        with open(file_path, 'rb') as f:
+            files = {'file': (os.path.basename(file_path), f, mime_type)}
+            response = requests.post('https://graph.org/upload', files=files, headers=headers)
+        
+        if response.status_code == 200:
+            res_json = response.json()
+            if isinstance(res_json, list) and len(res_json) > 0:
+                return res_json[0]['src']
+            else:
+                return None
+        else:
+            return None
+    except Exception as e:
+        print(f"Upload Error: {e}")
+        return None
 
 def resize_image(image):
     im = Image.open(image)
@@ -45,28 +62,20 @@ extractor = URLExtract()
 telegraph = Telegraph()
 
 try:
-    r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
-    auth_url = r["auth_url"]
+    telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
 except Exception:
-    auth_url = "https://telegra.ph"
-
+    pass
 
 @zq_lo.rep_cmd(
     pattern=r"(t(ele)?g(raph)?) ?(m|t|media|text)(?:\s|$)([\s\S]*)",
     command=("telegraph", plugin_category),
-    info={
-        "header": "To get telegraph link.",
-        "description": "يرفع النصوص والوسائط (صور/فيديو) إلى تلغراف.",
-        "usage": "{tr}tgm (بالرد على ميديا) أو {tr}tgt (بالرد على نص)",
-    },
 )
 async def _(event):
     "To get telegraph link."
-    catevent = await edit_or_reply(event, "`جاري المعالجة........`")
+    catevent = await edit_or_reply(event, "`جاري المعالجة... ⏳`")
     
-    optional_title = event.pattern_match.group(5)
     if not event.reply_to_msg_id:
-        return await catevent.edit("`يرجى الرد على رسالة للحصول على رابط تلغراف.`")
+        return await catevent.edit("`يرجى الرد على رسالة أولاً.`")
 
     start = datetime.now()
     r_message = await event.get_reply_message()
@@ -74,59 +83,36 @@ async def _(event):
 
     if input_str in ["media", "m"]:
         if not r_message.media:
-            return await catevent.edit("`الرسالة التي رددت عليها لا تحتوي على ميديا!`")
+            return await catevent.edit("`الرسالة لا تحتوي على ميديا!`")
             
-        downloaded_file_name = await event.client.download_media(r_message, Config.TEMP_DIR)
-        await catevent.edit(f"`تم التحميل.. جاري الرفع الآن..`")
-        if downloaded_file_name.endswith((".webp")):
-            resize_image(downloaded_file_name)
+        file_path = await event.client.download_media(r_message, Config.TEMP_DIR)
+        
+        if file_path.endswith((".webp")):
+            resize_image(file_path)
             
         try:
-            media_urls = safe_upload_file(downloaded_file_name)
+            media_path = safe_upload_file(file_path)
+            if not media_path:
+                return await catevent.edit("`فشل الرفع.. ربما السيرفر مضغوط أو الملف غير مدعوم.`")
             end = datetime.now()
             ms = (end - start).seconds
             
             await catevent.edit(
-                f"**تم الرفع بنجاح ✅**\n\n**الرابط : **[اضغط هنا](https://graph.org{media_urls[0]})\n"
-                f"**الوقت المستغرق : **`{ms} ثانية.`",
+                f"**تم الرفع بنجاح ✅**\n\n**الرابط : **[اضغط هنا](https://graph.org{media_path})\n"
+                f"**الوقت : **`{ms} ثانية.`",
                 link_preview=True,
             )
         except Exception as exc:
-            await catevent.edit(f"**خطأ أثناء الرفع : **\n`{exc}`")
+            await catevent.edit(f"**خطأ :**\n`{exc}`")
         finally:
-            if os.path.exists(downloaded_file_name):
-                os.remove(downloaded_file_name)
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
     elif input_str in ["text", "t"]:
-        user_object = await event.client.get_entity(r_message.sender_id)
-        title_of_page = get_display_name(user_object)
-        
-        if optional_title:
-            title_of_page = optional_title
-            
-        page_content = r_message.message
-        if r_message.media:
-            if page_content != "":
-                title_of_page = page_content
-            downloaded_file_name = await event.client.download_media(r_message, Config.TEMP_DIR)
-            with open(downloaded_file_name, "rb") as fd:
-                m_list = fd.readlines()
-            for m in m_list:
-                page_content += m.decode("UTF-8") + "\n"
-            os.remove(downloaded_file_name)
-            
-        page_content = page_content.replace("\n", "<br>")
+        page_content = r_message.message.replace("\n", "<br>")
         try:
-            response = telegraph.create_page(title_of_page, html_content=page_content)
-        except Exception:
-            title_of_page = "".join(random.choice(string.ascii_letters) for _ in range(16))
-            response = telegraph.create_page(title_of_page, html_content=page_content)
-            
-        end = datetime.now()
-        ms = (end - start).seconds
-        cat = f"https://graph.org/{response['path']}"
-        await catevent.edit(
-            f"**تم إنشاء الصفحة بنجاح ✅**\n\n**الرابط : ** [اضغط هنا]({cat})\n"
-            f"**الوقت المستغرق : **`{ms} ثانية.`",
-            link_preview=True,
-        )
+            response = telegraph.create_page("Repthon Post", html_content=page_content)
+            cat = f"https://graph.org/{response['path']}"
+            await catevent.edit(f"**الرابط :** [اضغط هنا]({cat})", link_preview=True)
+        except Exception as e:
+            await catevent.edit(f"**خطأ :** `{e}`")
