@@ -220,10 +220,10 @@ async def _(event):
         await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     elif ("𝟬" not in DEFAULTUSER) or ("𝟎" not in DEFAULTUSER) or ("٠" not in DEFAULTUSER) or ("₀" not in DEFAULTUSER) or ("⁰" not in DEFAULTUSER) or ("✪" not in DEFAULTUSER) or ("⓿" not in DEFAULTUSER) or ("⊙" not in DEFAULTUSER) or ("⓪" not in DEFAULTUSER) or ("𝟢" not in DEFAULTUSER) or ("𝟶" not in DEFAULTUSER) or ("𝟘" not in DEFAULTUSER) or ("０" not in DEFAULTUSER):
         baqir = user.first_name if user.first_name else "-"
-        await event.client(functions.account.UpdateProfileRequest(last_name=zelzalll))
+        await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     else:
         baqir = DEFAULTUSER
-        await event.client(functions.account.UpdateProfileRequest(last_name=zelzalll))
+        await event.client(functions.account.UpdateProfileRequest(last_name=baqir))
     addgvar("autoname", True)
     await rrr.edit("<b>⎉╎تـم بـدء الاسـم الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف الاسـم الوقتـي ↶ <a href = https://t.me/Repthon_vars/24>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await autoname_loop()
