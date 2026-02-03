@@ -57,6 +57,8 @@ telegraph = Telegraph()
 try:
     r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
     auth_url = r["auth_url"]
+except Exception:
+    auth_url = "https://telegra.ph"
 
 
 @zq_lo.rep_cmd(
