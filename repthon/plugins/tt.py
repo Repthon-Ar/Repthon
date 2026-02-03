@@ -29,21 +29,27 @@ def safe_upload_file(file_path):
         if not mime_type:
             mime_type = 'application/octet-stream'
 
+        file_name = os.path.basename(file_path)
+
         with open(file_path, 'rb') as f:
-            files = {'file': (file_path, f, mime_type)}
+            files = [('file', (file_name, f, mime_type))]
             response = requests.post('https://graph.org/upload', files=files)
         
         if response.status_code == 200:
             res_json = response.json()
             if isinstance(res_json, list) and len(res_json) > 0:
-                # نرجع قائمة بالروابط للحفاظ على توافق الكود
                 return [item['src'] for item in res_json]
+            elif isinstance(res_json, dict) and 'error' in res_json:
+                raise Exception(f"Telegraph Error: {res_json['error']}")
             else:
-                raise Exception(f"Unexpected response: {res_json}")
+                raise Exception(f"Unexpected response format: {res_json}")
         else:
-            raise Exception(f"Server Error: {response.status_code}")
+            error_details = response.text
+            raise Exception(f"Server Error {response.status_code}: {error_details}")
+            
     except Exception as e:
         raise Exception(f"Upload Failed: {str(e)}")
+
 
 def resize_image(image):
     im = Image.open(image)
