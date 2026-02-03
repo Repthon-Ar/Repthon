@@ -198,7 +198,7 @@ async def _(event):
     downloader.start(blocking=False)
     while not downloader.isFinished():
         pass
-    if gvarstatus("DIGITAL_PIC") is None:
+    if digitalpfp is None:
         return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
