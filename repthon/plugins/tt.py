@@ -4,11 +4,6 @@ import random
 import string
 import requests
 
-try:
-    import mimetypes
-except ModuleNotFoundError:
-    os.system("pip3 install mimetypes")
-    import mimetypes
 from datetime import datetime
 
 from PIL import Image
@@ -23,32 +18,20 @@ from ..helpers.functions import delete_conv
 from . import BOTLOG, BOTLOG_CHATID, zq_lo, reply_id
 
 
+
 def safe_upload_file(file_path):
     try:
-        mime_type, _ = mimetypes.guess_type(file_path)
-        if not mime_type:
-            mime_type = 'application/octet-stream'
-
-        file_name = os.path.basename(file_path)
-
         with open(file_path, 'rb') as f:
-            files = [('file', (file_name, f, mime_type))]
-            response = requests.post('https://graph.org/upload', files=files)
+            response = requests.post(
+                'https://graph.org/upload',
+                files={'file': ('file', f, 'image/jpeg')}
         
-        if response.status_code == 200:
-            res_json = response.json()
-            if isinstance(res_json, list) and len(res_json) > 0:
-                return [item['src'] for item in res_json]
-            elif isinstance(res_json, dict) and 'error' in res_json:
-                raise Exception(f"Telegraph Error: {res_json['error']}")
-            else:
-                raise Exception(f"Unexpected response format: {res_json}")
-        else:
-            error_details = response.text
-            raise Exception(f"Server Error {response.status_code}: {error_details}")
+        if response.status_code != 200:
+            return f"Error: Server returned {response.status_code}"
             
+        return response.json()
     except Exception as e:
-        raise Exception(f"Upload Failed: {str(e)}")
+        return str(e)
 
 
 def resize_image(image):
