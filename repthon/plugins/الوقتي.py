@@ -59,7 +59,7 @@ NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقت
 NAAUTO = gvarstatus("R_NAAUTO") or "(الاسم تلقائي2|الاسم الوقتي2|اسم وقتي2|اسم تلقائي2)"
 PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره الوقتيه|الصورة الوقتية|صوره وقتيه|البروفايل)"
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
-digitalpfp = gvarstatus("DIGITAL_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg"
+digitalpfp = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/tvs936.jpg"
 
 extractor = URLExtract()
 telegraph = Telegraph()
@@ -185,7 +185,7 @@ async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
     if not os.path.exists(digitalpic_path):
         try:
-            url = gvarstatus("DIGITAL_PIC") or "https://graph.org/file/63a826d5e5f0003e006a0.jpg"
+            url = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/tvs936.jpg"
             opener = urllib.request.build_opener()
             opener.addheaders = [('User-agent', 'Mozilla/5.0')]
             urllib.request.install_opener(opener)
