@@ -74,6 +74,7 @@ async def digitalpicloop():
     i = 0
     while DIGITALPICSTART:
         if not os.path.exists(digitalpic_path):
+            digitalpfp = gvarstatus("DIGITAL_PIC")
             downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
             downloader.start(blocking=False)
             while not downloader.isFinished():
@@ -198,12 +199,10 @@ async def _(event):
     downloader.start(blocking=False)
     while not downloader.isFinished():
         pass
-    if digitalpfp is None:
-        return await edit_delete(event, "**- فار الصـورة الوقتيـه غيـر موجـود ؟!**\n**- ارسـل صورة ثم قم بالـرد عليهـا بالامـر :**\n\n`.اضف صورة الوقتي`")
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
     addgvar("digitalpic", True)
-    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_cklaish/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
+    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await digitalpicloop()
 
 @zq_lo.rep_cmd(pattern=f"{NAUTO}$")
