@@ -70,51 +70,41 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 async def digitalpicloop():
-    DIGITALPICSTART = gvarstatus("digitalpic") == "true"
-    i = 0
-    while DIGITALPICSTART:
+    while gvarstatus("digitalpic") == "true":
         try:
             if not os.path.exists(digitalpic_path):
-                digitalpfp = gvarstatus("DIGITAL_PIC")
                 downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-                downloader.start(blocking=False)
-                while not downloader.isFinished():
-                    await asyncio.sleep(0.1)
-            
+                downloader.start(blocking=True)
+
             repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
-            shutil.copy(digitalpic_path, autophoto_path)
             TIME_ZONE = gvarstatus("T_Z") or Config.TZ
-            RTZone = dt.now(timezone(TIME_ZONE))
-            RT = RTZone.strftime("%I:%M")
-            img = Image.open(autophoto_path)
-            drawn_text = ImageDraw.Draw(img)
-            fnt = ImageFont.truetype(repfont, 35)
-            drawn_text.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
+            RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
+            img = Image.open(digitalpic_path)
+            draw = ImageDraw.Draw(img)
+            fnt = ImageFont.truetype(repfont, 60) 
+            draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
             img.save(autophoto_path)
-            
+
             file = await zq_lo.upload_file(autophoto_path)
             
-            if i > 0:
-                photos = await zq_lo.get_profile_photos("me", limit=1)
-                if photos:
-                    await zq_lo(functions.photos.DeletePhotosRequest(photos))
-            
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            i += 1
             
+            all_photos = await zq_lo.get_profile_photos("me", limit=2)
+            if len(all_photos) > 1:
+                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
+
             if os.path.exists(autophoto_path):
                 os.remove(autophoto_path)
-                
+
             await asyncio.sleep(CHANGE_TIME)
-            
+
         except Exception as e:
-            print(f"Error in digitalpicloop: {e}")
-            await asyncio.sleep(10)
-        DIGITALPICSTART = gvarstatus("digitalpic") == "true"
+            print(f"PFP Error: {e}")
+            await asyncio.sleep(20)
 
 
-                
-async def autoname_loop():
+    
+    async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
         #DM = time.strftime("%d-%m-%y")
         #HM = time.strftime("%I:%M")
