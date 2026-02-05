@@ -103,8 +103,7 @@ async def digitalpicloop():
             await asyncio.sleep(20)
 
 
-    
-    async def autoname_loop():
+async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
         #DM = time.strftime("%d-%m-%y")
         #HM = time.strftime("%I:%M")
