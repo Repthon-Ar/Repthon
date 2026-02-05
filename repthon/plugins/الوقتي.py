@@ -81,7 +81,7 @@ async def digitalpicloop():
             # تأكد أن digitalpic_path هو المسار الصحيح للصورة الأصلية
             img = Image.open(digitalpic_path)
             draw = ImageDraw.Draw(img)
-            fnt = ImageFont.truetype(gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf", 60)
+            fnt = ImageFont.truetype(gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf", 60)
             draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
             img.save(autophoto_path)
 
