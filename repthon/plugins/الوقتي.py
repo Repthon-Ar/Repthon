@@ -72,35 +72,37 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
 async def digitalpicloop():
     while gvarstatus("digitalpic") == "true":
         try:
-            if not os.path.exists(digitalpic_path):
-                downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-                downloader.start(blocking=True)
-
-            repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
+            # 1. جلب التوقيت
             TIME_ZONE = gvarstatus("T_Z") or Config.TZ
             RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
+
+            # 2. رسم الوقت على الصورة
+            # تأكد أن digitalpic_path هو المسار الصحيح للصورة الأصلية
             img = Image.open(digitalpic_path)
             draw = ImageDraw.Draw(img)
-            fnt = ImageFont.truetype(repfont, 60) 
+            fnt = ImageFont.truetype(gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf", 60)
             draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
             img.save(autophoto_path)
 
-            file = await zq_lo.upload_file(autophoto_path)
+            # 3. استخدام الدالة السحرية المختصرة (إرسال مباشر)
+            # هذه الدالة تقوم بالرفع والتعيين في خطوة واحدة وتلقائية
+            await zq_lo.edit_photo(file=autophoto_path)
             
-            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            
-            all_photos = await zq_lo.get_profile_photos("me", limit=2)
-            if len(all_photos) > 1:
-                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
+            # 4. تنظيف وحذف الصور القديمة (لتجنب تراكم الصور في البروفايل)
+            photos = await zq_lo.get_profile_photos("me")
+            if len(photos) > 1:
+                # حذف الصورة السابقة فقط والإبقاء على الجديدة
+                await zq_lo(functions.photos.DeletePhotosRequest([photos[1]]))
 
+            # مسح الملف المؤقت من السيرفر
             if os.path.exists(autophoto_path):
                 os.remove(autophoto_path)
 
-            await asyncio.sleep(CHANGE_TIME)
-
         except Exception as e:
-            print(f"PFP Error: {e}")
-            await asyncio.sleep(20)
+            print(f"حدث خطأ: {e}")
+        
+        # الانتظار قبل التحديث القادم
+        await asyncio.sleep(CHANGE_TIME)
 
 
 async def autoname_loop():
