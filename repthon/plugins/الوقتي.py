@@ -73,40 +73,45 @@ async def digitalpicloop():
     DIGITALPICSTART = gvarstatus("digitalpic") == "true"
     i = 0
     while DIGITALPICSTART:
-        if not os.path.exists(digitalpic_path):
-            digitalpfp = gvarstatus("DIGITAL_PIC")
-            downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-            downloader.start(blocking=False)
-            while not downloader.isFinished():
-                pass
-        repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/Papernotes.ttf" #Code by T.me/RR0RT
-        shutil.copy(digitalpic_path, autophoto_path)
-        Image.open(autophoto_path)
-        TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
-        RTZone = dt.now(timezone(TIME_ZONE))
-        RTime = RTZone.strftime('%H:%M')
-        RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
-        #current_time = dt.now().strftime("%I:%M")
-        img = Image.open(autophoto_path)
-        drawn_text = ImageDraw.Draw(img)
-        fnt = ImageFont.truetype(f"{repfont}", 35) #Code by T.me/RR0RT
-        drawn_text.text((140, 70), RT, font=fnt, fill=(280, 280, 280)) #Code by T.me/RR0RT
-        img.save(autophoto_path)
-        file = await zq_lo.upload_file(autophoto_path)
         try:
+            if not os.path.exists(digitalpic_path):
+                digitalpfp = gvarstatus("DIGITAL_PIC")
+                downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+                downloader.start(blocking=False)
+                while not downloader.isFinished():
+                    await asyncio.sleep(0.1)
+            
+            repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
+            shutil.copy(digitalpic_path, autophoto_path)
+            TIME_ZONE = gvarstatus("T_Z") or Config.TZ
+            RTZone = dt.now(timezone(TIME_ZONE))
+            RT = RTZone.strftime("%I:%M")
+            img = Image.open(autophoto_path)
+            drawn_text = ImageDraw.Draw(img)
+            fnt = ImageFont.truetype(repfont, 35)
+            drawn_text.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
+            img.save(autophoto_path)
+            
+            file = await zq_lo.upload_file(autophoto_path)
+            
             if i > 0:
-                await zq_lo(
-                    functions.photos.DeletePhotosRequest(
-                        await zq_lo.get_profile_photos("me", limit=1)
-                    )
-                )
-            i += 1
+                photos = await zq_lo.get_profile_photos("me", limit=1)
+                if photos:
+                    await zq_lo(functions.photos.DeletePhotosRequest(photos))
+            
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            os.remove(autophoto_path)
+            i += 1
+            
+            if os.path.exists(autophoto_path):
+                os.remove(autophoto_path)
+                
             await asyncio.sleep(CHANGE_TIME)
-        except BaseException:
-            return
+            
+        except Exception as e:
+            print(f"Error in digitalpicloop: {e}")
+            await asyncio.sleep(10)
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
+
 
                 
 async def autoname_loop():
