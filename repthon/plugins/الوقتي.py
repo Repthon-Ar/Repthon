@@ -50,16 +50,14 @@ FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
 normretext = "1234567890"
 
-autopic_path = os.path.join(os.getcwd(), "repthon", "original_pic.png")
-digitalpic_path = os.path.join(os.getcwd(), "repthon", "digital_pic.png")
-autophoto_path = os.path.join(os.getcwd(), "repthon", "photo_pfp.png")
+digitalpic_path = "repthon/baqir/autopic.jpg"
+autophoto_path = "repthon/baqir/photo_pfp.JPEG"
 
 
 NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقتي|اسم وقتي|اسم تلقائي)"
 NAAUTO = gvarstatus("R_NAAUTO") or "(الاسم تلقائي2|الاسم الوقتي2|اسم وقتي2|اسم تلقائي2)"
 PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره الوقتيه|الصورة الوقتية|صوره وقتيه|البروفايل)"
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
-digitalpfp = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/tvs936.jpg"
 
 extractor = URLExtract()
 telegraph = Telegraph()
@@ -71,30 +69,34 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 async def digitalpicloop():
-    while gvarstatus("digitalpic") == "true":
+    await asyncio.sleep(10)
+    while str(gvarstatus("digitalpic")).lower() == "true":
         try:
             if not os.path.exists(digitalpic_path):
-                downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
-                downloader.start(blocking=True)
+                print(f"❌ الصورة غير موجودة في: {digitalpic_path}")
+                await asyncio.sleep(60)
+                continue
             repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
             TIME_ZONE = gvarstatus("T_Z") or Config.TZ
             RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
-            img = Image.open(digitalpic_path)
-            draw = ImageDraw.Draw(img)
-            fnt = ImageFont.truetype(repfont, 60) 
-            draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
-            img.save(autophoto_path)
+            with Image.open(digitalpic_path) as img:
+                draw = ImageDraw.Draw(img)
+                try:
+                    fnt = ImageFont.truetype(repfont, 60)
+                except:
+                    fnt = ImageFont.load_default()
+                draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
+                img.save(autophoto_path, "JPEG")
             file = await zq_lo.upload_file(autophoto_path)
+            all_photos = await zq_lo.get_profile_photos("me", limit=1)
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            all_photos = await zq_lo.get_profile_photos("me", limit=2)
-            if len(all_photos) > 1:
-                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-            if os.path.exists(autophoto_path):
-                os.remove(autophoto_path)
-            await asyncio.sleep(CHANGE_TIME)
+            if all_photos:
+                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[0]]))
+            print(f"✅ تم تحديث الساعة: {RT}")
         except Exception as e:
-            print(f"PFP Error: {e}")
-            await asyncio.sleep(20)
+            print(f"❌ خطأ في البروفايل الوقتي: {e}")
+            await asyncio.sleep(10)
+        await asyncio.sleep(CHANGE_TIME)
 
 
 async def autoname_loop():
