@@ -87,7 +87,9 @@ async def digitalpicloop():
                     fnt = ImageFont.load_default()
                 draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
                 img.save(autophoto_path, "JPEG")
+            
             file_to_upload = await zq_lo.upload_file(autophoto_path)
+            
             try:
                 await zq_lo(functions.photos.UploadProfilePhotoRequest(
                     file=file_to_upload
@@ -95,10 +97,14 @@ async def digitalpicloop():
                 print(f"✅ تم تغيير الصورة الشخصية بنجاح في الساعة: {RT}")
             except Exception as e:
                 print(f"❌ تليجرام رفض تعيين الصورة: {e}")
-            all_photos = await zq_lo.get_profile_photos("me", limit=1)
+            all_photos = await zq_lo.get_profile_photos("me", limit=2)
             if len(all_photos) > 1:
                 await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-                await asyncio.sleep(CHANGE_TIME)
+            
+        except Exception as main_e:
+            print(f"⚠️ خطأ في الدورة: {main_e}")
+        await asyncio.sleep(CHANGE_TIME)
+
 
 
 async def autoname_loop():
