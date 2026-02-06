@@ -98,7 +98,7 @@ async def digitalpicloop():
             all_photos = await zq_lo.get_profile_photos("me", limit=1)
             if len(all_photos) > 1:
                 await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-        await asyncio.sleep(CHANGE_TIME)
+                await asyncio.sleep(CHANGE_TIME)
 
 
 async def autoname_loop():
