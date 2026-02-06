@@ -185,17 +185,10 @@ async def autobio_loop():
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-    if not os.path.exists(digitalpic_path):
-        try:
-            url = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/tvs936.jpg"
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-            urllib.request.install_opener(opener)
-            urllib.request.urlretrieve(url, digitalpic_path)
-        except Exception as e:
-            return await rep.edit(f"**⎉╎فشل تحميل الصورة الأصلية:** \n`{e}`")
     if gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
+        if not os.path.exists(digitalpic_path):
+            return await edit_or_reply(event, f"**❌ خطأ: لم أجد ملف الصورة في المسار:**\n`{digitalpic_path}`")
     addgvar("digitalpic", "true")
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await digitalpicloop()
