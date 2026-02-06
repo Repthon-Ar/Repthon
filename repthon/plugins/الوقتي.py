@@ -87,15 +87,17 @@ async def digitalpicloop():
                     fnt = ImageFont.load_default()
                 draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
                 img.save(autophoto_path, "JPEG")
-            file = await zq_lo.upload_file(autophoto_path)
+            file_to_upload = await zq_lo.upload_file(autophoto_path)
+            try:
+                await zq_lo(functions.photos.UploadProfilePhotoRequest(
+                    file=file_to_upload
+                ))
+                print(f"✅ تم تغيير الصورة الشخصية بنجاح في الساعة: {RT}")
+            except Exception as e:
+                print(f"❌ تليجرام رفض تعيين الصورة: {e}")
             all_photos = await zq_lo.get_profile_photos("me", limit=1)
-            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
-            if all_photos:
-                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[0]]))
-            print(f"✅ تم تحديث الساعة: {RT}")
-        except Exception as e:
-            print(f"❌ خطأ في البروفايل الوقتي: {e}")
-            await asyncio.sleep(10)
+            if len(all_photos) > 1:
+                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
         await asyncio.sleep(CHANGE_TIME)
 
 
@@ -191,7 +193,7 @@ async def _(event):
             return await edit_or_reply(event, f"**❌ خطأ: لم أجد ملف الصورة في المسار:**\n`{digitalpic_path}`")
     addgvar("digitalpic", "true")
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
-    await digitalpicloop()
+    asyncio.create_task(digitalpicloop())
 
 @zq_lo.rep_cmd(pattern=f"{NAUTO}$")
 async def _(event):
