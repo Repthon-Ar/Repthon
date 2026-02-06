@@ -23,7 +23,6 @@ from datetime import datetime as dt
 from pytz import timezone
 
 from PIL import Image, ImageDraw, ImageFont
-from telegraph import Telegraph, exceptions, upload_file
 from urlextract import URLExtract
 from pySmartDL import SmartDL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -33,12 +32,9 @@ from telethon.tl import functions
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
 from telethon.errors.rpcerrorlist import AboutTooLongError
-from catbox import CatboxUploader
 
 from ..Config import Config
 from ..helpers.utils import _format
-from ..helpers.functions.catbox import catbox_upload
-from ..helpers.functions.help_catbox import download_catbox_file
 from ..core.managers import edit_or_reply
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from . import edit_delete, zq_lo, logging, BOTLOG, BOTLOG_CHATID, mention
@@ -60,10 +56,6 @@ PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره 
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
 
 extractor = URLExtract()
-telegraph = Telegraph()
-upload = CatboxUploader()
-r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
-auth_url = r["auth_url"]
 
 if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
@@ -100,11 +92,9 @@ async def digitalpicloop():
             all_photos = await zq_lo.get_profile_photos("me", limit=2)
             if len(all_photos) > 1:
                 await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-            
         except Exception as main_e:
             print(f"⚠️ خطأ في الدورة: {main_e}")
         await asyncio.sleep(CHANGE_TIME)
-
 
 
 async def autoname_loop():
