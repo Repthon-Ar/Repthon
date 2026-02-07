@@ -62,39 +62,55 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
 
 async def digitalpicloop():
     await asyncio.sleep(10)
-    while str(gvarstatus("digitalpic")).lower() == "true":
-        try:
-            if not os.path.exists(digitalpic_path):
-                print(f"❌ الصورة غير موجودة في: {digitalpic_path}")
-                await asyncio.sleep(60)
-                continue
-            repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
-            TIME_ZONE = gvarstatus("T_Z") or Config.TZ
-            RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
-            with Image.open(digitalpic_path) as img:
-                draw = ImageDraw.Draw(img)
-                try:
-                    fnt = ImageFont.truetype(repfont, 60)
-                except:
-                    fnt = ImageFont.load_default()
-                draw.text((140, 70), RT, font=fnt, fill=(255, 255, 255))
-                img.save(autophoto_path, "JPEG")
-            
-            file_to_upload = await zq_lo.upload_file(autophoto_path)
-            
+    last_digital_pic = gvarstatus("DIGITAL_PIC")
+    async with aiohttp.ClientSession() as session:
+        while str(gvarstatus("digitalpic")).lower() == "true":
             try:
-                await zq_lo(functions.photos.UploadProfilePhotoRequest(
-                    file=file_to_upload
-                ))
-                print(f"✅ تم تغيير الصورة الشخصية بنجاح في الساعة: {RT}")
-            except Exception as e:
-                print(f"❌ تليجرام رفض تعيين الصورة: {e}")
-            all_photos = await zq_lo.get_profile_photos("me", limit=2)
-            if len(all_photos) > 1:
-                await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-        except Exception as main_e:
-            print(f"⚠️ خطأ في الدورة: {main_e}")
-        await asyncio.sleep(CHANGE_TIME)
+                current_pic_link = gvarstatus("DIGITAL_PIC")
+                if current_pic_link and current_pic_link != last_digital_pic:
+                    try:
+                        async with session.get(current_pic_link, timeout=15) as resp:
+                            if resp.status == 200:
+                                with open(digitalpic_path, "wb") as f:
+                                    f.write(await resp.read())
+                                last_digital_pic = current_pic_link
+                                print("✅ تم تحديث من الرابط بنجاح")
+                    except Exception as e:
+                        print(f"❌ خطأ في تحميل صورة الفار: {e}")
+                if not os.path.exists(digitalpic_path):
+                    await asyncio.sleep(5)
+                    continue
+                TIME_ZONE = gvarstatus("T_Z") or Config.TZ
+                RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
+                with Image.open(digitalpic_path) as img:
+                    img = img.convert("RGB").resize((640, 640))
+                    draw = ImageDraw.Draw(img)
+                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
+                    try:
+                        fnt = ImageFont.truetype(repfont, 145)
+                    except:
+                        fnt = ImageFont.load_default()
+                    draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
+                    img.save(autophoto_path, "JPEG", quality=90)
+                if not zq_lo.is_connected():
+                    await zq_lo.connect()
+                try:
+                    file_to_upload = await zq_lo.upload_file(autophoto_path)
+                    await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
+                    print(f"✅ تم تحديث البروفايل بنجاح | الوقت: {RT}")
+                except Exception as upload_err:
+                    print(f"⚠️ خطأ أثناء الرفع (تليجرام): {upload_err}")
+                    await asyncio.sleep(5)
+                    continue
+                try:
+                    all_photos = await zq_lo.get_profile_photos("me", limit=2)
+                    if len(all_photos) > 1:
+                        await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
+                except:
+                    pass
+            except Exception as main_e:
+                print(f"⚠️ خطأ: {main_e}")
+            await asyncio.sleep(CHANGE_TIME)
 
 
 async def autoname_loop():
@@ -179,14 +195,13 @@ async def autobio_loop():
         await asyncio.sleep(CHANGE_TIME)
         AUTOBIOSTART = gvarstatus("autobio") == "true"
 
-
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
     if gvarstatus("digitalpic") == "true":
         return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
-        if not os.path.exists(digitalpic_path):
-            return await edit_or_reply(event, f"**❌ خطأ: لم أجد ملف الصورة في المسار:**\n`{digitalpic_path}`")
+    if not os.path.exists(digitalpic_path):
+        return await edit_or_reply(event, f"**❌ خطأ: لم أجد ملف الصورة في المسار:**\n`{digitalpic_path}`")
     addgvar("digitalpic", "true")
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     asyncio.create_task(digitalpicloop())
@@ -412,10 +427,6 @@ zq_lo.loop.create_task(autobio_loop())
 # ================================================================================================ #
 # =========================================الوقتيه================================================= #
 # ================================================================================================ #
-
-telegraph = Telegraph()
-r = telegraph.create_account(short_name=Config.TELEGRAPH_SHORT_NAME)
-auth_url = r["auth_url"]
 
 
 BaqirVP_cmd = (
