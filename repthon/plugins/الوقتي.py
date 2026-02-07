@@ -62,28 +62,29 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 async def digitalpicloop():
-    await asyncio.sleep(10)
-    last_digital_pic = gvarstatus("DIGITAL_PIC")
+    await asyncio.sleep(5)
+    last_digital_pic = None
     async with aiohttp.ClientSession() as session:
         while str(gvarstatus("digitalpic")).lower() == "true":
             try:
-                current_pic_link = gvarstatus("DIGITAL_PIC")
-                if current_pic_link and current_pic_link != last_digital_pic:
+                current_link = gvarstatus("DIGITAL_PIC")
+                if current_link and current_link != last_digital_pic:
+                    print(f"🔄 محاولة تحميل صورة جديدة من: {current_link}")
                     try:
-                        async with session.get(current_pic_link, timeout=15) as resp:
+                        async with session.get(current_link, timeout=15) as resp:
                             if resp.status == 200:
-                                if os.path.exists(digitalpic_path):
-                                    os.remove(digitalpic_path)
+                                data = await resp.read()
                                 with open(digitalpic_path, "wb") as f:
-                                    f.write(await resp.read())
-                                last_digital_pic = current_pic_link
-                                print(f"✅ تم تحديث الخلفية من الرابط: {current_pic_link}")
+                                    f.write(data)
+                                last_digital_pic = current_link
+                                print("✅ تم استبدال الصورة المحلية بالصورة من الرابط")
                     except Exception as e:
-                        print(f"❌ خطأ تحميل من الرابط الجديد: {e}")
+                        print(f"❌ فشل التحميل من الرابط: {e}")
                 if not os.path.exists(digitalpic_path):
                     await asyncio.sleep(5)
                     continue
                 TIME_ZONE  = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+                RT = dt.now(timezone(gvarstatus("T_Z") or Config.TZ)).strftime("%I:%M")
                 RTZone = dt.now(timezone(TIME_ZONE))
                 RTime = RTZone.strftime('%H:%M')
                 RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
@@ -99,23 +100,16 @@ async def digitalpicloop():
                     img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
-                try:
-                    file_to_upload = await zq_lo.upload_file(autophoto_path)
-                    await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
-                    print(f"✅ تم تحديث البروفايل بنجاح | الساعة الآن: {RT}")
-                except Exception as upload_err:
-                    print(f"⚠️ فشل الرفع (تليجرام مشغول): {upload_err}")
-                    await asyncio.sleep(20) 
-                    continue
-                try:
-                    all_photos = await zq_lo.get_profile_photos("me", limit=2)
-                    if len(all_photos) > 1:
-                        await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-                except:
-                    pass
-            except Exception as main_e:
-                print(f"⚠️ خطأ عام : {main_e}")
+                file_to_upload = await zq_lo.upload_file(autophoto_path)
+                await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
+                print(f"✅ تم تحديث البروفايل بنجاح | الوقت: {RT}")
+                all_photos = await zq_lo.get_profile_photos("me", limit=2)
+                if len(all_photos) > 1:
+                    await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
+            except Exception as e:
+                print(f"⚠️ خطأ في اللوب: {e}")
             await asyncio.sleep(CHANGE_TIME)
+
 
 async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
@@ -203,9 +197,9 @@ async def autobio_loop():
 async def _(event):
     rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
     if gvarstatus("digitalpic") == "true":
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. تم تفعيلهـا سابقـاً**")
-    if not os.path.exists(digitalpic_path):
-        return await edit_or_reply(event, f"**❌ خطأ: لم أجد ملف الصورة في المسار:**\n`{digitalpic_path}`")
+        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. مفعـل بالفعـل**")
+    if not os.path.exists(digitalpic_path) and not gvarstatus("DIGITAL_PIC"):
+        return await rep.edit(f"**❌ خطأ: لا يوجد صورة محلية في المسار:**\n`{digitalpic_path}`\n**ولم يتم إضافة رابط صورة عبر الفارات أيضاً!**")
     addgvar("digitalpic", "true")
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     asyncio.create_task(digitalpicloop())
