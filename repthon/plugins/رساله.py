@@ -40,16 +40,16 @@ async def writer(e):
     font = ImageFont.truetype("baqir/taiba/zarz.ttf", 30)
     x, y = 150, 140
     lines = text_set(text)
-    line_height = font.getsize("hg")[1]
+    left, top, right, bottom = font.getbbox("hg")
+    line_height = bottom - top
     for line in lines:
         draw.text((x, y), line, fill=(1, 22, 55), font=font)
-        y = y + line_height - 5
+        y = y + line_height + 5
     file = "baqir.jpg"
     img.save(file)
     await e.reply(file=file)
     os.remove(file)
     await e.delete()
-
 
 
 @zq_lo.rep_cmd(pattern="^\\:/$")
