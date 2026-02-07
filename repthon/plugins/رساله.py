@@ -44,7 +44,7 @@ async def writer(e):
     line_height = bottom - top
     for line in lines:
         draw.text((x, y), line, fill=(1, 22, 55), font=font)
-        y = y + line_height + 5
+        y = y + line_height - 5
     file = "baqir.jpg"
     img.save(file)
     await e.reply(file=file)
