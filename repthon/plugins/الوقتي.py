@@ -72,17 +72,21 @@ async def digitalpicloop():
                     try:
                         async with session.get(current_pic_link, timeout=15) as resp:
                             if resp.status == 200:
+                                if os.path.exists(digitalpic_path):
+                                    os.remove(digitalpic_path)
                                 with open(digitalpic_path, "wb") as f:
                                     f.write(await resp.read())
                                 last_digital_pic = current_pic_link
-                                print("✅ تم تحديث من الرابط بنجاح")
+                                print(f"✅ تم تحديث الخلفية من الرابط: {current_pic_link}")
                     except Exception as e:
-                        print(f"❌ خطأ في تحميل صورة الفار: {e}")
+                        print(f"❌ خطأ تحميل من الرابط الجديد: {e}")
                 if not os.path.exists(digitalpic_path):
                     await asyncio.sleep(5)
                     continue
-                TIME_ZONE = gvarstatus("T_Z") or Config.TZ
-                RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
+                TIME_ZONE  = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+                RTZone = dt.now(timezone(TIME_ZONE))
+                RTime = RTZone.strftime('%H:%M')
+                RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
                 with Image.open(digitalpic_path) as img:
                     img = img.convert("RGB").resize((640, 640))
                     draw = ImageDraw.Draw(img)
@@ -98,10 +102,10 @@ async def digitalpicloop():
                 try:
                     file_to_upload = await zq_lo.upload_file(autophoto_path)
                     await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
-                    print(f"✅ تم تحديث البروفايل بنجاح | الوقت: {RT}")
+                    print(f"✅ تم تحديث البروفايل بنجاح | الساعة الآن: {RT}")
                 except Exception as upload_err:
-                    print(f"⚠️ خطأ أثناء الرفع (تليجرام): {upload_err}")
-                    await asyncio.sleep(5)
+                    print(f"⚠️ فشل الرفع (تليجرام مشغول): {upload_err}")
+                    await asyncio.sleep(20) 
                     continue
                 try:
                     all_photos = await zq_lo.get_profile_photos("me", limit=2)
@@ -110,9 +114,8 @@ async def digitalpicloop():
                 except:
                     pass
             except Exception as main_e:
-                print(f"⚠️ خطأ: {main_e}")
+                print(f"⚠️ خطأ عام : {main_e}")
             await asyncio.sleep(CHANGE_TIME)
-
 
 async def autoname_loop():
     while AUTONAMESTART := gvarstatus("autoname") == "true":
