@@ -109,8 +109,8 @@ async def digitalpicloop():
             await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
             os.remove(autophoto_path)
             await asyncio.sleep(CHANGE_TIME)
-        except Exception as e:
-            print(f"⚠️ خطأ في : {e}")
+        except BaseException:
+            return
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
