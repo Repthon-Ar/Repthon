@@ -64,6 +64,7 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
 async def digitalpicloop():
     await asyncio.sleep(5)
     last_digital_pic = None
+    current_image = None
     async with aiohttp.ClientSession() as session:
         while str(gvarstatus("digitalpic")).lower() == "true":
             try:
@@ -76,38 +77,56 @@ async def digitalpicloop():
                                 data = await resp.read()
                                 with open(digitalpic_path, "wb") as f:
                                     f.write(data)
-                                last_digital_pic = current_link
                                 print("✅ تم استبدال الصورة المحلية بالصورة من الرابط")
+                                try:
+                                    img = Image.open(digitalpic_path)
+                                    current_image = img.copy()
+                                    img.close()
+                                    last_digital_pic = current_link
+                                    print("✅ تم تحديث الصورة في الذاكرة")
+                                except Exception as img_error:
+                                    print(f"❌ خطأ في فتح الصورة الجديدة: {img_error}")
+                                    current_image = None
+                            else:
+                                print(f"❌ استجابة غير ناجحة: {resp.status}")
                     except Exception as e:
                         print(f"❌ فشل التحميل من الرابط: {e}")
-                if not os.path.exists(digitalpic_path):
+                        current_image = None
+                if current_image is None and os.path.exists(digitalpic_path):
+                    try:
+                        img = Image.open(digitalpic_path)
+                        current_image = img.copy()
+                        img.close()
+                    except Exception as e:
+                        print(f"❌ لا يمكن فتح الصورة: {e}")
+                        await asyncio.sleep(5)
+                        continue
+                if current_image is None:
+                    print("⚠️ لا توجد صورة متاحة للاستخدام")
                     await asyncio.sleep(5)
                     continue
-                TIME_ZONE  = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
-                RT = dt.now(timezone(gvarstatus("T_Z") or Config.TZ)).strftime("%I:%M")
-                RTZone = dt.now(timezone(TIME_ZONE))
-                RTime = RTZone.strftime('%H:%M')
-                RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
-                with Image.open(digitalpic_path) as img:
-                    img = img.convert("RGB").resize((640, 640))
-                    draw = ImageDraw.Draw(img)
-                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
-                    try:
-                        fnt = ImageFont.truetype(repfont, 145)
-                    except:
-                        fnt = ImageFont.load_default()
-                    draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
-                    img.save(autophoto_path, "JPEG", quality=90)
+                TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+                RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
+                img_to_edit = current_image.copy()
+                img_to_edit = img_to_edit.convert("RGB").resize((640, 640))
+                draw = ImageDraw.Draw(img_to_edit)
+                repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
+                try:
+                    fnt = ImageFont.truetype(repfont, 145)
+                except:
+                    fnt = ImageFont.load_default()
+                draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
+                img_to_edit.save(autophoto_path, "JPEG", quality=90)
+                img_to_edit.close()
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
                 file_to_upload = await zq_lo.upload_file(autophoto_path)
                 await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
-                print(f"✅ تم تحديث البروفايل بنجاح | الوقت: {RT}")
                 all_photos = await zq_lo.get_profile_photos("me", limit=2)
                 if len(all_photos) > 1:
                     await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
             except Exception as e:
-                print(f"⚠️ خطأ في اللوب: {e}")
+                print(f"⚠️ خطأ في : {e}")
             await asyncio.sleep(CHANGE_TIME)
 
 
