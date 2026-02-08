@@ -26,6 +26,7 @@ from pytz import timezone
 from PIL import Image, ImageDraw, ImageFont
 from urlextract import URLExtract
 from pySmartDL import SmartDL
+from catbox import CatboxUploader
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from telethon.errors import FloodWaitError
@@ -47,8 +48,9 @@ FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
 normretext = "1234567890"
 
-digitalpic_path = "repthon/baqir/autopic.jpg"
-autophoto_path = "repthon/baqir/photo_pfp.JPEG"
+autopic_path = os.path.join(os.getcwd(), "repthon", "original_pic.png")
+digitalpic_path = os.path.join(os.getcwd(), "repthon", "digital_pic.png")
+autophoto_path = os.path.join(os.getcwd(), "repthon", "photo_pfp.png")
 
 
 NAUTO = gvarstatus("R_NAUTO") or "(الاسم تلقائي|الاسم الوقتي|اسم وقتي|اسم تلقائي)"
@@ -57,77 +59,57 @@ PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره 
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
 
 extractor = URLExtract()
+uploader = CatboxUploader()
 
 if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 async def digitalpicloop():
-    await asyncio.sleep(5)
-    last_digital_pic = None
-    current_image = None
-    async with aiohttp.ClientSession() as session:
-        while str(gvarstatus("digitalpic")).lower() == "true":
-            try:
-                current_link = gvarstatus("DIGITAL_PIC")
-                if current_link and current_link != last_digital_pic:
-                    print(f"🔄 محاولة تحميل صورة جديدة من: {current_link}")
-                    try:
-                        async with session.get(current_link, timeout=15) as resp:
-                            if resp.status == 200:
-                                data = await resp.read()
-                                with open(digitalpic_path, "wb") as f:
-                                    f.write(data)
-                                print("✅ تم استبدال الصورة المحلية بالصورة من الرابط")
-                                try:
-                                    img = Image.open(digitalpic_path)
-                                    current_image = img.copy()
-                                    img.close()
-                                    last_digital_pic = current_link
-                                    print("✅ تم تحديث الصورة في الذاكرة")
-                                except Exception as img_error:
-                                    print(f"❌ خطأ في فتح الصورة الجديدة: {img_error}")
-                                    current_image = None
-                            else:
-                                print(f"❌ استجابة غير ناجحة: {resp.status}")
-                    except Exception as e:
-                        print(f"❌ فشل التحميل من الرابط: {e}")
-                        current_image = None
-                if current_image is None and os.path.exists(digitalpic_path):
-                    try:
-                        img = Image.open(digitalpic_path)
-                        current_image = img.copy()
-                        img.close()
-                    except Exception as e:
-                        print(f"❌ لا يمكن فتح الصورة: {e}")
-                        await asyncio.sleep(5)
-                        continue
-                if current_image is None:
-                    print("⚠️ لا توجد صورة متاحة للاستخدام")
-                    await asyncio.sleep(5)
-                    continue
-                TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
-                RT = dt.now(timezone(TIME_ZONE)).strftime("%I:%M")
-                img_to_edit = current_image.copy()
-                img_to_edit = img_to_edit.convert("RGB").resize((640, 640))
-                draw = ImageDraw.Draw(img_to_edit)
-                repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
-                try:
-                    fnt = ImageFont.truetype(repfont, 145)
-                except:
-                    fnt = ImageFont.load_default()
-                draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
-                img_to_edit.save(autophoto_path, "JPEG", quality=90)
-                img_to_edit.close()
-                if not zq_lo.is_connected():
-                    await zq_lo.connect()
-                file_to_upload = await zq_lo.upload_file(autophoto_path)
-                await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
-                all_photos = await zq_lo.get_profile_photos("me", limit=2)
-                if len(all_photos) > 1:
-                    await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
-            except Exception as e:
-                print(f"⚠️ خطأ في : {e}")
+    DIGITALPICSTART = gvarstatus("digitalpic") == "true"
+    i = 0
+    while DIGITALPICSTART:
+        try:
+            if not os.path.exists(digitalpic_path):
+                digitalpfp = gvarstatus("DIGITAL_PIC")
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(digitalpfp) as response:
+                        if response.status == 200:
+                            data = await response.read()
+                            with open(digitalpic_path, 'wb') as f:
+                                f.write(data)
+            downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
+            downloader.start(blocking=False)
+            while not downloader.isFinished():
+                pass
+        repfont = gvarstatus("DEFAULT_PIC") if gvarstatus("DEFAULT_PIC") else "repthon/helpers/styles/REPTHONEMOGE.ttf" #Code by T.me/RR0RT
+        shutil.copy(digitalpic_path, autophoto_path)
+        Image.open(autophoto_path)
+        TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
+        RTZone = dt.now(timezone(TIME_ZONE))
+        RTime = RTZone.strftime('%H:%M')
+        RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
+        #current_time = dt.now().strftime("%I:%M")
+        img = Image.open(autophoto_path)
+        drawn_text = ImageDraw.Draw(img)
+        fnt = ImageFont.truetype(f"{repfont}", 35) #Code by T.me/RR0RT
+        drawn_text.text((140, 70), RT, font=fnt, fill=(280, 280, 280)) #Code by T.me/RR0RT
+        img.save(autophoto_path)
+        file = await zq_lo.upload_file(autophoto_path)
+        try:
+            if i > 0:
+                await zq_lo(
+                    functions.photos.DeletePhotosRequest(
+                        await zq_lo.get_profile_photos("me", limit=1)
+                    )
+                )
+            i += 1
+            await zq_lo(functions.photos.UploadProfilePhotoRequest(file))
+            os.remove(autophoto_path)
             await asyncio.sleep(CHANGE_TIME)
+        except Exception as e:
+            print(f"خطأ: {e}")
+            await asyncio.sleep(5)
+        DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
 async def autoname_loop():
@@ -214,14 +196,26 @@ async def autobio_loop():
 
 @zq_lo.rep_cmd(pattern=f"{PAUTO}$")
 async def _(event):
-    rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتـي ⅏. . .**")
-    if gvarstatus("digitalpic") == "true":
-        return await edit_delete(event, "**⎉╎البروفـايل الوقتـي .. مفعـل بالفعـل**")
-    if not os.path.exists(digitalpic_path) and not gvarstatus("DIGITAL_PIC"):
-        return await rep.edit(f"**❌ خطأ: لا يوجد صورة محلية في المسار:**\n`{digitalpic_path}`\n**ولم يتم إضافة رابط صورة عبر الفارات أيضاً!**")
-    addgvar("digitalpic", "true")
-    await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
-    asyncio.create_task(digitalpicloop())
+    rep = await edit_or_reply(event, "**• جـارِ تفعيـل البروفايـل الوقتي...**")
+    downloaded_file_name = await event.client.download_profile_photo(
+        zq_lo.uid,
+        Config.TMP_DOWNLOAD_DIRECTORY + str(zq_lo.uid) + ".jpg",
+        download_big=True,
+    )
+    if not downloaded_file_name:
+        return await rep.edit("**⎉╎فشل في تحميل الصورة**")
+    try:
+        result = uploader.upload(downloaded_file_name)
+        media_url = result.url
+        addgvar("DIGITAL_PIC", media_url)
+        addgvar("digitalpic", "true")
+        await rep.edit("**⎉╎تم تفعيل البروفايل الوقتي ✓**")
+        await digitalpicloop()
+    except Exception as e:
+        await rep.edit(f"**⎉╎خطأ: {str(e)}**")
+    finally:
+        if os.path.exists(downloaded_file_name):
+            os.remove(downloaded_file_name)
 
 @zq_lo.rep_cmd(pattern=f"{NAUTO}$")
 async def _(event):
