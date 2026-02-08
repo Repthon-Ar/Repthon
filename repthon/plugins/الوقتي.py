@@ -110,7 +110,7 @@ async def digitalpicloop():
             os.remove(autophoto_path)
             await asyncio.sleep(CHANGE_TIME)
         except Exception as e:
-        print(f"⚠️ خطأ في : {e}")
+            print(f"⚠️ خطأ في : {e}")
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
