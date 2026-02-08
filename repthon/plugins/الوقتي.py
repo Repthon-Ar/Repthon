@@ -207,8 +207,7 @@ async def _(event):
     if not downloaded_file_name:
         return await rep.edit("**⎉╎فشل في تحميل الصورة**")
     try:
-        result = uploader.upload(downloaded_file_name)
-        media_url = result.url
+        media_url = uploader.upload_file(downloaded_file_name)
         addgvar("DIGITAL_PIC", media_url)
         addgvar("digitalpic", "true")
         await rep.edit("**⎉╎تم تفعيل البروفايل الوقتي ✓**")
