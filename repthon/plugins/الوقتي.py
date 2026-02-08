@@ -70,13 +70,16 @@ async def digitalpicloop():
     while DIGITALPICSTART:
         try:
             if not os.path.exists(digitalpic_path):
-                digitalpfp = gvarstatus("DIGITAL_PIC")
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(digitalpfp) as response:
-                        if response.status == 200:
-                            data = await response.read()
-                            with open(digitalpic_path, 'wb') as f:
-                                f.write(data)
+            digitalpfp = gvarstatus("DIGITAL_PIC")
+            async with aiohttp.ClientSession() as session:
+            async with session.get(digitalpfp) as response:
+            if response.status == 200:
+            data = await response.read()
+            with open(digitalpic_path, 'wb') as f:
+            f.write(data)
+            except Exception as e:
+            print(f"خطأ: {e}")
+            await asyncio.sleep(5)
             downloader = SmartDL(digitalpfp, digitalpic_path, progress_bar=False)
             downloader.start(blocking=False)
             while not downloader.isFinished():
@@ -107,8 +110,7 @@ async def digitalpicloop():
             os.remove(autophoto_path)
             await asyncio.sleep(CHANGE_TIME)
         except Exception as e:
-            print(f"خطأ: {e}")
-            await asyncio.sleep(5)
+        print(f"⚠️ خطأ في : {e}")
         DIGITALPICSTART = gvarstatus("digitalpic") == "true"
 
 
