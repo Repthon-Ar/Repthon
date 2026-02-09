@@ -87,12 +87,12 @@ async def digitalpicloop():
                 with Image.open(digitalpic_path) as base_img:
                     edit_img = base_img.convert("RGB").resize((640, 640))
                     draw = ImageDraw.Draw(edit_img)
-                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
+                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
                     try:
-                        fnt = ImageFont.truetype(repfont, 135)
+                        fnt = ImageFont.truetype(repfont, 145)
                     except:
                         fnt = ImageFont.load_default()
-                    draw.text((140, 70), RT, font=fnt, fill=(250, 250, 250))
+                    draw.text((140, 230), RT, font=fnt, fill=(250, 250, 250))
                     edit_img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
