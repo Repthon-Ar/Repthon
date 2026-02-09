@@ -16,7 +16,6 @@ import os
 import shutil
 import time
 import urllib3
-import urllib.request
 import aiohttp
 import base64
 import requests
@@ -67,7 +66,7 @@ async def digitalpicloop():
     async with aiohttp.ClientSession() as session:
         while str(gvarstatus("digitalpic")).lower() == "true":
             try:
-                current_link = gvarstatus("DIGITAL_PIC")
+                current_link = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/uxgghu.jpg"
                 if current_link and current_link != last_downloaded_url:
                     try:
                         async with session.get(current_link, timeout=20) as resp:
@@ -90,10 +89,10 @@ async def digitalpicloop():
                     draw = ImageDraw.Draw(edit_img)
                     repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
                     try:
-                        fnt = ImageFont.truetype(repfont, 145)
+                        fnt = ImageFont.truetype(repfont, 35)
                     except:
                         fnt = ImageFont.load_default()
-                    draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
+                    draw.text((140, 70), RT, font=fnt, fill=(280, 280, 280))
                     edit_img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
