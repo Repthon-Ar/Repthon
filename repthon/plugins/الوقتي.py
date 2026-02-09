@@ -66,7 +66,7 @@ async def digitalpicloop():
     async with aiohttp.ClientSession() as session:
         while str(gvarstatus("digitalpic")).lower() == "true":
             try:
-                current_link = gvarstatus("DIGITAL_PIC") or "https://files.catbox.moe/uxgghu.jpg"
+                current_link = gvarstatus("DIGITAL_PIC")
                 if current_link and current_link != last_downloaded_url:
                     try:
                         async with session.get(current_link, timeout=20) as resp:
@@ -87,12 +87,12 @@ async def digitalpicloop():
                 with Image.open(digitalpic_path) as base_img:
                     edit_img = base_img.convert("RGB").resize((640, 640))
                     draw = ImageDraw.Draw(edit_img)
-                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
+                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/Papernotes.ttf"
                     try:
-                        fnt = ImageFont.truetype(repfont, 35)
+                        fnt = ImageFont.truetype(repfont, 135)
                     except:
                         fnt = ImageFont.load_default()
-                    draw.text((140, 70), RT, font=fnt, fill=(280, 280, 280))
+                    draw.text((140, 70), RT, font=fnt, fill=(250, 250, 250))
                     edit_img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
