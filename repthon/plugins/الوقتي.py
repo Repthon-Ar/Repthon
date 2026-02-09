@@ -63,63 +63,38 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
 
 async def digitalpicloop():
     await asyncio.sleep(5)
-    last_digital_pic = None
-    current_image = None
+    last_downloaded_url = None
     async with aiohttp.ClientSession() as session:
         while str(gvarstatus("digitalpic")).lower() == "true":
             try:
                 current_link = gvarstatus("DIGITAL_PIC")
-                if current_link and current_link != last_digital_pic:
-                    print(f"🔄 محاولة تحميل صورة جديدة من: {current_link}")
+                if current_link and current_link != last_downloaded_url:
                     try:
-                        async with session.get(current_link, timeout=15) as resp:
+                        async with session.get(current_link, timeout=20) as resp:
                             if resp.status == 200:
                                 data = await resp.read()
                                 with open(digitalpic_path, "wb") as f:
                                     f.write(data)
-                                print("✅ تم استبدال الصورة المحلية بالصورة من الرابط")
-                                try:
-                                    img = Image.open(digitalpic_path)
-                                    current_image = img.copy()
-                                    img.close()
-                                    last_digital_pic = current_link
-                                    print("✅ تم تحديث الصورة في الذاكرة")
-                                except Exception as img_error:
-                                    print(f"❌ خطأ في فتح الصورة الجديدة: {img_error}")
-                                    current_image = None
-                            else:
-                                print(f"❌ استجابة غير ناجحة: {resp.status}")
+                                last_downloaded_url = current_link
                     except Exception as e:
-                        print(f"❌ فشل التحميل من الرابط: {e}")
-                        current_image = None
-                if current_image is None and os.path.exists(digitalpic_path):
-                    try:
-                        img = Image.open(digitalpic_path)
-                        current_image = img.copy()
-                        img.close()
-                    except Exception as e:
-                        print(f"❌ لا يمكن فتح الصورة: {e}")
-                        await asyncio.sleep(5)
-                        continue
-                if current_image is None:
-                    print("⚠️ لا توجد صورة متاحة للاستخدام")
-                    await asyncio.sleep(5)
+                        print(f"❌ فشل التحميل: {e}")
+                if not os.path.exists(digitalpic_path):
+                    await asyncio.sleep(10)
                     continue
                 TIME_ZONE = gvarstatus("T_Z") if gvarstatus("T_Z") else Config.TZ
                 RTZone = dt.now(timezone(TIME_ZONE))
                 RTime = RTZone.strftime('%H:%M')
                 RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
-                img_to_edit = current_image.copy()
-                img_to_edit = img_to_edit.convert("RGB").resize((640, 640))
-                draw = ImageDraw.Draw(img_to_edit)
-                repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
-                try:
-                    fnt = ImageFont.truetype(repfont, 145)
-                except:
-                    fnt = ImageFont.load_default()
-                draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
-                img_to_edit.save(autophoto_path, "JPEG", quality=90)
-                img_to_edit.close()
+                with Image.open(digitalpic_path) as base_img:
+                    edit_img = base_img.convert("RGB").resize((640, 640))
+                    draw = ImageDraw.Draw(edit_img)
+                    repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
+                    try:
+                        fnt = ImageFont.truetype(repfont, 145)
+                    except:
+                        fnt = ImageFont.load_default()
+                    draw.text((140, 230), RT, font=fnt, fill=(255, 255, 255))
+                    edit_img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
                 file_to_upload = await zq_lo.upload_file(autophoto_path)
