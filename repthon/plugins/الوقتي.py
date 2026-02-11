@@ -19,14 +19,12 @@ import shutil
 import time
 import urllib3
 import aiohttp
-import base64
 import requests
 from datetime import datetime as dt
 from pytz import timezone
 
 from PIL import Image, ImageDraw, ImageFont
 from urlextract import URLExtract
-from pySmartDL import SmartDL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from telethon.errors import FloodWaitError
@@ -104,7 +102,7 @@ async def digitalpicloop():
                     draw = ImageDraw.Draw(img)
                     repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
                     try:
-                        fnt = ImageFont.truetype(repfont, 145)
+                        fnt = ImageFont.truetype(repfont, 35)
                     except:
                         fnt = ImageFont.load_default()
                     color_name = gvarstatus("DIGITAL_COLOR") or "أبيض"
@@ -112,7 +110,7 @@ async def digitalpicloop():
                         color = random.choice(list(COLOR_MAP.values())[:-1])
                     else:
                         color = COLOR_MAP[color_name]
-                    draw.text((140, 230), RT, font=fnt, fill=color)
+                    draw.text((140, 70), RT, font=fnt, fill=color)
                     anti_ban(draw)
                     img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
