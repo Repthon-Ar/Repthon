@@ -548,7 +548,7 @@ async def search_audio(event):  # Repthon / RR0RT
                 with open(thumb_name, "wb") as f:
                     f.write(r.content)
             except Exception:
-        thumb_name = None
+                thumb_name = None
         await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
         await event.client.send_file(
             event.chat_id,
