@@ -501,40 +501,14 @@ async def search_audio(event):  # Repthon / RR0RT
             event,
             "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**",
         )
-
     status = await edit_or_reply(
         event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**"
     )
-
-    try:
-        results = YoutubeSearch(query, max_results=1).to_dict()
-        if not results:
-            return await status.edit("**⎉╎لم يتم العثور على نتائج**")
-
-        data = results[0]
-        link = f"https://youtube.com{data['url_suffix']}"
-        title = data["title"][:40]
-        duration = data.get("duration", "0:00")
-        thumbnail = data["thumbnails"][0]
-
-    except Exception as e:
-        return await status.edit(f"**⎉╎فشل البحث**\n`{e}`")
-
-    thumb_name = None
-    try:
-        thumb_name = f"{data['id']}.jpg"
-        r = requests.get(thumbnail, timeout=10)
-        with open(thumb_name, "wb") as f:
-            f.write(r.content)
-    except Exception:
-        thumb_name = None
-
-    await status.edit("**╮ جـارِ التحميل ▬▭ . . .🎧♥️╰**")
-
     audio_file = None
-
+    thumb_name = None
+    search_query = f"ytsearch1:{query}"
     ydl_opts = {
-        "format": "bestaudio*/bestvideo+bestaudio/best",
+        "format": "bestaudio/best",
         "outtmpl": "%(id)s.%(ext)s",
         "quiet": True,
         "no_warnings": True,
@@ -543,6 +517,7 @@ async def search_audio(event):  # Repthon / RR0RT
         "cookiefile": get_cookies_file(),
         "allow_unplayable_formats": True,
         "ignore_no_formats_error": True,
+
         "merge_output_format": "mp4",
         "postprocessors": [
             {
@@ -552,55 +527,41 @@ async def search_audio(event):  # Repthon / RR0RT
             }
         ],
     }
-
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(link, download=True)
-
+            info = ydl.extract_info(search_query, download=True)
+        if "entries" in info:
+            info = info["entries"][0]
         if "requested_downloads" in info:
             audio_file = info["requested_downloads"][0]["filepath"]
-        elif "filepath" in info:
-            audio_file = info["filepath"]
-
+        else:
+            audio_file = info.get("filepath")
         if not audio_file or not os.path.exists(audio_file) or os.path.getsize(audio_file) < 10000:
-            raise Exception("Downloaded file is empty or blocked by YouTube")
-
+            raise Exception("No audio extracted")
+        title = info.get("title", "Repthon")
+        duration = info.get("duration", 0)
+        thumb_name = info.get("thumbnail")
         await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
-
         await event.client.send_file(
             event.chat_id,
             audio_file,
             force_document=False,
-            thumb=thumb_name,
-            caption=f"**⎉ البحث ⥃** `{title}`",
+            caption=f"**⎉ البحث ⥃** `{title[:40]}`",
             attributes=[
                 DocumentAttributeAudio(
-                    duration=(
-                        int(duration.split(":")[0]) * 60
-                        + int(duration.split(":")[1])
-                        if ":" in duration
-                        else int(duration)
-                    ),
+                    duration=int(duration),
                     title=title,
                     performer=info.get("uploader", "Repthon"),
                 )
             ],
         )
-
         await status.delete()
-
-    except ChatSendMediaForbiddenError:
-        await status.edit("**⎉╎الوسائط مغلقة في هذه الدردشة**")
-
     except Exception as e:
         await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
-
     finally:
         try:
             if audio_file and os.path.exists(audio_file):
                 os.remove(audio_file)
-            if thumb_name and os.path.exists(thumb_name):
-                os.remove(thumb_name)
         except Exception:
             pass
     
