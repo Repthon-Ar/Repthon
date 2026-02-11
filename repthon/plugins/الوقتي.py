@@ -56,10 +56,10 @@ PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره 
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
 
 COLOR_MAP = {
-    "أبيض": (255, 255, 255),
-    "أحمر": (255, 0, 0),
-    "أخضر": (0, 255, 0),
-    "أزرق": (0, 150, 255),
+    "ابيض": (255, 255, 255),
+    "احمر": (255, 0, 0),
+    "اخضر": (0, 255, 0),
+    "ازرق": (0, 150, 255),
     "ذهبي": (255, 215, 0),
     "عشوائي": "random"
 }
@@ -105,7 +105,7 @@ async def digitalpicloop():
                         fnt = ImageFont.truetype(repfont, 35)
                     except:
                         fnt = ImageFont.load_default()
-                    color_name = gvarstatus("DIGITAL_COLOR") or "أبيض"
+                    color_name = gvarstatus("DIGITAL_COLOR") or "ابيض"
                     if COLOR_MAP[color_name] == "random":
                         color = random.choice(list(COLOR_MAP.values())[:-1])
                     else:
