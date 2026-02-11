@@ -554,7 +554,7 @@ async def search_audio(event):  # Repthon / RR0RT
             event.chat_id,
             audio_file,
             force_document=False,
-            thumb=thumb_name
+            thumb=thumb_name,
             caption=f"**⎉ البحث ⥃** `{title[:40]}`",
             attributes=[
                 DocumentAttributeAudio(
