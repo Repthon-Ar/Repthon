@@ -501,6 +501,7 @@ async def search_audio(event):  # Repthon / RR0RT
             event,
             "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**",
         )
+
     status = await edit_or_reply(
         event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**"
     )
@@ -517,7 +518,6 @@ async def search_audio(event):  # Repthon / RR0RT
         "cookiefile": get_cookies_file(),
         "allow_unplayable_formats": True,
         "ignore_no_formats_error": True,
-
         "merge_output_format": "mp4",
         "postprocessors": [
             {
@@ -530,6 +530,10 @@ async def search_audio(event):  # Repthon / RR0RT
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(search_query, download=True)
+    except yt_dlp.utils.DownloadError:
+        ydl_opts["format"] = "worstaudio/worst"
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(search_query, download=True)
         if "entries" in info:
             info = info["entries"][0]
         if "requested_downloads" in info:
@@ -537,7 +541,7 @@ async def search_audio(event):  # Repthon / RR0RT
         else:
             audio_file = info.get("filepath")
         if not audio_file or not os.path.exists(audio_file) or os.path.getsize(audio_file) < 10000:
-            raise Exception("No audio extracted")
+            raise Exception("❌ لم يتم استخراج الصوت من الفيديو أو محظور")
         title = info.get("title", "Repthon")
         duration = info.get("duration", 0)
         thumbnail_url = info.get("thumbnail")
@@ -565,16 +569,20 @@ async def search_audio(event):  # Repthon / RR0RT
             ],
         )
         await status.delete()
+    except ChatSendMediaForbiddenError:
+        await status.edit("**⎉╎الوسائط مغلقة في هذه الدردشة**")
     except Exception as e:
         await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
     finally:
         try:
             if audio_file and os.path.exists(audio_file):
                 os.remove(audio_file)
+            if thumb_name and os.path.exists(thumb_name):
+                os.remove(thumb_name)
         except Exception:
             pass
+                
     
-
 @zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
 async def _(event):
     query = event.pattern_match.group(1)
