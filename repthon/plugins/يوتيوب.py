@@ -506,24 +506,6 @@ async def search_audio(event):  # Repthon / RR0RT
         event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**"
     )
 
-    ydl_opts = {
-        "format": "bestaudio",
-        "outtmpl": "%(id)s.%(ext)s",
-        "merge_output_format": "mp3",
-        "quiet": True,
-        "no_warnings": True,
-        "geo_bypass": True,
-        "noplaylist": True,
-        "cookiefile": get_cookies_file(),
-        "postprocessors": [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }
-        ],
-    }
-
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
         if not results:
@@ -551,14 +533,37 @@ async def search_audio(event):  # Repthon / RR0RT
 
     audio_file = None
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(link, download=True)
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "outtmpl": "%(title)s.%(ext)s",
+        "merge_output_format": "mp3",
+        "quiet": True,
+        "no_warnings": True,
+        "geo_bypass": True,
+        "noplaylist": True,
+        "cookiefile": get_cookies_file(),
+        "postprocessors": [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }
+        ],
+    }
 
-            if "requested_downloads" in info:
-                audio_file = info["requested_downloads"][0]["filepath"]
-            elif "filepath" in info:
-                audio_file = info["filepath"]
+    try:
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(link, download=True)
+        except yt_dlp.utils.DownloadError:
+            ydl_opts["format"] = "worstaudio/worst"
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(link, download=True)
+
+        if "requested_downloads" in info:
+            audio_file = info["requested_downloads"][0]["filepath"]
+        elif "filepath" in info:
+            audio_file = info["filepath"]
 
         if (
             not audio_file
@@ -568,7 +573,7 @@ async def search_audio(event):  # Repthon / RR0RT
             raise Exception("Downloaded file is empty or blocked by YouTube")
 
         await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
-        
+
         await event.client.send_file(
             event.chat_id,
             audio_file,
@@ -588,15 +593,11 @@ async def search_audio(event):  # Repthon / RR0RT
                 )
             ],
         )
-
         await status.delete()
-
     except ChatSendMediaForbiddenError:
         await status.edit("**⎉╎الوسائط مغلقة في هذه الدردشة**")
-
     except Exception as e:
         await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
-
     finally:
         try:
             if audio_file and os.path.exists(audio_file):
@@ -605,7 +606,7 @@ async def search_audio(event):  # Repthon / RR0RT
                 os.remove(thumb_name)
         except Exception:
             pass
-
+    
 
 @zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
 async def _(event):
