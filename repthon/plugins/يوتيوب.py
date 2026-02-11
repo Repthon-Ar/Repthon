@@ -540,12 +540,21 @@ async def search_audio(event):  # Repthon / RR0RT
             raise Exception("No audio extracted")
         title = info.get("title", "Repthon")
         duration = info.get("duration", 0)
-        thumb_name = info.get("thumbnail")
+        thumbnail_url = info.get("thumbnail")
+        if thumbnail_url:
+            try:
+                thumb_name = f"{info.get('id')}.jpg"
+                r = requests.get(thumbnail_url, timeout=10)
+                with open(thumb_name, "wb") as f:
+                    f.write(r.content)
+            except Exception:
+        thumb_name = None
         await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
         await event.client.send_file(
             event.chat_id,
             audio_file,
             force_document=False,
+            thumb=thumb_name
             caption=f"**⎉ البحث ⥃** `{title[:40]}`",
             attributes=[
                 DocumentAttributeAudio(
