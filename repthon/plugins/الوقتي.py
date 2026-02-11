@@ -11,6 +11,8 @@
 #هههههههههههههههههههههههههههههههههههههههههههههههههه
 
 import asyncio
+import random
+import user_agent
 import math
 import os
 import shutil
@@ -55,28 +57,41 @@ NAAUTO = gvarstatus("R_NAAUTO") or "(الاسم تلقائي2|الاسم الو�
 PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره الوقتيه|الصورة الوقتية|صوره وقتيه|البروفايل)"
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
 
+COLOR_MAP = {
+    "أبيض": (255, 255, 255),
+    "أحمر": (255, 0, 0),
+    "أخضر": (0, 255, 0),
+    "أزرق": (0, 150, 255),
+    "ذهبي": (255, 215, 0),
+    "عشوائي": "random"
+}
+
 extractor = URLExtract()
 
 if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
+def anti_ban(draw):
+    for _ in range(20):
+        draw.point(
+            (random.randint(0,639), random.randint(0,639)),
+            fill=(random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        )
+
 async def digitalpicloop():
     await asyncio.sleep(5)
-    last_downloaded_url = None
-    async with aiohttp.ClientSession() as session:
-        while str(gvarstatus("digitalpic")).lower() == "true":
+    last_url = None
+    headers = {"User-Agent": "Mozilla/5.0"}
+    async with aiohttp.ClientSession(headers=headers) as session:
+        while gvarstatus("digitalpic") == "true":
             try:
-                current_link = gvarstatus("DIGITAL_PIC")
-                if current_link and current_link != last_downloaded_url:
-                    try:
-                        async with session.get(current_link, timeout=20) as resp:
-                            if resp.status == 200:
-                                data = await resp.read()
-                                with open(digitalpic_path, "wb") as f:
-                                    f.write(data)
-                                last_downloaded_url = current_link
-                    except Exception as e:
-                        print(f"❌ فشل التحميل: {e}")
+                link = gvarstatus("DIGITAL_PIC")
+                if link and link != last_url:
+                    async with session.get(link, timeout=25) as r:
+                        if r.status == 200:
+                            with open(digitalpic_path, "wb") as f:
+                                f.write(await r.read())
+                            last_url = link
                 if not os.path.exists(digitalpic_path):
                     await asyncio.sleep(10)
                     continue
@@ -84,25 +99,36 @@ async def digitalpicloop():
                 RTZone = dt.now(timezone(TIME_ZONE))
                 RTime = RTZone.strftime('%H:%M')
                 RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
-                with Image.open(digitalpic_path) as base_img:
-                    edit_img = base_img.convert("RGB").resize((640, 640))
-                    draw = ImageDraw.Draw(edit_img)
+                with Image.open(digitalpic_path) as img:
+                    img = img.convert("RGB").resize((640,640))
+                    draw = ImageDraw.Draw(img)
                     repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
                     try:
                         fnt = ImageFont.truetype(repfont, 145)
                     except:
                         fnt = ImageFont.load_default()
-                    draw.text((140, 230), RT, font=fnt, fill=(250, 250, 250))
-                    edit_img.save(autophoto_path, "JPEG", quality=90)
+                    color_name = gvarstatus("DIGITAL_COLOR") or "أبيض"
+                    if COLOR_MAP[color_name] == "random":
+                        color = random.choice(list(COLOR_MAP.values())[:-1])
+                    else:
+                        color = COLOR_MAP[color_name]
+                    draw.text((140, 230), RT, font=fnt, fill=color)
+                    anti_ban(draw)
+                    img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
-                file_to_upload = await zq_lo.upload_file(autophoto_path)
-                await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file_to_upload))
-                all_photos = await zq_lo.get_profile_photos("me", limit=2)
-                if len(all_photos) > 1:
-                    await zq_lo(functions.photos.DeletePhotosRequest([all_photos[1]]))
+                for _ in range(3):
+                    try:
+                        file = await zq_lo.upload_file(autophoto_path)
+                        await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file))
+                        break
+                    except:
+                        await asyncio.sleep(5)
+                photos = await zq_lo.get_profile_photos("me", limit=2)
+                if len(photos) > 1:
+                    await zq_lo(functions.photos.DeletePhotosRequest([photos[1]]))
             except Exception as e:
-                print(f"⚠️ خطأ في : {e}")
+                print(f"⚠️ خطأ : {e}")
             await asyncio.sleep(CHANGE_TIME)
 
 
@@ -197,7 +223,7 @@ async def _(event):
         return await rep.edit(f"**❌ خطأ: لا يوجد صورة محلية في المسار:**\n`{digitalpic_path}`\n**ولم يتم إضافة رابط صورة عبر الفارات أيضاً!**")
     addgvar("digitalpic", "true")
     await rep.edit("<b>⎉╎تـم بـدء البروفايـل الوقتـي🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف البروفايـل الوقتـي ↶ <a href = https://t.me/Repthon_vars/20>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
-    asyncio.create_task(digitalpicloop())
+    await digitalpicloop()
 
 @zq_lo.rep_cmd(pattern=f"{NAUTO}$")
 async def _(event):
