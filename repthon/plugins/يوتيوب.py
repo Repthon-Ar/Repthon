@@ -534,14 +534,16 @@ async def search_audio(event):  # Repthon / RR0RT
     audio_file = None
 
     ydl_opts = {
-        "format": "bestaudio/best",
-        "outtmpl": "%(title)s.%(ext)s",
-        "merge_output_format": "mp3",
+        "format": "bestaudio*/bestvideo+bestaudio/best",
+        "outtmpl": "%(id)s.%(ext)s",
         "quiet": True,
         "no_warnings": True,
         "geo_bypass": True,
         "noplaylist": True,
         "cookiefile": get_cookies_file(),
+        "allow_unplayable_formats": True,
+        "ignore_no_formats_error": True,
+        "merge_output_format": "mp4",
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -552,24 +554,15 @@ async def search_audio(event):  # Repthon / RR0RT
     }
 
     try:
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(link, download=True)
-        except yt_dlp.utils.DownloadError:
-            ydl_opts["format"] = "worstaudio/worst"
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(link, download=True)
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(link, download=True)
 
         if "requested_downloads" in info:
             audio_file = info["requested_downloads"][0]["filepath"]
         elif "filepath" in info:
             audio_file = info["filepath"]
 
-        if (
-            not audio_file
-            or not os.path.exists(audio_file)
-            or os.path.getsize(audio_file) < 10000
-        ):
+        if not audio_file or not os.path.exists(audio_file) or os.path.getsize(audio_file) < 10000:
             raise Exception("Downloaded file is empty or blocked by YouTube")
 
         await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
@@ -593,11 +586,15 @@ async def search_audio(event):  # Repthon / RR0RT
                 )
             ],
         )
+
         await status.delete()
+
     except ChatSendMediaForbiddenError:
         await status.edit("**⎉╎الوسائط مغلقة في هذه الدردشة**")
+
     except Exception as e:
         await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
+
     finally:
         try:
             if audio_file and os.path.exists(audio_file):
