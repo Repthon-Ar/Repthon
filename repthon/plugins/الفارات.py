@@ -507,6 +507,14 @@ async def variable(event):
         	return await rep.edit("**⎉╎عـذࢪاً عـزيـزي .. انت لـم تقـم باضـافـة فـار {} اصـلاً...**".format(input_str))
         await rep.edit("**⎉╎تم حـذف {} بنجـاح ☑️**\n**⎉╎المتغيـر المحـذوف : ↶**\n `{}` \n**⎉╎يتم الان اعـادة تشغيـل بـوت ريبـــثون يستغـرق الامر 2-1 دقيقـه ▬▭ ...**".format(input_str, variable))
         delgvar("ALIVE_TEMPLATE")
+
+    elif input_str == "لون الوقتي" or input_str == "لون وقتي":
+        variable = gvarstatus("DIGITAL_COLOR")
+        await asyncio.sleep(1.5)
+        if gvarstatus("DIGITAL_COLOR") is None:
+        	return await rep.edit("**⎉╎عـذࢪاً عـزيـزي .. انت لـم تقـم باضـافـة فـار {} اصـلاً...**".format(input_str))
+        await rep.edit("**⎉╎تم حـذف {} بنجـاح ☑️**\n**⎉╎المتغيـر المحـذوف : ↶**\n `{}` \n**⎉╎يتم الان اعـادة تشغيـل بـوت ريبـــثون يستغـرق الامر 2-1 دقيقـه ▬▭ ...**".format(input_str, variable))
+        delgvar("DIGITAL_COLOR")
         
     elif input_str == "كليشة الحماية" or input_str == "كليشه الحمايه" or input_str == "كليشه الحماية" or input_str == "كليشة الحمايه":
         variable = gvarstatus("pmpermit_txt")
