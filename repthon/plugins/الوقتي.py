@@ -42,6 +42,7 @@ from . import edit_delete, zq_lo, logging, BOTLOG, BOTLOG_CHATID, mention
 plugin_category = "الادوات"
 LOGS = logging.getLogger(__name__)
 CHANGE_TIME = int(gvarstatus("CHANGE_TIME")) if gvarstatus("CHANGE_TIME") else 60
+CHANGE_TIME2 = int(gvarstatus("CHANGE_TIME2")) if gvarstatus("CHANGE_TIME2") else 120
 FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
 normretext = "1234567890"
@@ -56,12 +57,12 @@ PAUTO = gvarstatus("R_PAUTO") or "(البروفايل تلقائي|الصوره 
 BAUTO = gvarstatus("R_BAUTO") or "(البايو تلقائي|البايو الوقتي|بايو وقتي|نبذه وقتيه|النبذه الوقتيه)"
 
 COLOR_MAP = {
-    "ابيض": (255, 255, 255),
-    "احمر": (255, 0, 0),
-    "اخضر": (0, 255, 0),
-    "ازرق": (0, 150, 255),
-    "ذهبي": (255, 215, 0),
-    "عشوائي": "random"
+    "white": (255, 255, 255),
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+    "gold": (255, 215, 0),
+    "عشوائي": "random",
 }
 
 extractor = URLExtract()
@@ -70,16 +71,19 @@ if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
     os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
 
 def anti_ban(draw):
-    for _ in range(20):
+    for _ in range(random.randint(3, 7)):
         draw.point(
-            (random.randint(0,639), random.randint(0,639)),
-            fill=(random.randint(0,255), random.randint(0,255), random.randint(0,255))
+            (
+                random.randint(0, 639),
+                random.randint(0, 639)
+            ),
+            fill=(255, 255, 255)
         )
 
 async def digitalpicloop():
     await asyncio.sleep(5)
     last_url = None
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": "Mozilla/5.0 (Android 13)"}
     async with aiohttp.ClientSession(headers=headers) as session:
         while gvarstatus("digitalpic") == "true":
             try:
@@ -90,6 +94,7 @@ async def digitalpicloop():
                             with open(digitalpic_path, "wb") as f:
                                 f.write(await r.read())
                             last_url = link
+
                 if not os.path.exists(digitalpic_path):
                     await asyncio.sleep(10)
                     continue
@@ -98,36 +103,36 @@ async def digitalpicloop():
                 RTime = RTZone.strftime('%H:%M')
                 RT = dt.strptime(RTime, "%H:%M").strftime("%I:%M")
                 with Image.open(digitalpic_path) as img:
-                    img = img.convert("RGB").resize((640,640))
+                    img = img.convert("RGB").resize((640, 640))
                     draw = ImageDraw.Draw(img)
                     repfont = gvarstatus("DEFAULT_PIC") or "repthon/helpers/styles/REPTHONEMOGE.ttf"
                     try:
                         fnt = ImageFont.truetype(repfont, 35)
                     except:
                         fnt = ImageFont.load_default()
-                    color_name = gvarstatus("DIGITAL_COLOR") or "ابيض"
-                    if COLOR_MAP[color_name] == "random":
-                        color = random.choice(list(COLOR_MAP.values())[:-1])
+                    color_name = (gvarstatus("DIGITAL_COLOR") or "white").lower().strip()
+                    color_value = COLOR_MAP.get(color_name, COLOR_MAP["white"])
+                    if color_value == "random":
+                        color = random.choice(
+                            [v for v in COLOR_MAP.values() if isinstance(v, tuple)]
+                        )
                     else:
-                        color = COLOR_MAP[color_name]
-                    draw.text((140, 70), RT, font=fnt, fill=color)
+                        color = color_value
+                    draw.text((20, 20), RT, font=fnt, fill=color)
                     anti_ban(draw)
                     img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
                     await zq_lo.connect()
-                for _ in range(3):
-                    try:
-                        file = await zq_lo.upload_file(autophoto_path)
-                        await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file))
-                        break
-                    except:
-                        await asyncio.sleep(5)
+                file = await zq_lo.upload_file(autophoto_path)
+                await zq_lo(functions.photos.UploadProfilePhotoRequest(file=file))
                 photos = await zq_lo.get_profile_photos("me", limit=2)
                 if len(photos) > 1:
-                    await zq_lo(functions.photos.DeletePhotosRequest([photos[1]]))
+                    await zq_lo(
+                        functions.photos.DeletePhotosRequest([photos[1]])
+                    )
             except Exception as e:
                 print(f"⚠️ خطأ : {e}")
-            await asyncio.sleep(CHANGE_TIME)
+            await asyncio.sleep(CHANGE_TIME2)
 
 
 async def autoname_loop():
