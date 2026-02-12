@@ -493,31 +493,38 @@ def remove_if_exists(path):
 async def search_audio(event):  # Repthon / RR0RT
     reply = await event.get_reply_message()
     if event.pattern_match.group(1):
-        query = event.pattern_match.group(1)
-    elif reply and reply.message:
-        query = reply.message
+        url = event.pattern_match.group(1).strip()
+    elif reply and reply.text:
+        url = reply.text.strip()
     else:
         return await edit_or_reply(
             event,
-            "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**",
+            "**⎉╎أرسل رابط فيديو يوتيوب فقط**\n**⎉╎لا يدعم Shorts أو YouTube Music**"
         )
-
+    if "shorts" in url or "music.youtube" in url:
+        return await edit_or_reply(
+            event,
+            "**⎉╎هذا الأمر يدعم فيديوهات يوتيوب العادية فقط**"
+        )
     status = await edit_or_reply(
         event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**"
     )
     audio_file = None
     thumb_name = None
-    search_query = f"ytsearch1:{query}"
     ydl_opts = {
-        "format": "bestaudio/best",
+        "format": "bestaudio",
         "outtmpl": "%(id)s.%(ext)s",
         "quiet": True,
         "no_warnings": True,
-        "geo_bypass": True,
         "noplaylist": True,
-        "cookiefile": get_cookies_file(),
-        "allow_unplayable_formats": True,
-        "ignore_no_formats_error": True,
+        "geo_bypass": True,
+        "writethumbnail": True,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android"],
+                "player_skip": ["webpage"],
+            }
+        },
         "merge_output_format": "mp4",
         "postprocessors": [
             {
@@ -529,20 +536,11 @@ async def search_audio(event):  # Repthon / RR0RT
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(search_query, download=True)
-    except yt_dlp.utils.DownloadError:
-        ydl_opts["format"] = "worstaudio/worst"
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(search_query, download=True)
-        if "entries" in info:
-            info = info["entries"][0]
-        if "requested_downloads" in info:
-            audio_file = info["requested_downloads"][0]["filepath"]
-        else:
-            audio_file = info.get("filepath")
-        if not audio_file or not os.path.exists(audio_file) or os.path.getsize(audio_file) < 10000:
-            raise Exception("❌ لم يتم استخراج الصوت من الفيديو أو محظور")
-        title = info.get("title", "Repthon")
+            info = ydl.extract_info(url, download=True)
+        audio_file = f"{info.get('id')}.mp3"
+        if not os.path.exists(audio_file):
+            raise Exception("فشل استخراج الصوت من الفيديو")
+        title = info.get("title", "YouTube")
         duration = info.get("duration", 0)
         thumbnail_url = info.get("thumbnail")
         if thumbnail_url:
@@ -553,7 +551,7 @@ async def search_audio(event):  # Repthon / RR0RT
                     f.write(r.content)
             except Exception:
                 thumb_name = None
-        await status.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
+        await status.edit("**╮ جـارِ الرفع ▬▬ . . .🎧♥️╰**")
         await event.client.send_file(
             event.chat_id,
             audio_file,
@@ -564,7 +562,7 @@ async def search_audio(event):  # Repthon / RR0RT
                 DocumentAttributeAudio(
                     duration=int(duration),
                     title=title,
-                    performer=info.get("uploader", "Repthon"),
+                    performer=info.get("uploader", "YouTube"),
                 )
             ],
         )
@@ -572,7 +570,7 @@ async def search_audio(event):  # Repthon / RR0RT
     except ChatSendMediaForbiddenError:
         await status.edit("**⎉╎الوسائط مغلقة في هذه الدردشة**")
     except Exception as e:
-        await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
+        await status.edit(f"**⎉╎فشل التحويل**\n`{e}`")
     finally:
         try:
             if audio_file and os.path.exists(audio_file):
@@ -581,8 +579,8 @@ async def search_audio(event):  # Repthon / RR0RT
                 os.remove(thumb_name)
         except Exception:
             pass
-                
-    
+        
+            
 @zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
 async def _(event):
     query = event.pattern_match.group(1)
