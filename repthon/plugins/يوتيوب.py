@@ -487,7 +487,7 @@ async def yt_search(event):
 def remove_if_exists(path):
     if os.path.exists(path):
         os.remove(path)
-
+"""
 #R
 @zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
 async def search_audio(event):
@@ -558,9 +558,9 @@ async def search_audio(event):
         for f in [audio_file, thumb_name]:
             if f and os.path.exists(f):
                 os.remove(f)    
-        
+      """  
             
-@zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
 async def _(event):
     query = event.pattern_match.group(1)
     reply = await event.get_reply_message()
