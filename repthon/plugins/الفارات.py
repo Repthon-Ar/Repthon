@@ -841,6 +841,13 @@ async def custom_rep(event):
         else:
             await rep.edit("**⎉╎الفـار {} موجـود ☑️**\n**⎉╎قيمـة الفـار : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, variable))
 
+   elif input_str == "لون الوقتي" or input_str == "لون وقتي":
+        variable = gvarstatus("DIGITAL_COLOR")
+        if variable is None:
+            await rep.edit("**⎉╎فـار كليشـة الفحص غيـر موجـود ❌**\n**⎉╎لـ اضـافته بالـرد ع الكليشـة استخـدم الامـر : ↶**\n `.اضف فار لون الوقتي` \n\n**⎉╎قنـاة السـورس : @Repthon**")
+        else:
+            await rep.edit("**⎉╎الفـار {} موجـود ☑️**\n**⎉╎قيمـة الفـار : ↶**\n `{}` \n\n**⎉╎قنـاة السـورس : @Repthon**".format(input_str, variable)) 
+
     elif input_str == "كليشة البوت" or input_str == "كليشه البوت":
         variable = gvarstatus("START_TEXT")
         if variable is None:
