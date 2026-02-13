@@ -118,7 +118,7 @@ async def digitalpicloop():
                         )
                     else:
                         color = color_value
-                    draw.text((20, 20), RT, font=fnt, fill=color)
+                    draw.text((140, 70), RT, font=fnt, fill=color)
                     anti_ban(draw)
                     img.save(autophoto_path, "JPEG", quality=90)
                 if not zq_lo.is_connected():
@@ -257,9 +257,9 @@ async def _(event): #Code by T.me/@RR0RT
         delgvar("autoname")
     if gvarstatus("auto2name") is not None and gvarstatus("auto2name") == "true":
         return await edit_delete(event, "**⎉╎الاسـم الوقتـي² .. تم تفعيلـه سابقـاً**")
-    zzz = await edit_or_reply(event, "**• جـارِ تفعيـل الاسـم الوقتـي² ⅏. . .**")
+    rrr = await edit_or_reply(event, "**• جـارِ تفعيـل الاسـم الوقتـي² ⅏. . .**")
     addgvar("auto2name", True)
-    await zzz.edit("<b>⎉╎تـم بـدء الاسـم الوقتـي²🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف الاسـم الوقتـي ↶ <a href = https://t.me/Repthon_vars/24>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
+    await rrr.edit("<b>⎉╎تـم بـدء الاسـم الوقتـي²🝛 .. بنجـاح ✓</b>\n<b>⎉╎زخـارف الاسـم الوقتـي ↶ <a href = https://t.me/Repthon_vars/24>⦇  اضـغـط هنــا  ⦈</a> </b>", parse_mode="html", link_preview=False)
     await auto2name_loop()
 
 
@@ -382,9 +382,6 @@ async def _(event):  # sourcery no-metrics
         return await edit_delete(event, "**⎉╎النبـذه الوقتيـه .. غيـر مفعـله اصـلاً ؟!**")
 
  
-
-
-
 @zq_lo.rep_cmd(
     pattern="ايقاف(?: |$)(.*)",
     command=("ايقاف", plugin_category),
@@ -750,7 +747,7 @@ async def baqir(event):
             await rep.edit("**✾╎تم إضـافة زغـرفة الاسـم الوقتـي .. بنجـاح✓**\n**✾╎نـوع الزخـرفـه {} **\n**✾╎ارسـل الان ↶** `.الاسم تلقائي`".format(rinfo))
         addgvar("BA_FN", "𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡𝟘")
     elif input_str == "14":
-        zinfo = "１２３４５６７８９０"
+        rinfo = "１２３４５６７８９０"
         await asyncio.sleep(1.5)
         if gvarstatus("BA_FN") is not None:
             await rep.edit("**✾╎تم تغييـر زغـرفة الاسـم الوقتـي .. بنجـاح✓**\n**✾╎نـوع الزخـرفـه {} **\n**✾╎الان ارسـل ↶** `.الاسم تلقائي`".format(rinfo))
