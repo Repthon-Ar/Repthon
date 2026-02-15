@@ -13,14 +13,14 @@ from telethon.tl.types import InputMessagesFilterVideo, InputMessagesFilterVoice
 
 from repthon import zq_lo
 
-from repthon.core.logger import logging
+from ..core.logger import logging
 from ..helpers.styles.meme.meme import rvois
 from ..Config import Config
 from ..core.managers import edit_delete, edit_or_reply
 from . import ALIVE_NAME, mention
 from ..helpers import get_user_from_event
 from ..helpers.utils import _format
-from ..helpers.utils import admin_cmd
+from .utils import admin_cmd
 
 from . import reply_id
 
