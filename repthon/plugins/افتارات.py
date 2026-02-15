@@ -20,10 +20,9 @@ from ..core.managers import edit_delete, edit_or_reply
 from . import ALIVE_NAME, mention
 from ..helpers import get_user_from_event
 from ..helpers.utils import _format
-from ..helpers.utils import reply_id as rd
 from .utils import admin_cmd
 
-from . import reply_id
+from . import reply_id as rd
 
 
 @zq_lo.rep_cmd(pattern="حالات$")
