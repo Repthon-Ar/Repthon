@@ -14,11 +14,13 @@ from telethon.tl.types import InputMessagesFilterVideo, InputMessagesFilterVoice
 from repthon import zq_lo
 
 from repthon.core.logger import logging
+from ..helpers.styles.meme.meme import rvois
 from ..Config import Config
 from ..core.managers import edit_delete, edit_or_reply
 from . import ALIVE_NAME, mention
 from ..helpers import get_user_from_event
 from ..helpers.utils import _format
+from ..helpers.utils import admin_cmd
 
 from . import reply_id
 
@@ -443,3 +445,13 @@ async def _(event):
         await repevent.edit("**╮•⎚ عـذراً .. لـم استطـع ايجـاد المطلـوب ☹️💔**")
 
 
+@zq_lo.on(admin_cmd(outgoing=True, pattern="ص(\\d+)$"))
+async def rvois_handler(vois):
+    if vois.fwd_from:
+        return
+    Re = await rd(vois)
+    match = vois.pattern_match.group(1)
+    idx = int(match) - 1
+    if 0 <= idx < len(rvois):
+        await vois.client.send_file(vois.chat_id, rvois[idx], reply_to=Re)
+        await vois.delete()
