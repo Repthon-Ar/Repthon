@@ -14,7 +14,7 @@ from telethon.tl.types import InputMessagesFilterVideo, InputMessagesFilterVoice
 from repthon import zq_lo
 
 from ..core.logger import logging
-from ..helpers.styles.meme import rvois
+from ..helpers.styles.meme.meme import rvois
 from ..Config import Config
 from ..core.managers import edit_delete, edit_or_reply
 from . import ALIVE_NAME, mention
