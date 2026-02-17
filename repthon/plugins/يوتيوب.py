@@ -15,10 +15,10 @@ import aiofiles
 import wget
 
 try:
-    from pytubefix import Search
+    from pytubefix import Search, YouTube
 except ModuleNotFoundError:
     os.system("pip3 install pytubefix")
-    from pytubefix import Search
+    from pytubefix import Search, YouTube
 
 import yt_dlp
 from youtube_search import YoutubeSearch
@@ -495,43 +495,48 @@ def remove_if_exists(path):
         os.remove(path)
 
 #R
-
-TMP_DIR = "./temp/"
+TMP_DIR = "./temp"
 os.makedirs(TMP_DIR, exist_ok=True)
 
-@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
-async def search_mp3_repthon(event):
+def convert_to_mp3(input_file):
+    output_file = input_file.rsplit(".", 1)[0] + ".mp3"
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", input_file, output_file],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    os.remove(input_file)
+    return output_file
+
+@zq_lo.rep_cmd(pattern="بحث (.+)")
+async def search_mp3(event):
     query = event.pattern_match.group(1)
-    msg = await event.reply("🔍 جاري البحث عن الأغنية...")
+    msg = await event.reply("🔍 جاري البحث...")
     try:
         search = Search(query)
         video = search.results[0]
-        url = video.watch_url
         await msg.edit("⬇️ يتم تحميل الصوت...")
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": f"{TMP_DIR}/%(title)s.%(ext)s",
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-            "quiet": True,
-        }
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            title = info["title"]
-            file_path = f"{TMP_DIR}/{title}.mp3"
-        await msg.edit("📤 يتم رفع الملف...")
-        await client.send_file(
+        yt = YouTube(video.watch_url)
+        audio = (
+            yt.streams
+            .filter(only_audio=True)
+            .order_by("abr")
+            .desc()
+            .first()
+        )
+        file_path = audio.download(output_path=TMP_DIR)
+        await msg.edit("🎧 تحويل إلى MP3...")
+        mp3_file = convert_to_mp3(file_path)
+        await msg.edit("📤 يتم الرفع...")
+        await event.client.send_file(
             event.chat_id,
-            file_path,
-            caption=f"🎵 **{title}**\n\n🤍 by @Repthon",
+            mp3_file,
+            caption=f"🎵 **{video.title}**\n\n🔹 @Repthon",
         )
         await msg.delete()
-        os.remove(file_path)
+        os.remove(mp3_file)
     except Exception as e:
-        await msg.edit(f"❌ حدث خطأ:\n`{e}`")
+        await msg.edit(f"❌ خطأ:\n`{e}`")
             
 
 @zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
