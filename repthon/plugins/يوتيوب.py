@@ -495,18 +495,18 @@ def remove_if_exists(path):
         os.remove(path)
 
 #R
-TMP_DIR = "./temp"
+TMP_DIR = "./temp/"
 os.makedirs(TMP_DIR, exist_ok=True)
 
 def convert_to_mp3(input_file):
-    output_file = input_file.rsplit(".", 1)[0] + ".mp3"
+    mp3_file = input_file.rsplit(".", 1)[0] + ".mp3"
     subprocess.run(
-        ["ffmpeg", "-y", "-i", input_file, output_file],
+        ["ffmpeg", "-y", "-i", input_file, mp3_file],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
     )
     os.remove(input_file)
-    return output_file
+    return mp3_file
 
 @zq_lo.rep_cmd(pattern="بحث (.+)")
 async def search_mp3(event):
@@ -514,9 +514,12 @@ async def search_mp3(event):
     msg = await event.reply("🔍 جاري البحث...")
     try:
         search = Search(query)
+        if not search.results:
+            await msg.edit("❌ لم يتم العثور على نتائج")
+            return
         video = search.results[0]
         await msg.edit("⬇️ يتم تحميل الصوت...")
-        yt = YouTube(video.watch_url)
+        yt = YouTube(video.watch_url, client="WEB")
         audio = (
             yt.streams
             .filter(only_audio=True)
@@ -524,6 +527,9 @@ async def search_mp3(event):
             .desc()
             .first()
         )
+        if not audio:
+            await msg.edit("❌ لم يتم العثور على مسار صوتي")
+            return
         file_path = audio.download(output_path=TMP_DIR)
         await msg.edit("🎧 تحويل إلى MP3...")
         mp3_file = convert_to_mp3(file_path)
