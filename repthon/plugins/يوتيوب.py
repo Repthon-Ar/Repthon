@@ -511,7 +511,7 @@ def convert_to_mp3(input_file):
 async def safe_search(query, retries=3):
     for i in range(retries):
         try:
-            return Search(query)
+            return Search(query, client="WEB")
         except Exception as e:
             if "429" in str(e):
                 await asyncio.sleep(3 + i * 2)
