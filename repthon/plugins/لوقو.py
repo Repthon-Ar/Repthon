@@ -1,13 +1,3 @@
-# ابن الكحبة الي يغير حقوق
-
-""" 
-Logo & Style for Repthon™ t.me/Repthon
-Write file by Baqir t.me/E_7_V
-ها خماط بعدك تخمط مني .. ماتستحي ؟
-متى راح تصير مطور وانت مقضيها خمط تعب وحقوق الناس
-ههههههههههههههههههههههههههههههههههههههههههههههههههههههه
-"""
-
 import os
 import random
 import string
@@ -29,7 +19,7 @@ PICS_STR = []
 bot = zq_lo
 
 
-# code by t.me/E_7_V
+# code by t.me/RR0RT
 async def get_font_file(client, channel_id):
     font_file_message_s = await client.get_messages(
         entity=channel_id,
@@ -41,21 +31,21 @@ async def get_font_file(client, channel_id):
     return await client.download_media(font_file_message)
 
 
-# code by t.me/E_7_V
+# code by t.me/RR0RT
 @zq_lo.rep_cmd(pattern=r"لوكو ?(.*)")
 async def lg1(userevent):
     event = await eor(userevent, "**- جـارِ صنـع لـوكـو انكـلش بحقـوقك ...**")
     me = await userevent.client.get_me()
     my_first = me.first_name
     my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    if gvarstatus("REP_FONTS") is None: # code by t.me/E_7_V
+    if gvarstatus("REP_FONTS") is None: # code by t.me/RR0RT
         rep_font = await get_font_file(userevent.client, "@T_Taiz")
     else:
         rep_font = gvarstatus("REP_FONTS")
     if userevent.reply_to_msg_id:
         rply = await userevent.get_reply_message()
         logo_ = await rply.download_media()
-    else: # code by t.me/E_7_V
+    else: # code by t.me/RR0RT
         async for i in bot.iter_messages(
             "@Z_44_Z", filter=InputMessagesFilterPhotos
         ):
@@ -69,7 +59,7 @@ async def lg1(userevent):
     arabic_text = "".join(
         char for char in text if char.isalpha() and char not in string.ascii_letters
     )
-    if arabic_text: # code by t.me/E_7_V
+    if arabic_text: # code by t.me/RR0RT
         await eor(event, "**- الرجاء إدخال نص باللغـة الانجليـزية فقـط.**\n`.لوكو` + **نص انكـلش**\n`.لوقو` + **نص عـربـي**")
         return
     if len(text) <= 8:
@@ -85,7 +75,9 @@ async def lg1(userevent):
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(rep_font, font_size_)
     image_widthz, image_heightz = img.size
-    w, h = draw.textsize(text, font=font)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
     h += int(h * 0.21)
     image_width, image_height = img.size
     draw.text(
@@ -116,21 +108,21 @@ async def lg1(userevent):
 
 
 
-# code by t.me/E_7_V
+# code by t.me/RR0RT
 @zq_lo.rep_cmd(pattern=r"لوقو ?(.*)")
 async def lg1(userevent):
     event = await eor(userevent, "**- جـارِ صنـع لـوقـو عـربـي بحقـوقك ...**")
     me = await userevent.client.get_me()
     my_first = me.first_name
     my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    if gvarstatus("REP_FONTS") is None: # code by t.me/E_7_V
+    if gvarstatus("REP_FONTS") is None: # code by t.me/RR0RT
         rep_font = await get_font_file(userevent.client, "@S_SSQ")
-    else: # code by t.me/E_7_V
+    else: # code by t.me/RR0RT
         rep_font = gvarstatus("REP_FONTS")
     if userevent.reply_to_msg_id:
         rply = await userevent.get_reply_message()
         logo_ = await userevent.client.download_media(rply)
-    else: # code by t.me/zzzzl1l
+    else: # code by t.me/RR0RT
         async for i in bot.iter_messages(
             "@Z_44_Z", filter=InputMessagesFilterPhotos
         ):
@@ -144,7 +136,7 @@ async def lg1(userevent):
     arabic_text = "".join(
         char for char in text if char.isalpha() and char not in string.ascii_letters
     )
-    if not arabic_text: # code by t.me/E_7_V
+    if not arabic_text: # code by t.me/RR0RT
         await eor(event, "**- الرجاء إدخال نص باللغـة العربيـة فقـط.**\n`.لوقو` + **نص عـربـي**\n`.لوكو` + **نص انكـلش**")
         return
     if len(text) <= 8:
@@ -160,7 +152,9 @@ async def lg1(userevent):
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(rep_font, font_size_)
     image_widthz, image_heightz = img.size
-    w, h = draw.textsize(text, font=font)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
     h += int(h * 0.21)
     image_width, image_height = img.size
     draw.text(
