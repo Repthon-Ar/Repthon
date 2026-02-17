@@ -508,16 +508,38 @@ def convert_to_mp3(input_file):
     os.remove(input_file)
     return mp3_file
 
-@zq_lo.rep_cmd(pattern="بحث (.+)")
+async def safe_search(query, retries=3):
+    for i in range(retries):
+        try:
+            return Search(query)
+        except Exception as e:
+            if "429" in str(e):
+                await asyncio.sleep(3 + i * 2)
+            else:
+                raise e
+    return None
+
+def pick_official_video(results):
+    keywords = ("official", "vevo", "topic")
+    for v in results:
+        title = (v.title or "").lower()
+        author = (v.author or "").lower()
+        if any(k in title or k in author for k in keywords):
+            if getattr(v, "length", 0) and v.length > 60:
+                return v
+    return results[0]
+
+@zq_lo.rep_cmd(pattern=r"بحث (.+)")
 async def search_mp3(event):
     query = event.pattern_match.group(1)
     msg = await event.reply("🔍 جاري البحث...")
     try:
-        search = Search(query)
-        if not search.results:
+        await asyncio.sleep(2)
+        search = await safe_search(query)
+        if not search or not search.results:
             await msg.edit("❌ لم يتم العثور على نتائج")
             return
-        video = search.results[0]
+        video = pick_official_video(search.results)
         await msg.edit("⬇️ يتم تحميل الصوت...")
         yt = YouTube(video.watch_url, client="WEB")
         audio = (
