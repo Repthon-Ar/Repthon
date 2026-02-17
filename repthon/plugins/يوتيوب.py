@@ -13,8 +13,14 @@ from pathlib import Path
 import aiohttp
 import aiofiles
 import wget
+
+try:
+    from pytubefix import Search
+except ModuleNotFoundError:
+    os.system("pip3 install pytubefix")
+    from pytubefix import Search
+
 import yt_dlp
-from yt_dlp import YoutubeDL
 from youtube_search import YoutubeSearch
 from ShazamAPI import Shazam
 from validators.url import url
@@ -487,80 +493,48 @@ async def yt_search(event):
 def remove_if_exists(path):
     if os.path.exists(path):
         os.remove(path)
-"""
-#R
-@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
-async def search_audio(event):
-    reply = await event.get_reply_message()
-    if event.pattern_match.group(1):
-        query = event.pattern_match.group(1)
-    elif reply and reply.message:
-        query = reply.message
-    else:
-        return await edit_or_reply(
-            event,
-            "**⎉╎بحث + اسم المقطع**",
-        )
-    status = await edit_or_reply(event, "**⎉╎جارِ التحميل...**")
-    audio_file = None
-    thumb_name = None
-    ydl_opts = {
-        "format": "bv*+ba/best",
-        "outtmpl": "%(id)s.%(ext)s",
-        "quiet": True,
-        "no_warnings": True,
-        "geo_bypass": True,
-        "noplaylist": True,
-        "cookiefile": get_cookies_file(),
-        "default_search": "ytsearch1",
 
-        "postprocessors": [
-            {
+#R
+
+TMP_DIR = "./temp/"
+os.makedirs(TMP_DIR, exist_ok=True)
+
+@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
+async def search_mp3_repthon(event):
+    query = event.pattern_match.group(1)
+    msg = await event.reply("🔍 جاري البحث عن الأغنية...")
+    try:
+        search = Search(query)
+        video = search.results[0]
+        url = video.watch_url
+        await msg.edit("⬇️ يتم تحميل الصوت...")
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": f"{TMP_DIR}/%(title)s.%(ext)s",
+            "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "mp3",
                 "preferredquality": "192",
-            }
-        ],
-    }
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(query, download=True)
-        if "entries" in info:
-            info = info["entries"][0]
-        audio_file = f"{info['id']}.mp3"
-        if not os.path.exists(audio_file):
-            raise Exception("فشل استخراج الصوت")
-        title = info.get("title", "Audio")
-        duration = info.get("duration", 0)
-        if info.get("thumbnail"):
-            try:
-                thumb_name = f"{info['id']}.jpg"
-                r = requests.get(info["thumbnail"], timeout=10)
-                open(thumb_name, "wb").write(r.content)
-            except Exception:
-                thumb_name = None
-        await event.client.send_file(
+            }],
+            "quiet": True,
+        }
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            title = info["title"]
+            file_path = f"{TMP_DIR}/{title}.mp3"
+        await msg.edit("📤 يتم رفع الملف...")
+        await client.send_file(
             event.chat_id,
-            audio_file,
-            thumb=thumb_name,
-            attributes=[
-                DocumentAttributeAudio(
-                    duration=int(duration),
-                    title=title,
-                    performer=info.get("uploader", "YouTube"),
-                )
-            ],
+            file_path,
+            caption=f"🎵 **{title}**\n\n🤍 by @Repthon",
         )
-        await status.delete()
+        await msg.delete()
+        os.remove(file_path)
     except Exception as e:
-        await status.edit(f"**⎉╎فشل التحميل**\n`{e}`")
-    finally:
-        for f in [audio_file, thumb_name]:
-            if f and os.path.exists(f):
-                os.remove(f)    
-      """  
+        await msg.edit(f"❌ حدث خطأ:\n`{e}`")
             
-@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
+
+@zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
 async def _(event):
     query = event.pattern_match.group(1)
     reply = await event.get_reply_message()
