@@ -14,12 +14,6 @@ import aiohttp
 import aiofiles
 import wget
 
-try:
-    from pytubefix import YouTube
-except ModuleNotFoundError:
-    os.system("pip3 install pytubefix")
-    from pytubefix import YouTube
-
 import yt_dlp
 from youtube_search import YoutubeSearch
 from youtubesearchpython import VideosSearch
@@ -496,30 +490,7 @@ def remove_if_exists(path):
         os.remove(path)
 
 #R
-TMP_DIR = "./temp/"
-os.makedirs(TMP_DIR, exist_ok=True)
-
-def convert_to_mp3(input_file):
-    mp3_file = input_file.rsplit(".", 1)[0] + ".mp3"
-    subprocess.run(
-        ["ffmpeg", "-y", "-i", input_file, mp3_file],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
-    )
-    os.remove(input_file)
-    return mp3_file
-
-def external_search(query):
-    search = VideosSearch(query, limit=1)
-    results = search.result().get("result", [])
-    if not results:
-        return None
-    return {
-        "title": results[0]["title"],
-        "url": results[0]["link"]
-    }
-
-@zq_lo.rep_cmd(pattern="بحث (.+)")
+"""@zq_lo.rep_cmd(pattern="بحث (.+)")
 async def search_mp3(event):
     query = event.pattern_match.group(1)
     msg = await event.reply("🔍 جاري البحث...")
@@ -556,10 +527,10 @@ async def search_mp3(event):
         if "429" in str(e) or "bot" in str(e).lower():
             await msg.edit("⚠️ يوتيوب يطلب تهدئة مؤقتة، حاول لاحقًا")
         else:
-            await msg.edit(f"❌ خطأ:\n`{e}`")
+            await msg.edit(f"❌ خطأ:\n`{e}`")"""
             
 
-@zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
+@zq_lo.rep_cmd(pattern="بحث(?: |$)(.*)")
 async def _(event):
     query = event.pattern_match.group(1)
     reply = await event.get_reply_message()
@@ -567,28 +538,21 @@ async def _(event):
         query = reply.text
     if not query:
         return await edit_or_reply(event, "**⎉╎قم باضافـة إسـم للامـر ..**\n**⎉╎بحث + اسـم المقطـع الصـوتي**")
-
     revent = await edit_or_reply(event, "**╮ جـارِ البحث ؏ـن المقطـٓع الصٓوتـي... 🎧♥️╰**")
-
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
         if not results:
             return await revent.edit("**• لم يتم العثور على نتائج للبحث.**")
-        
         link = f"https://youtube.com{results[0]['url_suffix']}"
         title = results[0]["title"]
     except Exception as e:
         return await revent.edit(f"**• فشـل في محرك البحث:** `{str(e)}`")
-
     await revent.edit(f"**╮ جـارِ تحميـل بحثك... 📥╰**\n**⎉ العنوان:** `{title[:30]}...`")
-    
     assistant_bot = "@QJ9bot"
     async with event.client.conversation(assistant_bot, timeout=600) as conv:
         try:
             await conv.send_message(link)
-            
             response = await conv.get_response()
-            
             found_button = None
             if response.buttons:
                 for row in response.buttons:
@@ -599,7 +563,6 @@ async def _(event):
                             break
                     if found_button:
                         break
-            
             if not found_button:
                 await asyncio.sleep(2)
                 messages = await event.client.get_messages(assistant_bot, limit=2)
@@ -612,21 +575,15 @@ async def _(event):
                                 break
                         if found_button:
                             break
-            
             if not found_button:
                 return await revent.edit("**• لم أجد زر تحميل الصوت في رد البوت.**")
-            
-            await revent.edit("**╮ تم العثور على بحثك! جاري التحميل... 🎧╰**")
+            await revent.edit("** ╮ تم العثور على بحثك! جاري التحميل... 🎧╰ **")
             await found_button.click()
-            
             await asyncio.sleep(3)
-            
             audio_msg = None
             max_attempts = 20
-            
             for attempt in range(max_attempts):
                 messages = await event.client.get_messages(assistant_bot, limit=5)
-                
                 for msg in messages:
                     if msg.media:
                         if hasattr(msg.media, 'document'):
@@ -639,13 +596,10 @@ async def _(event):
                             break
                         elif hasattr(msg.media, 'photo'):
                             continue
-                
                 if audio_msg:
                     break
-                
                 await revent.edit(f"**╮ جاري البحث عن الملف الصوتي... ({attempt+1}/{max_attempts}) ⏳╰**")
                 await asyncio.sleep(2)
-            
             if audio_msg and audio_msg.media:
                 await revent.edit("**╮ جـارِ الرفـع ▬▬ . . .🎧♥️╰**")
                 await event.client.send_file(
