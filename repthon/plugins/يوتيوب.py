@@ -15,13 +15,14 @@ import aiofiles
 import wget
 
 try:
-    from pytubefix import Search, YouTube
+    from pytubefix import YouTube
 except ModuleNotFoundError:
     os.system("pip3 install pytubefix")
-    from pytubefix import Search, YouTube
+    from pytubefix import YouTube
 
 import yt_dlp
 from youtube_search import YoutubeSearch
+from youtubesearchpython import VideosSearch
 from ShazamAPI import Shazam
 from validators.url import url
 
@@ -508,40 +509,28 @@ def convert_to_mp3(input_file):
     os.remove(input_file)
     return mp3_file
 
-async def safe_search(query, retries=3):
-    for i in range(retries):
-        try:
-            return Search(query, client="WEB")
-        except Exception as e:
-            if "429" in str(e):
-                await asyncio.sleep(3 + i * 2)
-            else:
-                raise e
-    return None
+def external_search(query):
+    search = VideosSearch(query, limit=1)
+    results = search.result().get("result", [])
+    if not results:
+        return None
+    return {
+        "title": results[0]["title"],
+        "url": results[0]["link"]
+    }
 
-def pick_official_video(results):
-    keywords = ("official", "vevo", "topic")
-    for v in results:
-        title = (v.title or "").lower()
-        author = (v.author or "").lower()
-        if any(k in title or k in author for k in keywords):
-            if getattr(v, "length", 0) and v.length > 60:
-                return v
-    return results[0]
-
-@zq_lo.rep_cmd(pattern=r"بحث (.+)")
+@zq_lo.rep_cmd(pattern="بحث (.+)")
 async def search_mp3(event):
     query = event.pattern_match.group(1)
     msg = await event.reply("🔍 جاري البحث...")
     try:
-        await asyncio.sleep(2)
-        search = await safe_search(query)
-        if not search or not search.results:
+        video = external_search(query)
+        if not video:
             await msg.edit("❌ لم يتم العثور على نتائج")
             return
-        video = pick_official_video(search.results)
+        await asyncio.sleep(3)
         await msg.edit("⬇️ يتم تحميل الصوت...")
-        yt = YouTube(video.watch_url, client="WEB")
+        yt = YouTube(video["url"], client="WEB")
         audio = (
             yt.streams
             .filter(only_audio=True)
@@ -559,12 +548,15 @@ async def search_mp3(event):
         await event.client.send_file(
             event.chat_id,
             mp3_file,
-            caption=f"🎵 **{video.title}**\n\n🔹 @Repthon",
+            caption=f"🎵 **{video['title']}**\n\n🔹 @Repthon",
         )
         await msg.delete()
         os.remove(mp3_file)
     except Exception as e:
-        await msg.edit(f"❌ خطأ:\n`{e}`")
+        if "429" in str(e) or "bot" in str(e).lower():
+            await msg.edit("⚠️ يوتيوب يطلب تهدئة مؤقتة، حاول لاحقًا")
+        else:
+            await msg.edit(f"❌ خطأ:\n`{e}`")
             
 
 @zq_lo.rep_cmd(pattern="s(?: |$)(.*)")
